@@ -8,8 +8,10 @@ with open(input_filename) as f:
         print(in_string.rstrip().split(' -> '))
 
 
-    # number_draws = [int(i) for i in f.readline().rstrip().split(',')]
-    # bingo_board_being_created = None
-    # for line_num, in_string in enumerate(f):
-        # print(line_num, end=': ')
-        # print(in_string.rstrip())
+# plan:
+# For each line of input
+# Create multiple 2-tuples with all points in that segment
+# Have two sets containing those tuples
+# The first set will be for points with at least one line there
+# The second set will be for points with at least two lines there
+# The answer will be the length of the second set
