@@ -13,6 +13,12 @@ class Bingo:
         # at this time no numbers have been drawn yet, so none are marked
         self.marked = [] 
 
+        # this flag indicates if this board has already won
+        self.won = False
+
+    def has_won(self):
+        return self.won
+
     def __str__(self):
         return str(self.numbers)
 
@@ -48,20 +54,21 @@ class Bingo:
                             winning_board['column'] = False
                     if True in winning_board.values():
                         print('This board has won!')
-                        print(self)
-                        print()
+                        # print(self)
+                        # print()
                         print('winning drawn number: ', end='')
                         print(drawn_number)
-                        print()
+                        # print()
                         
                         sum_unmarked = self.sum_unmarked()
+                        self.won = True
 
                         print('sum of undrawn numbers: ', end='')
                         print(sum_unmarked)
 
-                        print('final score (answer to part a): ', end='')
+                        print('final score: ', end='')
                         print(sum_unmarked*drawn_number)
-                        sys.exit()
+                        print()
 
         # print(self.marked)
 
@@ -82,7 +89,15 @@ class BingoBoardSet:
 
     def draw_number(self, drawn_number):
         for board in self.board_set:
-            board.draw_number(drawn_number)
+
+            if not board.has_won():
+                board.draw_number(drawn_number)
+
+                # board.draw_number(drawn_number)
+                # print('Dude!')
+                # continue # skip to the next board
+
+            
         # print()
 
 # Task 1:  Input data
@@ -102,28 +117,29 @@ with open(input_filename) as f:
     
 
         if line_num % 6 == 0:
-        #     # start a new blank bingo board
             bingo_board_being_created = Bingo()
             # print()
         else:
-        #     # add line to bingo 
             bingo_board_being_created.add_row(in_string)
         
         if line_num % 6 == 5:
             bingo_board_set.add(bingo_board_being_created)
-            print(bingo_board_being_created)
+            # print(bingo_board_being_created)
 
-print()
-print(number_draws)
-print()
+# print()
+# print(number_draws)
+# print()
 
 # note that set does not retain any order
-print(bingo_board_set)
+# print(bingo_board_set)
+
+print()
+print('Below is a list of the winning boards')
+print('Get answer to part a from the first final score')
+print('and get the answer to part b from the last final score')
+print()
 
 for num_draw in number_draws:
-    # print('Number drawn: ', end='')
-    # print(num_draw)
-
     bingo_board_set.draw_number(num_draw)
     
 
