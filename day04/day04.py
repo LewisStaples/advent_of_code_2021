@@ -1,4 +1,4 @@
-# adventOfCode 2021 day 4, parts 1
+# adventOfCode 2021 day 4, parts 1 and 2
 # https://adventofcode.com/2021/day/4
 
 import sys
