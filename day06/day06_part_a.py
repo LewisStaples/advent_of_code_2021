@@ -1,14 +1,15 @@
-# adventOfCode 2021 day 5, parts 1 and 2
-# https://adventofcode.com/2021/day/5
+# adventOfCode 2021 day 6, part a only 
+# https://adventofcode.com/2021/day/6
 
 # display output to match the problem statement
-def print_special(fish_list):
-    for i, fish in enumerate(fish_list):
-        print(fish, end='')
-        if i < len(fish_list)-1:
-            print(',', end='')
-    print()
+# def print_special(fish_list):
+#     for i, fish in enumerate(fish_list):
+#         print(fish, end='')
+#         if i < len(fish_list)-1:
+#             print(',', end='')
+#     print()
 
+# this modifies each fishes' numeric value
 def update(the_int):
     ret_val = the_int-1
     if ret_val<0:
@@ -23,6 +24,7 @@ with open(input_filename) as f:
 # print('Initial state: ', end='')
 # print_special(fish_list)
 
+# for each day
 for day_number in range(1,81):
 
     # detect number of fish to add
@@ -41,10 +43,11 @@ for day_number in range(1,81):
     # print(' days: ', end='')
     # print_special(fish_list)
 
-    # # add fish, if appropriate
-    # print(fish_list.count(6))
+    ## # add fish, if appropriate
+    ## print(fish_list.count(6))
     
 print()
+print('The answer to part a is:')
 print('On day # ', end='')
 print(day_number, end='')
 print(' there are ', end='')
