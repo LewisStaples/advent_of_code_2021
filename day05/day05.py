@@ -1,7 +1,7 @@
-# adventOfCode 2021 day 5, parts 1 and 2
+# adventOfCode 2021 day 5, parts a and b
 # https://adventofcode.com/2021/day/5
 
-input_filename='input_scenario0.txt'
+input_filename='input.txt'
 
 points__one_or_more = set()
 points__two_or_more = set()
@@ -13,7 +13,7 @@ with open(input_filename) as f:
         in_list = list([int(x) for x in in_string.rstrip().replace(' -> ',',').split(',')])
         # print(in_list)
 
-        # only consider vertical or horizontal segments
+        # for part a, only consider vertical or horizontal segments
         if (in_list[0]!=in_list[2] and in_list[1]!=in_list[3]):
             continue
 
@@ -23,9 +23,10 @@ with open(input_filename) as f:
             print()
 
         i_step = 1 if in_list[2] > in_list[0] else -1 # 1 or -1
-        # a if condition else b
+        j_step = 1 if in_list[3] > in_list[1] else -1 # 1 or -1
+
         for i in range(in_list[0], in_list[2]+i_step,i_step):
-            for j in range(in_list[1], in_list[3]+1):
+            for j in range(in_list[1], in_list[3]+j_step, j_step):
                 # print(str(i) + ', ' + str(j))
                 new_point = (i,j)
                 if new_point in points__one_or_more:
@@ -35,8 +36,10 @@ with open(input_filename) as f:
 print()
 print('set with two or more: ', end='')
 print(points__two_or_more)
-print('set with one or more: ', end='')
-print(points__one_or_more)
+# print('set with one or more: ', end='')
+# print(points__one_or_more)
+print()
+
 print('The answer to a is ', end='')
 print(len(points__two_or_more))
 
