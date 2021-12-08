@@ -5,7 +5,7 @@ import statistics
 import enum
 import sys
 
-# this calculates fuel for part b
+# calculate fuel required to move all submarines to the specified final position
 def calc_fuel(horizontal_positions, alignment_position):
     ret_val = 0
     # loop through all submarines
@@ -49,14 +49,11 @@ horizontal_positions = None
 
 with open(input_filename) as f:
     horizontal_positions = [int(x) for x in f.readline().rstrip().split(',')]
-# print(horizontal_positions)
-
 
 median = statistics.median(horizontal_positions)
 stdev = statistics.stdev(horizontal_positions)
 
 bounds = [int(median-2*stdev-1), int(median+2*stdev+1)]
-
 
 # assume that the minimum will between median-2*stdev and median+2*stdev
 # therefore assert that lower bound must be decreasing, and upper bound increasing
@@ -68,22 +65,15 @@ if getFuelTrend(horizontal_positions, bounds[1]) != FuelTrend.INCREASING:
 
 
 while bounds[1]-bounds[0] > 1:
-    # print(bounds, end=': ')
-    # print([getFuelTrend(horizontal_positions, x) for x in bounds])
-
     midpoint = int(sum(bounds)/2)
-    # bounds[1] = midpoint
     if getFuelTrend(horizontal_positions, midpoint) == FuelTrend.DECREASING:
         bounds[0] = midpoint
     elif getFuelTrend(horizontal_positions, midpoint) == FuelTrend.INCREASING:
         bounds[1] = midpoint
     elif getFuelTrend(horizontal_positions, midpoint) == FuelTrend.MINIMUM:
         # success!
-        print('The smallest fuel consumption is with position ', end='')
-        print(midpoint, end='')
-        print(', which consumes ', end='')
+        print('The answer to part b (fuel consumed) is ', end='')
         print(calc_fuel(horizontal_positions, midpoint), end='')
-        print(' gallons of fuel')
-        sys.exit('The program has ended successfully')
+        sys.exit('')
 
 sys.exit('WARNING: The program has ended unsuccessfully')

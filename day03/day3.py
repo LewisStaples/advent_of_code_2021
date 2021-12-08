@@ -40,7 +40,7 @@ class PuzzleInput:
         sum=0
         for index in number_index_list:
             sum += self.puzzle_input[index][bit_number]
-        # most_common_bit = sum/(len(number_index_list))
+
         if sum/(len(number_index_list)) >= 0.5:
             most_common_bit = 1
         else:
@@ -60,22 +60,15 @@ class PuzzleInput:
 # Task 1:  Input data
 input_filename='input.txt'
 # puzzle_input is also known as "diagnostic report", list of lists of integers
-# puzzle_input = [] 
 puzzle_input = PuzzleInput()
 
 with open(input_filename) as f:
     for in_string in f:
-        # print(in_string.rstrip())
         line_list = []
         for ch in in_string.rstrip():
-            # print(ch)
             line_list.append(int(ch))
-        # puzzle_input.append(line_list)
-        puzzle_input.add_line_list(line_list)
-        # print()
 
-# print(puzzle_input)
-# print()
+        puzzle_input.add_line_list(line_list)
 
 
 # Task 2:  Solve part a
@@ -87,26 +80,11 @@ epsilon_str = ''
 number_index_list_gamma = [x for x in range(puzzle_input.length())]
 number_index_list_epsilon = [x for x in range(puzzle_input.length())]
 
-# print('number_index_list_gamma')
-# print(number_index_list_gamma)
-# print()
 
 for line_index in range(puzzle_input.line_length()):
     gamma_str += str(puzzle_input.superlative_common_bit(number_index_list_gamma, line_index, Superlative.most_common))
     epsilon_str += str(puzzle_input.superlative_common_bit(number_index_list_epsilon, line_index, Superlative.least_common))
 
-# print(gamma_str)
-# print(int(gamma_str,2))
-# print()
-
-# print(epsilon_str)
-# print(int(epsilon_str,2))
-# print()
-
-# print('number_index_list_gamma ', end='')
-# print(number_index_list_gamma , end=', ')
-# print('number_index_list_epsilon ', end='')
-# print(number_index_list_epsilon , end=', ')
 
 print('The solution to part a is ', end='')
 print(int(gamma_str,2)*int(epsilon_str,2))
@@ -122,16 +100,9 @@ for line_index in range(puzzle_input.line_length()):
     number_index_list_gamma = puzzle_input.reduce_number_index_list(number_index_list_gamma, line_index, gamma_bit)
 
 
-    # print('line_index: ', end='')
-    # print(line_index, end=', ')
-    # print('number_index_list_gamma ', end='')
-    # print(number_index_list_gamma , end=', ')
-    # print()
-
     if len(number_index_list_gamma) < 2:
         break
 
-# print()
 
 # Task 4:  For part b, determine epsilon:
 
@@ -142,20 +113,11 @@ for line_index in range(puzzle_input.line_length()):
     # reduce number_index_list-s
     number_index_list_epsilon = puzzle_input.reduce_number_index_list(number_index_list_epsilon, line_index, epsilon_bit)
 
-    # print('line_index: ', end='')
-    # print(line_index, end=', ')
 
-
-    # print('number_index_list_epsilon ', end='')
-    # print(number_index_list_epsilon , end=', ')
-    # print()
 
     if len(number_index_list_epsilon) < 2:
         break
 
-# print(puzzle_input.get_line_integer(number_index_list_gamma[0]))
-
-# print(puzzle_input.get_line_integer(number_index_list_epsilon[0]))
 
 print('The solution to part b is ', end='')
 print(

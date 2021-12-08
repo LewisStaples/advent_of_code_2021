@@ -18,7 +18,6 @@ def update(the_int):
 
 input_filename='input.txt'
 
-# fish_list = None
 fish_list__by_init = {}
 
 # this function updates and returns the fish_list
@@ -40,18 +39,11 @@ def update_f_l(fish_list, start_day, end_day):
 # This is a dict with index 0 to 8, and with
 # value the a list of fish that would result after 128 runs
 for age in range(9):
-    # print(age)
-    # fish_list = [age]
     fish_list__by_init[age] = update_f_l([age], 1, 128)
-    # print(age, end=': ')
-    # print(fish_list__by_init[age])
-print()
-# print()
 
 # read text file and write into fish_list, which is a list of integers
 with open(input_filename) as f:
     fish_list = [int(x) for x in f.readline().rstrip().split(',')]
-# print(len(fish_list))
 
 # this uses fish_list__by_init to create a list
 # showing what fish would be present after 128 days
@@ -67,10 +59,10 @@ fish_list = new_list
 # descendents would be around at 256 days.
 sum = 0
 for fish in fish_list:
-    # print(fish)
     sum += len(fish_list__by_init[fish])
 
 # This displays the sum of fish at 256 days to the screen
 # This is the answer to part b
+print()
 print('The answer to part b is: ', end='')
 print(sum)

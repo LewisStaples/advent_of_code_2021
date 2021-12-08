@@ -21,12 +21,7 @@ with open(input_filename) as f:
     # pull in each line from the input file
     for in_string in f:
         # convert each line to a list of integers (with four elements)
-
-        # print(in_string.rstrip())
         in_list = list([int(x) for x in in_string.rstrip().replace(' -> ',',').split(',')])
-        # print(in_list)
-
-
 
         # calculate the number of points in the line:
         points_in_line = max([abs(in_list[2] - in_list[0]), abs(in_list[3] - in_list[1])])
@@ -43,18 +38,8 @@ with open(input_filename) as f:
             if new_point in points__one_or_more:
                 points__two_or_more.add(new_point)
             points__one_or_more.add(new_point)
-        # print()
 
-# output sets (for troubleshooting only)
-
-# print()
-# print('set with two or more: ', end='')
-# print(points__two_or_more)
-# print()
-# print('set with one or more: ', end='')
-# print(points__one_or_more)
-# print()
-
+# output the answer
 print()
 print('The answer to b is ', end='')
 print(len(points__two_or_more))

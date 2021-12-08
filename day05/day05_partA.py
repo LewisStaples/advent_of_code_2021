@@ -11,10 +11,7 @@ with open(input_filename) as f:
     # pull in each line from the input file
     for in_string in f:
         # convert each line to a list of integers (with four elements)
-        
-        # print(in_string)
         in_list = list([int(x) for x in in_string.rstrip().replace(' -> ',',').split(',')])
-        # print(in_list)
 
         # part a will only consider vertical or horizontal segments, so ignore any diagonals
         if (in_list[0]!=in_list[2] and in_list[1]!=in_list[3]):
@@ -33,21 +30,13 @@ with open(input_filename) as f:
         # create line segments to fill in each point between endpoints
         for i in range(in_list[0], in_list[2]+i_step,i_step):
             for j in range(in_list[1], in_list[3]+j_step, j_step):
-                # print(str(i) + ', ' + str(j))
                 new_point = (i,j)
                 if new_point in points__one_or_more:
                     points__two_or_more.add(new_point)
                 points__one_or_more.add(new_point)
 
-# output sets (for troubleshooting only)
-
-# print()
-# print('set with two or more: ', end='')
-# print(points__two_or_more)
-# print('set with one or more: ', end='')
-# print(points__one_or_more)
-print()
 
 # output the answer
+print()
 print('The answer to a is ', end='')
 print(len(points__two_or_more))

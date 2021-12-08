@@ -31,10 +31,6 @@ class Bingo:
 
         # subtract all marked numbers
         for marked_coords in self.marked:
-            # print(marked_coords, end=': ')
-            # print(self.numbers)
-            # print()
-            # print(self.numbers[marked_coords[0]][marked_coords[1]])
             sum_unmarked -= self.numbers[marked_coords[0]][marked_coords[1]]
         
         # the result is the sum of all unmarked numbers
@@ -54,12 +50,9 @@ class Bingo:
                             winning_board['column'] = False
                     if True in winning_board.values():
                         print('This board has won!')
-                        # print(self)
-                        # print()
                         print('winning drawn number: ', end='')
                         print(drawn_number)
-                        # print()
-                        
+
                         sum_unmarked = self.sum_unmarked()
                         self.won = True
 
@@ -69,8 +62,6 @@ class Bingo:
                         print('final score: ', end='')
                         print(sum_unmarked*drawn_number)
                         print()
-
-        # print(self.marked)
 
 class BingoBoardSet:
     def __init__(self):
@@ -82,7 +73,6 @@ class BingoBoardSet:
             ret_str += str(board) + '\n'
         ret_str += 'END OF SET'
         return ret_str
-        # return str(self.board_set)
 
     def add(self, new_board):
         self.board_set.append(new_board)
@@ -93,45 +83,27 @@ class BingoBoardSet:
             if not board.has_won():
                 board.draw_number(drawn_number)
 
-                # board.draw_number(drawn_number)
-                # print('Dude!')
-                # continue # skip to the next board
-
-            
-        # print()
 
 # Task 1:  Input data
 
 input_filename='input.txt'
 number_draws = None
-# bingo_board_set = set()
+
+# note that set does not retain any order
 bingo_board_set = BingoBoardSet()
 
 with open(input_filename) as f:
     number_draws = [int(i) for i in f.readline().rstrip().split(',')]
     bingo_board_being_created = None
     for line_num, in_string in enumerate(f):
-        # print(line_num, end=': ')
-        # print(in_string.rstrip())
-
-    
-
         if line_num % 6 == 0:
             bingo_board_being_created = Bingo()
-            # print()
         else:
             bingo_board_being_created.add_row(in_string)
         
         if line_num % 6 == 5:
             bingo_board_set.add(bingo_board_being_created)
-            # print(bingo_board_being_created)
 
-# print()
-# print(number_draws)
-# print()
-
-# note that set does not retain any order
-# print(bingo_board_set)
 
 print()
 print('Below is a list of the winning boards')
@@ -142,4 +114,3 @@ print()
 for num_draw in number_draws:
     bingo_board_set.draw_number(num_draw)
     
-

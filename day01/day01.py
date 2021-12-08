@@ -11,19 +11,12 @@ with open(input_filename) as f:
         in_num = int(in_string)
         input_numbers.append(in_num)
 
-# print out the input
-# print()
-# print(input_numbers)
-
 
 # Task 2:  Solve part a
 total_increases = 0
 
-# print()
-# print()
 
 for i in range(len(input_numbers)-1):
-    # print(input_numbers[i])
     if input_numbers[i+1] > input_numbers[i]:
         total_increases += 1
 
@@ -36,14 +29,8 @@ print()
 # Task 3:  Solve part b
 total_increases = 0
 
-# print()
-# print()
 
 for i in range(len(input_numbers)-3):
-    # print(input_numbers[i])
-    # print(input_numbers[i+3])
-    # print()
-
     # to evaluate if the latter "three-measurement sliding window" 
     # is larger than the prior, it is OK to only compare the prior's 
     # earliest member and the latter's latest member, because the other
