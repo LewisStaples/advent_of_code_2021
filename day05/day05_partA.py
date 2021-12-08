@@ -1,4 +1,4 @@
-# adventOfCode 2021 day 5, parts a and b
+# adventOfCode 2021 day 5, part a
 # https://adventofcode.com/2021/day/5
 
 input_filename='input.txt'
@@ -8,23 +8,29 @@ points__two_or_more = set()
 
 
 with open(input_filename) as f:
+    # pull in each line from the input file
     for in_string in f:
+        # convert each line to a list of integers (with four elements)
+        
         # print(in_string)
         in_list = list([int(x) for x in in_string.rstrip().replace(' -> ',',').split(',')])
         # print(in_list)
 
-        # for part a, only consider vertical or horizontal segments
+        # part a will only consider vertical or horizontal segments, so ignore any diagonals
         if (in_list[0]!=in_list[2] and in_list[1]!=in_list[3]):
             continue
 
+        # this scenario didn't appear
         if (in_list[0]==in_list[2] and in_list[1]==in_list[3]):
             print('input is a point')
             print(in_string)
             print()
 
+        # determine whether the value increases or decreases along axis (x and then y)
         i_step = 1 if in_list[2] > in_list[0] else -1 # 1 or -1
         j_step = 1 if in_list[3] > in_list[1] else -1 # 1 or -1
 
+        # create line segments to fill in each point between endpoints
         for i in range(in_list[0], in_list[2]+i_step,i_step):
             for j in range(in_list[1], in_list[3]+j_step, j_step):
                 # print(str(i) + ', ' + str(j))
@@ -33,22 +39,15 @@ with open(input_filename) as f:
                     points__two_or_more.add(new_point)
                 points__one_or_more.add(new_point)
 
-print()
-print('set with two or more: ', end='')
-print(points__two_or_more)
+# output sets (for troubleshooting only)
+
+# print()
+# print('set with two or more: ', end='')
+# print(points__two_or_more)
 # print('set with one or more: ', end='')
 # print(points__one_or_more)
 print()
 
+# output the answer
 print('The answer to a is ', end='')
 print(len(points__two_or_more))
-
-
-
-# plan:
-# For each line of input
-# Create multiple 2-tuples with all points in that segment
-# Have two sets containing those tuples
-# The first set will be for points with at least one line there
-# The second set will be for points with at least two lines there
-# The answer will be the length of the second set
