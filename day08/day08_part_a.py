@@ -1,12 +1,11 @@
-# adventOfCode 2021 day 8
+# adventOfCode 2021 day 8 part a
 # https://adventofcode.com/2021/day/8
 
 input_filename='input.txt'
 
-# appearances of 1, 4, 7, or 8  (char lengths: 2, 4, 3, 7)
+# count appearances of 1, 4, 7, or 8  (char lengths: 2, 4, 3, 7)
 unique_seg_digit_count = 0
 
-# print()
 with open(input_filename) as f:
     # pull in each line from the input file
     for in_string in f:
