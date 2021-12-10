@@ -1,4 +1,4 @@
-# adventOfCode 2021 day 9 part a
+# adventOfCode 2021 day 9
 # https://adventofcode.com/2021/day/9
 
 # class to handle height map behavior
@@ -26,7 +26,7 @@ class HeightMap:
                 ret_val += self.risk_level(i,j)
         return ret_val
 
-    # this uses recursion to calculate basin_size
+    # (part b) this uses recursion to calculate basin_size
     def calc_basin_size(self, basin_size, i, j):
         # check if this point is off of self.height_map
         if True in [i<0, j<0, i>=len(self.height_map), j>=len(self.height_map[0])]:
@@ -35,22 +35,29 @@ class HeightMap:
         # check if this point was checked earlier
         if self.point_checked[i][j]:
             return 0
-        # mark (i,j) checked so it won't be checked again in the future
+        
+        # mark (i,j) checked so this point won't be checked again in the future
         self.point_checked[i][j] = True
 
         # do not count points with a height of nine
         if self.height_map[i][j] == 9:
             return 0
 
-        # otherwise
-        ret_val = 1 + self.calc_basin_size(basin_size, i+1, j) \
+        # if this code is being run, then this point is in the basin
+        # add the point to add to the basin_size, and then use
+        # recursion to call the four points that surround it
+        ret_val = 1 \
+            + self.calc_basin_size(basin_size, i+1, j) \
             + self.calc_basin_size(basin_size, i-1, j) \
             + self.calc_basin_size(basin_size, i, j+1) \
             + self.calc_basin_size(basin_size, i, j-1) 
         
+        # return count of this point (1), plus all points that
+        # were called recursively from here
         return ret_val
 
     # (part b) this calculates the product of the three largest basins
+    # (done by this function and by calling calc_basin_size recursively)
     def prod_three_largest_basins(self):
         # print()
         basin_list = []
@@ -58,10 +65,9 @@ class HeightMap:
             for j, j_list in enumerate(i_list):
                 if self.risk_level(i,j) > 0:
                     basin_size = 0
-                    # print(str(i) + ',' + str(j) + ' is a low point')
                     basin_list.append(self.calc_basin_size(basin_size, i,j))
         basin_list.sort(reverse=True)
-        # print(basin_list)
+
 
         return basin_list[0]*basin_list[1]*basin_list[2]
 
@@ -84,6 +90,7 @@ class HeightMap:
         # since it's not a low point, return 0              
         return 0
 
+# used by parts a and b
 the_height_map = HeightMap()
 print()
 
