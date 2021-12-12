@@ -11,6 +11,8 @@ class OctopusStatus:
     def __init__(self, energy):
         self.energy = energy
         self.flashed = FlashStatus.NOT_FLASHED
+        
+        # total number of times that this octopus has flashed
         self.flash_tally = 0
 
     def get_energy(self):
@@ -19,6 +21,7 @@ class OctopusStatus:
     def get_flashed(self):
         return self.flashed
 
+    # total number of times that this octopus has flashed
     def get_flash_tally(self):
         return self.flash_tally
 
@@ -39,6 +42,21 @@ class Octopus:
     def __init__(self):
         self.oct_status = []
 
+    # returns True/False, if all octopuses are flashing right now
+    # 
+    # this function should be called before reset_to_zero is run
+    # (since it is designed to capture the state before that is run)
+    def are_all_octopuses_flashing(self):
+        # traverse all octopuses ... return False immediately if an unflashed octopus is found
+        for i in range(len(self.oct_status)):
+            for j in range(len(self.oct_status[i])):
+                if self.oct_status[i][j].get_flashed() == FlashStatus.NOT_FLASHED:
+                    return False
+
+        # if the end gets reached, then the answer is True (all octopuses are flashing)
+        return True
+
+    # calculates total number of times that all octupuses have flashed (in the past as well as now)
     def get_flash_tally(self):
         ret_val = 0
         for i in range(len(self.oct_status)):
@@ -114,11 +132,17 @@ class Octopus:
             if flash_count == 0:
                 break
 
+    # this function performs a single step
+    # the return value (for part b) is whether all octpuses are lit at this time
+    # all other information passed to the calling program are embedded in the 
+    # octopus' oct_status data structure
     def perform_step(self):
+        ret_val = None
         self.increment_all_octs()
         self.flashes()
+        ret_val = self.are_all_octopuses_flashing()
         self.reset_to_zero()
-
+        return ret_val
 
 # reading height input from the input file
 input_filename='input.txt'
@@ -128,18 +152,18 @@ with open(input_filename) as f:
     for in_string in f:
         octopus.add_line(in_string.rstrip())
 
-print()
-print('Initial state:')
-octopus.display()
+# print()
+# print('Initial state:')
+# octopus.display()
 print()
 
-for i in range(100):
-    
-    octopus.perform_step()
-    if i in [99]:  # need to type in one less than desired step number
-        print('After step # ' + str(i+1))
-        octopus.display()
-        print()
+for i in range(1000):
+    if octopus.perform_step():
+        print('Step# ' + str(i+1) + ' has all octopuses illuminated')
+    # if i in [192,193, 194]:  # need to type in one less than desired step number
+    #     print('After step # ' + str(i+1))
+    #     octopus.display()
+    #     print()
 
 print('The answer to part a is ', end='')
 print(octopus.get_flash_tally())
