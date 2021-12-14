@@ -35,34 +35,6 @@ class Paper_Dots:
         for i in self.fold_instructions:
             print(i)
 
-    # IN THE BELOW COMMENTS ARE INSTRUCTIONS TO DISPLAY THE DOTS
-    # # this can only be run with input_sample0.txt !
-    # def display(self):
-    #     dot_count = 0
-
-    #     # initialize conversion of data to array
-    #     array_to_display = []
-    #     for j in range(15):
-    #         line = []
-    #         for i in range(11):
-    #             line.append('.')
-    #         array_to_display.append(line)
-
-    #     # copy dot_set's data to the array
-    #     for [j,i] in self.dot_set:
-    #         array_to_display[i][j] = '#'
-    #         dot_count += 1
-
-    #     # do the display from the array
-    #     print('Dot Count = ', end='')
-    #     print(dot_count)
-    #     for line in array_to_display:
-    #         for ch in line:
-    #             print(ch, end='')
-    #         print()
-    #     print()
-    #     print()
-
     # this function performs a single fold
     # it also prints the number of dots
     def do_fold(self):
@@ -91,7 +63,5 @@ class Paper_Dots:
 input_filename='input.txt'
 paper_dots = Paper_Dots()
 paper_dots.input(input_filename)
-# paper_dots.display()
 
 paper_dots.do_fold()
-# paper_dots.display()

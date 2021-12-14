@@ -1,6 +1,7 @@
 # adventOfCode 2021 day 13
 # https://adventofcode.com/2021/day/13
 
+# this class implements behavior of the dots
 class Paper_Dots:
     def __init__(self):
         # this will be a set of 2-member tuples of integers, showing the coordinates
@@ -35,15 +36,20 @@ class Paper_Dots:
         for i in self.fold_instructions:
             print(i)
 
-    # this can only be run with small grids, like input_sample0.txt , for input.txt for part b (after all of the folds)
-    def display(self):
+    # this function displays all dots as a grid of dots
+    # this can only be run with small grids, like input_sample0.txt , 
+    # or for input.txt for part b (after all of the folds)
+    # the input is a tuple of the sizes of axes
+    def display_dots_in_grid(self, max_axes):
         dot_count = 0
 
         # initialize conversion of data to array
         array_to_display = []
-        for j in range(6):
+        # for j in range(6):
+        for j in range(max_axes[1]+1):
             line = []
-            for i in range(39):
+            # for i in range(39):
+            for i in range(max_axes[0]+1):
                 line.append('.')
             array_to_display.append(line)
 
@@ -53,8 +59,6 @@ class Paper_Dots:
             dot_count += 1
 
         # do the display from the array
-        print('Dot Count = ', end='')
-        print(dot_count)
         for line in array_to_display:
             for ch in line:
                 print(ch, end='')
@@ -62,12 +66,10 @@ class Paper_Dots:
         print()
         print()
 
-    # this function performs a single fold
+    # this function performs all folds
     # it also prints the number of dots
     def do_folds(self):
         for [axis,value] in self.fold_instructions:
-            # [axis,value] = self.fold_instructions[0]
-
             old_dot_set =  self.dot_set
             new_dot_set = set()
             for [x,y] in old_dot_set:
@@ -85,26 +87,21 @@ class Paper_Dots:
         print('Number of dots is: ', end='')
         print(len(self.dot_set))
 
-    # this function prints the maximum values of x and y
-    def print_ranges(self):
+    # this function returns the maximum values of x and y
+    # def print_ranges(self):
+    def return_ranges(self):
         x_max = 0
         y_max = 0
         for pair in self.dot_set:
             x_max = max(x_max, pair[0])
             y_max = max(y_max, pair[1])
-        print('Ranges: ', end='')
-        print(x_max, end='')
-        print(', ', end='')
-        print(y_max, end='')
-        print()
+        return (x_max, y_max)
 
 input_filename='input.txt'
 paper_dots = Paper_Dots()
 paper_dots.input(input_filename)
-paper_dots.print_ranges()
-# paper_dots.display()
 
 paper_dots.do_folds()
-paper_dots.print_ranges()
+
 print()
-paper_dots.display()
+paper_dots.display_dots_in_grid( paper_dots.return_ranges() )
