@@ -9,30 +9,33 @@ class Paper_Dots:
         # this will be a list of 2-member lists containing a str and an int
         self.fold_instructions = []
 
+    # this function reads input from the file named in the function parameter
     def input(self, input_filename):
         # reading input from the input file
         with open(input_filename) as f:
             # pull in each line from the input fil
             for in_string in f:
-                # print(in_string.rstrip())
+                # input a pair of numbers into self.dot_set
                 if ',' in in_string:
                     self.dot_set.add((
-                        # [int(x) for x in in_string.split(',')]
                         int(in_string.split(',')[0]),
                         int(in_string.split(',')[1])
                         ))
+                # input a character and a number into self.fold_instructions
                 if '=' in in_string:
                     in_string = in_string.replace('fold along','')
                     [left, right] = in_string.split('=')
                     self.fold_instructions.append([left.strip(), int(right)])
-    
+
+    # this function (for testing) displays the contents of the list of dots
+    # and the list of folding instructions
     def display_lists(self):
         for i in self.dot_set:
             print(i)
         for i in self.fold_instructions:
             print(i)
 
-    # this can only be run with small grids, like input_sample0.txt !
+    # this can only be run with small grids, like input_sample0.txt , for input.txt for part b (after all of the folds)
     def display(self):
         dot_count = 0
 
@@ -59,6 +62,8 @@ class Paper_Dots:
         print()
         print()
 
+    # this function performs a single fold
+    # it also prints the number of dots
     def do_folds(self):
         for [axis,value] in self.fold_instructions:
             # [axis,value] = self.fold_instructions[0]
@@ -80,6 +85,7 @@ class Paper_Dots:
         print('Number of dots is: ', end='')
         print(len(self.dot_set))
 
+    # this function prints the maximum values of x and y
     def print_ranges(self):
         x_max = 0
         y_max = 0
