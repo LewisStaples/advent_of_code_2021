@@ -1,4 +1,4 @@
-# adventOfCode 2021 day 14
+# adventOfCode 2021 day 14, part a
 # https://adventofcode.com/2021/day/14
 
 import copy
