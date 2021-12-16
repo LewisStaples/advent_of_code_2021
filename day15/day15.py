@@ -2,7 +2,7 @@
 # https://adventofcode.com/2021/day/15
 
 import copy
-
+import sys
 
 class CavePosition:
     def __init__(self, risk_level):
@@ -13,6 +13,7 @@ class CavePaths:
     def __init__(self):
         self.grid = []
         self.lowest_path_risk = float('inf')
+        self.path_stack = []
     
     # calculate risk from a path
     def calc_path_risk(self, path):
@@ -42,55 +43,66 @@ class CavePaths:
     # path_is the path
     # being passed to this function
     # i, j are the potential point to add to the path
-    def recur_call(self, path): # , i, j):
-        ret_val = float('inf')
-        # find the last point (i,j) in the path passed to this call
-        (i,j) = path[-1]
+    def recur_call(self): # , i, j):
+        # ret_val = float('inf')
+        while len(self.path_stack) > 0:
+            # find the last point (i,j) in the path passed to this call
+            path = self.path_stack.pop()
+            (i,j) = path[-1]
 
-        # test if the end has been reached
-        if i == len(self.grid)-1 and j == len(self.grid[0])-1:
-            risk = self.calc_path_risk(path)
-            self.lowest_path_risk = risk
-            return risk
+            # test if the end has been reached
+            if i == len(self.grid)-1 and j == len(self.grid[0])-1:
+                # update value of best possible path found
+                risk = self.calc_path_risk(path)
+                self.lowest_path_risk = min(risk, self.lowest_path_risk)
+                # return risk
+                continue
 
-        # if yes .... what is to be done ????
-        # return the risk along the path
+            # consider the adjacent points in all four directions from (i,j)
+            for next_point in [(i-1,j), (i+1,j), (i,j-1), (i,j+1)]:
+                # if next_point can be added to the path
+                if self.point_permitted_on_path(next_point, path):
+                    # then create newpath by adding next_point
+                    newpath = copy.deepcopy(path)
+                    newpath.append(next_point)
 
-        # consider the adjacent points in all four directions from (i,j)
-        for next_point in [(i-1,j), (i+1,j), (i,j-1), (i,j+1)]:
-            # if next_point can be added to the path
-            if self.point_permitted_on_path(next_point, path):
-                # then create newpath by adding next_point
-                newpath = copy.deepcopy(path)
-                newpath.append(next_point)
+                    # protection from infinite loops
+                    # if len(newpath) > 1000000:
+                    #     sys.exit('newpath is too large')
 
-                # if newpath has higher risk than the best seen so far, skip it
-                # this speeds up the program DRAMATICALLY
-                if self.calc_path_risk(newpath) >= self.lowest_path_risk:
-                    continue
-                # do recursive call with the new path
-                ret_val = min(ret_val, self.recur_call(newpath))
+                    # if newpath has higher risk than the best previously discovered that 
+                    # goes to the end so far, skip it ... this speeds up the program
+                    if self.calc_path_risk(newpath) >= self.lowest_path_risk:
+                        continue
+                    # do recursive call with the new path
+                    # ret_val = min(ret_val, self.recur_call(newpath))
+                    self.path_stack.append(newpath)
 
-        return ret_val
+            # return ret_val
+            
 
     def find_best_path(self):
+        self.path_stack.append([(0,0)])
+        self.recur_call()
+
+        print('The smallest total risk for all paths is ', end='')
+        print(self.lowest_path_risk)
+        print()
+
         # self.recur_call(0) #, 0, 0)
-        print( self.recur_call([(0,0)]) )
+        # print( self.recur_call([(0,0)]) )
         # for i in range(3): # later replace with infinite loop with breakout logic
         #     dummy = 123
 
 cavepaths = CavePaths()
 # reading input from the input file
-input_filename='input_sample0.txt'
+input_filename='input.txt'
 with open(input_filename) as f:
     # pull in each line from the input file
     for in_string in f:
         cavepaths.input_line(in_string.rstrip())
 
 cavepaths.find_best_path()
-
-
-cavepaths.calc_path_risk([(0,0), (1,0), (1,1),(0,1)])
 
 
 
