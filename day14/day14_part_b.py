@@ -5,8 +5,11 @@ import copy
 import collections
 import enum
 
+# this is used with function apply_n_steps_to_polymer
+# it is used to choose the return type
+# (either get a list of all characters, or get a collection of counts of character frequency)
 class Type_of_return(enum.Enum):
-    LIST_OF_INT = 0
+    LIST_OF_CHAR = 0
     COLLECTIONS_COUNTER = 1
 
 class Polymer:
@@ -26,9 +29,11 @@ class Polymer:
         # agains the pair in the index
         self.pair_to_polymer_after_20_runs = {}
 
+    # this returns the list of characters (the polymer's structure)
     def get_polymer(self):
         return self.polymer
 
+    # this imports data from file
     def input_from_file(self, input_filename):
         insertion_rule_sign = ' -> '
 
@@ -46,82 +51,64 @@ class Polymer:
                     self.insertion_rule[left] = right
                     self.polymer_characters.add(right)
 
-    # this function solves the quantity for the number to be submitted
-    # for part a of the problem = quantity_most - quantity_least
-    def calc_quantity(self, polymer):
-        lowest_val = float('inf')
-        highest_val = 0
-        for char in self.polymer_characters:
-            # print(char + ': ', end='')
-            # print(polymer.count(char))
-            count = polymer.count(char)
-            if count < lowest_val:
-                lowest_val = count
-            if count > highest_val:
-                highest_val = count
-        return highest_val - lowest_val
-
+    # this gets counts of each character in the polymer list
     def get_counts(self, polymer):
         cnt = collections.Counter()
         for ch in polymer:
             cnt[ch] += 1
         return cnt
 
-    # for part b, this function returns a ????
+    # for part b, this function takes an initial polymer and runs
+    # n_steps steps on it.
+    # the function return_type indicates what will be returned
+    # either the list of i
     # listing counts of all polymers in polymer
-    # use  https://docs.python.org/3/library/collections.html#counter-objects
     def apply_n_steps_to_polymer(self, polymer, n_steps, return_type):
-        for step in range(1,n_steps+1): # range needs a second parameter with total_steps + 1
+        # for each step
+        for step in range(1,n_steps+1):
+            # create a new polymer starting with the first char/element of the old one
             new_polymer = [polymer[0]]
+            # alternate between insert and copying the next char/element from the old one
             for i in range(1,len(polymer)):
                 new_polymer.append(self.insertion_rule[''.join(polymer[i-1:i+1])])
                 new_polymer.append(polymer[i])
+            # finally point towards the newly created polymer
             polymer = new_polymer
 
-        if return_type == Type_of_return.LIST_OF_INT:
+        if return_type == Type_of_return.LIST_OF_CHAR:
             return polymer
         if return_type == Type_of_return.COLLECTIONS_COUNTER:
             return self.get_counts(polymer)
-        # print('the answer to part a is ', end='')
-        # print(self.calc_quantity(polymer))
-        # return self.calc_quantity(new_polymer)
 
+    # this function starts the processing to solve part b
     def solve_part_b(self):
+        # go through all pairs of elements given as starting points in the insertion rules and develop 
+        # the polymer after 20 steps ... only keep the character (element) counts
         for pair in self.insertion_rule:
-            # dummy = 123
-            # print(pair)
             self.pair_to_polymer_after_20_runs[pair] = \
             self.apply_n_steps_to_polymer(pair , 20, Type_of_return.COLLECTIONS_COUNTER)
 
+        # use the given input and determine what happens after 20 steps
         result_from_first_20_runs = \
-            self.apply_n_steps_to_polymer(polymer.get_polymer() , 20, Type_of_return.LIST_OF_INT)
+            self.apply_n_steps_to_polymer(polymer.get_polymer() , 20, Type_of_return.LIST_OF_CHAR)
 
+        # go through all pairs from the output from running 20 steps on the input
+        # for each pair, add counts from the insertion rule counts
         cnt = collections.Counter()
-
         for i in range(len(result_from_first_20_runs)-1):
             char_pair = ''.join(result_from_first_20_runs[i:i+2])
             cnt += self.pair_to_polymer_after_20_runs[char_pair]
 
-        # the above is correct, except that all letters from index 1 through -1
-        # are counted twice, therefore, 
+        # the above is correct, except that all letters (except first and last)
+        # are counted twice, therefore remove those from the counts
         adjust_list = result_from_first_20_runs
         adjust_list.pop(0)
         adjust_list.pop()
         cnt -= collections.Counter(adjust_list)
 
-        print(cnt)
-
         print('The solution to part b is ', end='')
         print(cnt.most_common()[0][1] - cnt.most_common()[-1][1])
         print()
-
-        # print(self.apply_n_steps_to_polymer(polymer.get_polymer() , 10)[0][1])
-        # print(self.apply_n_steps_to_polymer(polymer.get_polymer() , 10)[-1][1])
-        # print('The solution to part b is ', end='')
-        # print(
-        # self.apply_n_steps_to_polymer(polymer.get_polymer() , 10)[0][1] -
-        # self.apply_n_steps_to_polymer(polymer.get_polymer() , 10)[-1][1]
-        # )
 
 # this is a free-standing function (it's not in any class)
 # this function determines the string length after 10 steps
@@ -143,8 +130,6 @@ polymer = Polymer()
 
 # read input from the input file
 polymer.input_from_file('input.txt')
-
-# polymer.apply_n_steps_to_polymer(polymer.get_polymer() , 20)
 
 polymer.solve_part_b()
 print()

@@ -14,6 +14,7 @@ class Polymer:
         # this dict stores all insertion rules (in computer memory)
         self.insertion_rule = {}
 
+    # this imports data from file
     def input_from_file(self, input_filename):
         insertion_rule_sign = ' -> '
 
@@ -33,13 +34,10 @@ class Polymer:
 
     # this function solves the quantity for the number to be submitted
     # for part a of the problem = quantity_most - quantity_least
-
     def calc_quantity(self):
         lowest_val = float('inf')
         highest_val = 0
         for char in self.polymer_characters:
-            # print(char + ': ', end='')
-            # print(self.polymer.count(char))
             count = self.polymer.count(char)
             if count < lowest_val:
                 lowest_val = count
@@ -47,27 +45,21 @@ class Polymer:
                 highest_val = count
         return highest_val - lowest_val
 
+    # for part a, this function takes an initial polymer and runs
+    # 10 steps on it.
+    # the function returns the desired quantity (from calc_quantity)
     def solve_problem_a(self):
-        # new_polymer = [self.polymer[0]]
+        # for each step
         for step in range(1,11): # range needs a second parameter with total_steps + 1
+            # create a new polymer starting with the first char/element of the old one
             new_polymer = [self.polymer[0]]
+            # alternate between insert and copying the next char/element from the old one
             for i in range(1,len(self.polymer)):
-                # dummy=1234
-                # print(self.polymer[i])
                 new_polymer.append(self.insertion_rule[''.join(self.polymer[i-1:i+1])])
                 new_polymer.append(self.polymer[i])
-                # new_polymer.a
-                # print(self.polymer[i] + ', ' + self.polymer[i+1])
-                # print(str(self.polymer[i:i+2]))
-                # print(self.insertion_rule[''.join(self.polymer[i:i+2])])
-                # self.polymer.insert(i, self.insertion_rule[''.join(self.polymer[i:i+2])])
-            # print(self.polymer)
-            # print(''.join(new_polymer))
+            # finally point towards the newly created polymer
             self.polymer = new_polymer
 
-            # self.calc_quantity()
-
-            # print()
         print('the answer to part a is ', end='')
         print(self.calc_quantity())
 
@@ -89,8 +81,7 @@ def display_length_results(length):
 polymer = Polymer()
 
 # read input from the input file
-polymer.input_from_file('input_sample0.txt')
+polymer.input_from_file('input.txt')
 
 polymer.solve_problem_a()
-
 
