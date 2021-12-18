@@ -1,0 +1,35 @@
+38006F45291200
+
+# human readable is below ...
+converted to binary:
+00111000000000000110111101000101001010010001001000000000
+
+packet version (binary, dec)
+001, 1
+
+packet type ID (binary, dec)
+110, 6
+
+length ID is 0
+next 15 bits are total length in bits of subpackets
+total length of subpackets in bits: 00000000011011 and in decimal: 27
+
+
+first subpacket version is (bin): 110, (dec): 6
+first subpacket typeID is (bin): 100, (dec): 4
+next bit is 0 ... last group
+bit group is (bin) 1010, (dec) 10
+
+second subpacket version is (bin): 010 (dec): 2
+second subpacket typeID is (bin): 100 (dec): 4
+next bit is 1 ... not last group
+bit group is (bin) 0001
+next bit is 0 ... last 
+
+bit group is (bin) 0100
+bit value is 00010100
+dec value is 16+4 = 20
+
+
+
+
