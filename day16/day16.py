@@ -2,6 +2,8 @@
 # https://adventofcode.com/2021/day/16
 
 import sys
+import math
+import operator
 
 def binary_to_decimal(in_string):
     return int(in_string, 2)
@@ -71,6 +73,27 @@ class Packet:
         ret_val['char_index'] = char_index + 5
         return ret_val
 
+    # This is used on an operator packet.  It calls get_typeID to get
+    # the packet's typeID, and then runs the function / operator 
+    # associated with it
+    def get_value(self, values_list):
+        func_dict = {
+            0: sum,
+            1: math.prod,
+            2: min,
+            3: max,
+            5: operator.ge,
+            6: operator.lt,
+            7: operator.eq
+        }
+        # handle functions called on single argument ... the whole list
+        if self.get_typeID() in [0,1,2,3]:
+            return func_dict[self.get_typeID()](values_list)
+        # handle binary operators called on two arguments
+        elif self.get_typeID() in [5,6,7]:
+            return 1 if func_dict[self.get_typeID()](values_list[0], values_list[1]) else 0
+
+
     # this function parses the packet (including all subpackets),
     # ??? or string of packets
     # to calculate the sum of all versions
@@ -104,16 +127,19 @@ class Packet:
             # return tuple with multiple values to the calling packet
             return {'version_total': self.version_total, \
                 'next_character': char_index, \
-                'literal_value': binary_to_decimal(bit_string)}
+                'value': binary_to_decimal(bit_string)}
 
         # this code is only for for operator packets (with 1 or more
         # subpackets)
 
+        values_list = []
         if self.get_lengthID() == 0:
             length_subpackets = binary_to_decimal(self.binary_string[7:22])
             char_index = 22
             end_of_subpackets = char_index + length_subpackets
-            # make loop ...
+
+            # values_list = []
+            # loop counting as index goes further through the bits in this packet
             while char_index < end_of_subpackets:
                 # make new substring for recursive call (binary)
                 new_string = self.binary_string[char_index:]
@@ -121,12 +147,15 @@ class Packet:
                 ret_val = Packet(new_string).parse_version()
                 char_index += ret_val['next_character']
                 self.version_total += ret_val['version_total']
+                values_list.append(ret_val['value'])
             dummy = 123
 
         elif self.get_lengthID() == 1:
             num_of_subpackets = binary_to_decimal(self.binary_string[7:18])
             char_index = 18
-            # for loop making that number of recursive 
+
+            # values_list = []
+            # for loop making that number of recursive calls
             for i in range(num_of_subpackets):
                 # make new substring for recursive call (binary)
                 new_string = self.binary_string[char_index:]
@@ -134,10 +163,12 @@ class Packet:
                 ret_val = Packet(new_string).parse_version()
                 char_index += ret_val['next_character']
                 self.version_total += ret_val['version_total']
+                values_list.append(ret_val['value'])
         else:
             sys.exit('Bad lengthID ... it is not a bit ... closing program')
 
-        return{'version_total':self.version_total, 'next_character': char_index}
+        return{'version_total':self.version_total, \
+            'next_character': char_index, 'value': self.get_value(values_list)}
         
 # start of main program
 print()
@@ -163,5 +194,9 @@ if len(in_string) < 100:
 
 ret_val = Packet(in_string).parse_version()
 
-print('The answer is: ', end='')
+print('The answer to part a is: ', end='')
 print(ret_val['version_total'])
+
+print('The answer to part b is: ', end='')
+print(ret_val['value'])
+
