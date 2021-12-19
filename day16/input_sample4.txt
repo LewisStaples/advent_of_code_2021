@@ -1,1 +1,39 @@
 620080001611562C8802118E34
+
+not read by the computer .....
+input string converted to binary: 
+01100010000000001000000000000000000101100001000101010110001011001000100000000010000100011000111000110100
+
+outer packet: V.3, PacketTypeID=0 (sum), LengthTypeID=1
+num_of_subpackets = (bin) 00000000010 = (dec.) 2
+
+start of first [level 1] subpacket
+00000000000000000101100001000101010110001011001000100000000010000100011000111000110100
+v.0, PacketTypeID=0 (sum), LengthTypeID=0
+total length of subpackets = (bin) 000000000010110 = (dec) 22
+0001000101010110001011
+
+[level 2] subpackets
+00010001010
+v.0, PacketTypeID4, value .. (bin) 1010 (dec) 10
+10110001011
+v.5, PacketTypeID4, value ... (bin) 1011 (dec) 11
+
+this must be the second [level 1] subpacket
+001000100000000010000100011000111000110100
+v.1, PacketTypeID=0 (sum), LengthTypeID=1
+num_of_subpackets = (bin) 00000000010 = (dec) 2
+
+
+
+
+
+
+[level 2] subpackets
+00010001100
+v.0, PacketTypeID4, value ... (bin) 1100 = (dec) 12
+
+0111000110100
+v.3, PacketTypeID4, value ... (bin) 1101 = (dec) 13
+
+The sum of 46 from my program matches above analysis (10+11)+(12+13)

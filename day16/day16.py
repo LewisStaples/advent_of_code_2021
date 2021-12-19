@@ -174,7 +174,7 @@ class Packet:
 print()
 
 # read hexadecimal input
-input_filename='input.txt'
+input_filename='input_sample4.txt'
 with open(input_filename) as f:
     in_string = f.readline().rstrip()
 
@@ -188,9 +188,9 @@ if len(in_string) < 20:
 
 in_string = hex_to_binary(in_string)
 
-if len(in_string) < 100:
-    print('input string converted to binary: ', end='')
-    print(in_string)
+# if len(in_string) < 100:
+print('input string converted to binary: ', end='')
+print(in_string)
 
 ret_val = Packet(in_string).parse_version()
 
