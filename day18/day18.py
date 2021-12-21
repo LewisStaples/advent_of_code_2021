@@ -2,6 +2,7 @@
 # https://adventofcode.com/2021/day/18
 
 import sys
+import math  # for floor and ceil functions
 # import re
 
 class SnailfishNumber:
@@ -77,13 +78,32 @@ class SnailfishNumber:
         return False
 
     def split(self):
-        return
+        # search for a pair of adjacent digits
+        for i in range(len(self.sfnum)-1):
+            if self.sfnum[i].isdigit() and self.sfnum[i+1].isdigit():
+                # pair of digits found .... fail hard if there is a third out there 
+                # (the next char should either be a comma or a close bracket)
+                if i+2 >= len(self.sfnum) or self.sfnum[i+2].isdigit():
+                    sys.exit('bad char after two digit number!')
+
+                # determine the three pieces to assemble when the split is complete
+                left_str = self.sfnum[:i]
+                # determine new mid_str ...
+                old_int = int(self.sfnum[i]+self.sfnum[i+1])
+                mid_str = '[' + str(math.floor(old_int/2)) + ',' + str(math.ceil(old_int/2)) + ']'
+                right_str = self.sfnum[i+2:]
+                self.sfnum = left_str + mid_str + right_str
+                # inform calling program that a split occured
+                return True
+        # inform calling program that no split occured
+        return False
 
     def reduce(self):
         while True:
             if self.seek_explosion():
-                continue # explosion occured, so repeat 
-            self.split()
+                continue # explosion occured, so repeat this function
+            if self.split():
+                continue # a split occured, so repeat this function
             return # finished reduction
 
 # end of definition of Class SnailfishNumber
@@ -94,14 +114,18 @@ class SnailfishNumber:
 # n1.display()
 
 
-sn = SnailfishNumber('[[3,[2,[8,0]]],[9,[5,[4,[3,2]]]]]')
-sn.display()
-sn.seek_explosion()
-sn.display()
-
-# sn = SnailfishNumber('[[6,[5,[4,[3,2]]]],1]')
+# sn = SnailfishNumber('[[3,[2,[8,0]]],[9,[5,[4,[3,2]]]]]')
 # sn.display()
 # sn.seek_explosion()
 # sn.display()
 
+# sn = SnailfishNumber('[10,1]')
+# sn.split()
+# sn.display()
+
+sn1 = SnailfishNumber('[[[[4,3],4],4],[7,[[8,4],9]]]')
+sn2 = SnailfishNumber('[1,1]')
+sn1.add(sn2)
+sn1.reduce()
+sn1.display()
 
