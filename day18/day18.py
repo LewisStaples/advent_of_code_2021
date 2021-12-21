@@ -123,13 +123,40 @@ class SnailfishNumber:
                 ret_val += int(ch) * math.prod(multiplier_list)
         
         # debug only
-        print('for snail number ', end='')
-        print(self.sfnum, end=' ... ')
-        print(ret_val)
+        # print('for snail number ', end='')
+        # print(self.sfnum, end=' ... ')
+        # print(ret_val)
         
         return ret_val
 
 # end of definition of Class SnailfishNumber
+
+
+# reading input from the input file
+input_filename='input.txt'
+with open(input_filename) as f:
+
+    # read the first line into a sf number
+    n1 = SnailfishNumber(f.readline().rstrip())
+
+    print()
+    print()
+
+    # read each subsequent line into sf numbers:
+    for in_string in f:
+        # print(in_string.rstrip())
+        n2 = SnailfishNumber(in_string.rstrip())
+        n1.add(n2)
+        n1.reduce()
+
+print('The final snailfish number is: ', end='')
+n1.display()    
+
+print('The magnitude of the final snailfish number is: ', end='')
+print(n1.get_magnitude())
+print()
+
+
 
 # n1 = SnailfishNumber('[1,2]')
 # n2 = SnailfishNumber('[[3,4],5]')
@@ -152,7 +179,7 @@ class SnailfishNumber:
 # sn1.reduce()
 # sn1.display()
 
-SnailfishNumber('[[[[8,7],[7,7]],[[8,6],[7,7]]],[[[0,7],[6,6]],[8,7]]]').get_magnitude()
+# print( SnailfishNumber('[[[[8,7],[7,7]],[[8,6],[7,7]]],[[[0,7],[6,6]],[8,7]]]').get_magnitude() )
 
 # print(SnailfishNumber([]).get_magnitude())
 # print(SnailfishNumber([]).get_magnitude())
