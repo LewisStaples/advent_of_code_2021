@@ -2,7 +2,7 @@
 # https://adventofcode.com/2021/day/18
 
 import sys
-import math  # for floor and ceil functions
+import math  # for floor, ceil, prod functions
 # import re
 
 class SnailfishNumber:
@@ -106,6 +106,29 @@ class SnailfishNumber:
                 continue # a split occured, so repeat this function
             return # finished reduction
 
+    # this assumes that the number has been reduced
+    # (therefore all numbers are single digit integers)
+    def get_magnitude(self):
+        ret_val = 0
+        multiplier_list = []
+        for ch in self.sfnum:
+            if ch == '[':
+                multiplier_list.append(3)
+            elif ch == ',':
+                multiplier_list.pop()
+                multiplier_list.append(2)
+            elif ch == ']':
+                multiplier_list.pop()
+            elif ch.isdigit():
+                ret_val += int(ch) * math.prod(multiplier_list)
+        
+        # debug only
+        print('for snail number ', end='')
+        print(self.sfnum, end=' ... ')
+        print(ret_val)
+        
+        return ret_val
+
 # end of definition of Class SnailfishNumber
 
 # n1 = SnailfishNumber('[1,2]')
@@ -123,9 +146,17 @@ class SnailfishNumber:
 # sn.split()
 # sn.display()
 
-sn1 = SnailfishNumber('[[[[4,3],4],4],[7,[[8,4],9]]]')
-sn2 = SnailfishNumber('[1,1]')
-sn1.add(sn2)
-sn1.reduce()
-sn1.display()
+# sn1 = SnailfishNumber('[[[[4,3],4],4],[7,[[8,4],9]]]')
+# sn2 = SnailfishNumber('[1,1]')
+# sn1.add(sn2)
+# sn1.reduce()
+# sn1.display()
 
+SnailfishNumber('[[[[8,7],[7,7]],[[8,6],[7,7]]],[[[0,7],[6,6]],[8,7]]]').get_magnitude()
+
+# print(SnailfishNumber([]).get_magnitude())
+# print(SnailfishNumber([]).get_magnitude())
+# print(SnailfishNumber([]).get_magnitude())
+# print(SnailfishNumber([]).get_magnitude())
+# print(SnailfishNumber([]).get_magnitude())
+# print(SnailfishNumber([]).get_magnitude())
