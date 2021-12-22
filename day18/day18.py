@@ -17,12 +17,10 @@ class SnailfishNumber:
         # if other_sfnum is not SnailfishNumber:
         if not isinstance(other_sfnum, SnailfishNumber):
             sys.exit('cannot add other objects to a S.F.Number')
-        self.sfnum = '[' + self.sfnum + ',' + other_sfnum.sfnum + ']'
-
-# (element if isinstance(element, int) else element.get_magnitude())
-
-    def get_magnitude(self):
-        return 0
+        try:
+            self.sfnum = '[' + self.sfnum + ',' + other_sfnum.sfnum + ']'
+        except TypeError:
+            dummy = 123
 
     # This function explodes a pair that starts at index i
     # This assumes that the string starting at i will be
@@ -111,17 +109,22 @@ class SnailfishNumber:
     def get_magnitude(self):
         ret_val = 0
         multiplier_list = []
-        for ch in self.sfnum:
-            if ch == '[':
-                multiplier_list.append(3)
-            elif ch == ',':
-                multiplier_list.pop()
-                multiplier_list.append(2)
-            elif ch == ']':
-                multiplier_list.pop()
-            elif ch.isdigit():
-                ret_val += int(ch) * math.prod(multiplier_list)
-        
+
+        try:
+            for ch in self.sfnum:
+                if ch == '[':
+                    multiplier_list.append(3)
+                elif ch == ',':
+                    multiplier_list.pop()
+                    multiplier_list.append(2)
+                elif ch == ']':
+                    multiplier_list.pop()
+                elif ch.isdigit():
+                    ret_val += int(ch) * math.prod(multiplier_list)
+        except TypeError:
+            dummy = 123
+            sys.exit('TypeError!')
+
         # debug only
         # print('for snail number ', end='')
         # print(self.sfnum, end=' ... ')
@@ -132,58 +135,50 @@ class SnailfishNumber:
 # end of definition of Class SnailfishNumber
 
 
+# main program for part a
+
 # reading input from the input file
 input_filename='input.txt'
 with open(input_filename) as f:
-
     # read the first line into a sf number
     n1 = SnailfishNumber(f.readline().rstrip())
-
-    print()
-    print()
-
     # read each subsequent line into sf numbers:
     for in_string in f:
-        # print(in_string.rstrip())
         n2 = SnailfishNumber(in_string.rstrip())
         n1.add(n2)
         n1.reduce()
+    f.close()
 
+print('For part a:')
 print('The final snailfish number is: ', end='')
 n1.display()    
-
 print('The magnitude of the final snailfish number is: ', end='')
 print(n1.get_magnitude())
 print()
+print()
 
 
+# main program for part b
 
-# n1 = SnailfishNumber('[1,2]')
-# n2 = SnailfishNumber('[[3,4],5]')
-# n1.add(n2)
-# n1.display()
+list_of_sfnum_strings = []
+list_of_magnitudes = []
+with open(input_filename) as f:
+    for in_string in f:
+        list_of_sfnum_strings.append(in_string.rstrip())
+
+for i in range(len(list_of_sfnum_strings)):
+    for j in range(len(list_of_sfnum_strings)):
+        if i != j:
+            n1 = SnailfishNumber(list_of_sfnum_strings[i])
+            n2 = SnailfishNumber(list_of_sfnum_strings[j])
+            n1.add(n2)
+            n1.reduce()
+            list_of_magnitudes.append(n1.get_magnitude())
+
+print('For part b:')
+print('The magnitude of the largest snailfish number is: ', end='')
+print(max(list_of_magnitudes))
+print()
+print()
 
 
-# sn = SnailfishNumber('[[3,[2,[8,0]]],[9,[5,[4,[3,2]]]]]')
-# sn.display()
-# sn.seek_explosion()
-# sn.display()
-
-# sn = SnailfishNumber('[10,1]')
-# sn.split()
-# sn.display()
-
-# sn1 = SnailfishNumber('[[[[4,3],4],4],[7,[[8,4],9]]]')
-# sn2 = SnailfishNumber('[1,1]')
-# sn1.add(sn2)
-# sn1.reduce()
-# sn1.display()
-
-# print( SnailfishNumber('[[[[8,7],[7,7]],[[8,6],[7,7]]],[[[0,7],[6,6]],[8,7]]]').get_magnitude() )
-
-# print(SnailfishNumber([]).get_magnitude())
-# print(SnailfishNumber([]).get_magnitude())
-# print(SnailfishNumber([]).get_magnitude())
-# print(SnailfishNumber([]).get_magnitude())
-# print(SnailfishNumber([]).get_magnitude())
-# print(SnailfishNumber([]).get_magnitude())
