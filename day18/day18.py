@@ -3,32 +3,36 @@
 
 import sys
 import math  # for floor, ceil, prod functions
-# import re
 
+# This class defines a snailfish number
 class SnailfishNumber:
     def __init__(self, in_str):
         self.sfnum = in_str
 
+    # This function displays the snailfish number as a string
     def display(self):
         print(self.sfnum)
 
+    # This function adds this (self) snailfish number to
+    # another snailfish number named other_sfnum.
+    # Note that this does not automatically trigger reduction
+    # (that needs to be done with a call to reduce)
     def add(self, other_sfnum):
-        # safety check
-        # if other_sfnum is not SnailfishNumber:
+        # Safety check: see if other_sfnum is not SnailfishNumber:
         if not isinstance(other_sfnum, SnailfishNumber):
             sys.exit('cannot add other objects to a S.F.Number')
-        try:
-            self.sfnum = '[' + self.sfnum + ',' + other_sfnum.sfnum + ']'
-        except TypeError:
-            dummy = 123
+        # This does the actual addition.
+        self.sfnum = '[' + self.sfnum + ',' + other_sfnum.sfnum + ']'
 
     # This function explodes a pair that starts at index i
     # This assumes that the string starting at i will be
-    # opening bracket number 1, comma, number 2, closing bracket
+    # opening bracket, number 1, comma, number 2, closing bracket
     def do_explosion(self, i, j):
         # get numbers in the pair that will be exploded
         [n1, n2] = self.sfnum[i+1:j].split(',')
         [n1, n2] = [int(n1), int(n2)]
+
+        # this defines the strings before and after the pair being exploded
         left_string = self.sfnum[:i]
         right_string = self.sfnum[j+1:]
 
@@ -62,6 +66,8 @@ class SnailfishNumber:
     # If one is needed, it calls do_explosion
     # It assumes that the pair to be exploded is 
     # opening bracket number 1, comma, number 2, closing bracket
+    #
+    # The return value indicates whether an explosion has occured.
     def seek_explosion(self):
         level = 0
         for i, ch in enumerate(self.sfnum):                
@@ -75,27 +81,37 @@ class SnailfishNumber:
                 level -= 1
         return False
 
+    # This function performs a split if needed.
+    # It assumes that no numbers can have three or more digits.
+    # 
+    # The return value indicates whether a split has occured.
     def split(self):
-        # search for a pair of adjacent digits
+        
         for i in range(len(self.sfnum)-1):
+            # Search for a pair of adjacent digits
             if self.sfnum[i].isdigit() and self.sfnum[i+1].isdigit():
-                # pair of digits found .... fail hard if there is a third out there 
+                # Pair of digits found .... fail hard if there is a third out there 
                 # (the next char should either be a comma or a close bracket)
                 if i+2 >= len(self.sfnum) or self.sfnum[i+2].isdigit():
                     sys.exit('bad char after two digit number!')
 
-                # determine the three pieces to assemble when the split is complete
+                # Since a pair of digits have been found, a split will occur
+                # Determine the three pieces to assemble when the split is complete
                 left_str = self.sfnum[:i]
-                # determine new mid_str ...
                 old_int = int(self.sfnum[i]+self.sfnum[i+1])
                 mid_str = '[' + str(math.floor(old_int/2)) + ',' + str(math.ceil(old_int/2)) + ']'
                 right_str = self.sfnum[i+2:]
+                # Assemble the three strings together for the post-split status.
                 self.sfnum = left_str + mid_str + right_str
-                # inform calling program that a split occured
+                # Inform calling program that a split occured
                 return True
-        # inform calling program that no split occured
+        
+        # Inform calling program that no split occured, since this
+        # line can only be reached if there was no split.
         return False
 
+    # This function reduces a Snailfish number by looping through 
+    # explosions and splits until neither is needed anymore.
     def reduce(self):
         while True:
             if self.seek_explosion():
@@ -104,32 +120,27 @@ class SnailfishNumber:
                 continue # a split occured, so repeat this function
             return # finished reduction
 
-    # this assumes that the number has been reduced
+    # This function computes the magnitude for a Snailfish number
+    # 
+    # Note that this assumes that the number has been reduced
     # (therefore all numbers are single digit integers)
     def get_magnitude(self):
+        # this is the value to be returned (the magnitude)
         ret_val = 0
+        # this is an ongoing list of multipliers
         multiplier_list = []
 
-        try:
-            for ch in self.sfnum:
-                if ch == '[':
-                    multiplier_list.append(3)
-                elif ch == ',':
-                    multiplier_list.pop()
-                    multiplier_list.append(2)
-                elif ch == ']':
-                    multiplier_list.pop()
-                elif ch.isdigit():
-                    ret_val += int(ch) * math.prod(multiplier_list)
-        except TypeError:
-            dummy = 123
-            sys.exit('TypeError!')
+        for ch in self.sfnum:
+            if ch == '[':
+                multiplier_list.append(3)
+            elif ch == ',':
+                multiplier_list.pop()
+                multiplier_list.append(2)
+            elif ch == ']':
+                multiplier_list.pop()
+            elif ch.isdigit():
+                ret_val += int(ch) * math.prod(multiplier_list)
 
-        # debug only
-        # print('for snail number ', end='')
-        # print(self.sfnum, end=' ... ')
-        # print(ret_val)
-        
         return ret_val
 
 # end of definition of Class SnailfishNumber
