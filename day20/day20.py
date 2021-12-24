@@ -27,12 +27,15 @@ def display_image():
     for row in image:
         print(row)
 
-def get_binary_string(image_old, row_num, pixel_num):
+def get_binary_string(image_old, row_num, pixel_num, i):
     ret_val = ''
     for i in [row_num-1, row_num, row_num+1]:
         for j in [pixel_num-1, pixel_num, pixel_num+1]:
             if True in [i < 0, j < 0, i >= len(image_old), j >= len(image_old[0])]:
-                ret_val += '0'
+                if i%2 == 0:
+                    ret_val += '0'
+                else:
+                    ret_val += '1'
                 continue
             # try:
             if image_old[i][j] == '#':
@@ -41,12 +44,12 @@ def get_binary_string(image_old, row_num, pixel_num):
                 ret_val += '0'
     return ret_val
 
-def enhance_image(image):
+def enhance_image(image, i):
     image_old = copy.deepcopy(image)
     for row_num in range(len(image_old)):
         row_new = []
         for pixel_num in range(len(image_old[0])):
-            bin_str = get_binary_string(image_old, row_num, pixel_num)
+            bin_str = get_binary_string(image_old, row_num, pixel_num, i)
             new_value = image_enhancement_lookup_tbl[bin_str]
             row_new.append(new_value)
         # remove the old version of this row, and then insert the new one
@@ -95,7 +98,7 @@ print()
 print('Initial image:')
 for i in range(num_of_enhancements):
     display_image()
-    enhance_image(image)
+    enhance_image(image, i)
     print()
 
 print('Final image:')
