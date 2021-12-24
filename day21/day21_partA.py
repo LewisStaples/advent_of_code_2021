@@ -1,18 +1,23 @@
 # adventOfCode 2021 day 21
 # https://adventofcode.com/2021/day/21
 
+# This class handles data and functionality for a single player.
 class Player:
+    # Initialize a player
     def __init__(self, start_position):
         self.position = start_position
         self.score = 0
     
+    # Get the player's position
     def get_position(self):
         return self.position
     
+    # Get the player's score
     def get_score(self):
         return self.score
     
-    def process_roll(self, move_distance):
+    # This handles logic for a turn of this player
+    def player_turn(self, move_distance):
         # calculate new position
         self.position = self.position + move_distance
         if self.position % 10 == 0:
@@ -46,21 +51,28 @@ class Game:
         self.playerIndex = -1
         self.num_of_rolls = 0
     
+    # This handles a single roll of the dice
     def roll_dice(self):
         self.roll += 1
         if self.roll == 101:
             self.roll = 1
         return self.roll
     
+    # This determines and returns the index of the next player
     def get_next_player(self, playerIndex):
         return (playerIndex + 1) % len(self.players)
 
+    # This calculates and prints the answer to part a,
+    # which = (score of losing player) * (number of dice rolls)
     def print_submission(self, playerIndex):
         amount = self.num_of_rolls * \
             self.players[self.get_next_player(playerIndex)].get_score()
         print('The answer to part a is: ', end='')
         print(amount)
 
+    # This handles logic for one turn in the game.
+    # It returns True if the game is over.
+    # It returns False if the game hasn't yet ended.
     def take_turn(self):
         self.playerIndex = self.get_next_player(self.playerIndex)
         move_distance = 0
@@ -70,19 +82,23 @@ class Game:
             # is probably more efficient, but this makes the code easier
             # to modify if requirements change
             self.num_of_rolls += 1  
-        if self.players[self.playerIndex].process_roll(move_distance):
+        if self.players[self.playerIndex].player_turn(move_distance):
             self.print_submission(self.playerIndex)
             return True
         return False
 
+    # This displays results by printing them to the screen
     def display_results(self):
         print('Player #, New position, Score')
         print(self.playerIndex+1, end='      ')
         the_player = self.players[self.playerIndex]
         print(the_player.get_position(), end=',      ')
         print(the_player.get_score())
-        
+    
+# Create the Game object
 game = Game([4,8])
+
+# Run the game until there is a winner
 while True:
     if game.take_turn():
         break
