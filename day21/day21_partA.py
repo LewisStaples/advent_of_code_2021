@@ -1,5 +1,9 @@
-# adventOfCode 2021 day 21
+# adventOfCode 2021 day 21 part A
 # https://adventofcode.com/2021/day/21
+
+# This program should be able to handle any number of players.
+# All that should be needed is for the list of initial player positions
+# to be the length of the desired number of players.
 
 # This class handles data and functionality for a single player.
 class Player:
@@ -33,19 +37,21 @@ class Player:
         if self.score >= 1000:
             return True
         return False # no else is needed
-    
+
+# This class handles functionality for a game 
 class Game:
     # Note that start_positions is a list of player starting positions
     # Players will only be identifiable by their index in this list
     # "Player 1" will be at index 0, "Player 2" will be at index 1,
 
-    # (If part B increases the number of players then "Player 3" 
-    # will be at index 2, and so on).  I'm guessing that that is the 
-    # likely modification for part B.
+    # If part B increases the number of players then "Player 3" 
+    # will be at index 2, and so on.  I'm guessing that that is the 
+    # likely modification for part B.  (Update ... that guess was
+    # incorrect)
     def __init__(self, start_positions):
         self.players = [Player(start_position) for start_position in start_positions]
 
-        # both values below are one less than the first one used
+        # first two values below are one less than the first one used
         # (to accomodate incrementing them before the first use)
         self.roll = 0
         self.playerIndex = -1
