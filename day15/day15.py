@@ -1,128 +1,118 @@
 # adventOfCode 2021 day 15
 # https://adventofcode.com/2021/day/15
 
-import copy
-import sys
 
-class CavePosition:
-    def __init__(self, risk_level):
-        self.risk_level = risk_level
+# Use BFS iteration now.  (Prior attempts used DFS recursion and then DFS iteration).  Keep paths in a collection of paths, and each path will be a collection of points.
+
+# Have each position have a value of the lowest path risk found to that position so far, in addition to the given risk level for that position.  If the new path has a lower path risk from any path(s),
 
 
-class CavePaths:
-    def __init__(self):
-        self.grid = []
-        self.lowest_path_risk = float('inf')
-        self.path_stack = []
-    
-    # calculate risk from a path
-    def calc_path_risk(self, path):
-        ret_val = 0
-        for posn in path[1:]:
-            # print(posn)
-            ret_val += self.grid[posn[0]][posn[1]].risk_level
-            # dummy = 123
-        # pass
-        return ret_val
+# import copy
+# import sys
 
-    def input_line(self, in_line):
-        self.grid.append([CavePosition(int(x)) for x in in_line])
-        dummy=123
+# Collection of paths under consideration will be a list of tuples, with each tuple having two integers
+paths_current = []
+# This is a list of paths that are one step ahead of those in paths_current
+paths_stepped_forward = []
+# This is a list of paths that are complete (they have reached the destination)
+paths_complete = []
 
-    def point_permitted_on_path(self, point, path):
-        # don't allow point to fall off of the grid
-        (i,j) = point
-        if True in [i<0, j<0, i>=len(self.grid), j>=len(self.grid[0])]:
-            return False
-        # don't allow point to repeat any prior point on the path
-        if point in path:
-            return False
-        # since neither constraint is violated, it is permitted
-        return True
+# dictionary with index=point, value = (individual risk level, lowest path risk known)
+point_risks = {}
 
-    # path_is the path
-    # being passed to this function
-    # i, j are the potential point to add to the path
-    def recur_call(self): # , i, j):
-        # ret_val = float('inf')
-        while len(self.path_stack) > 0:
-            # find the last point (i,j) in the path passed to this call
-            path = self.path_stack.pop()
-            (i,j) = path[-1]
+(i_max, j_max) = (None, None)
 
-            # test if the end has been reached
-            if i == len(self.grid)-1 and j == len(self.grid[0])-1:
-                # update value of best possible path found
-                risk = self.calc_path_risk(path)
-                self.lowest_path_risk = min(risk, self.lowest_path_risk)
-                # return risk
-                continue
 
-            # consider the adjacent points in all four directions from (i,j)
-            for next_point in [(i-1,j), (i+1,j), (i,j-1), (i,j+1)]:
-                # if next_point can be added to the path
-                if self.point_permitted_on_path(next_point, path):
-                    # then create newpath by adding next_point
-                    newpath = copy.deepcopy(path)
-                    newpath.append(next_point)
+def point_permitted(next_point, this_path):
+    # Don't allow point to fall off of the grid
+    (i,j) = next_point
+    if True in [i<0, j<0, i>i_max, j>=j_max]:
+        return False
 
-                    # protection from infinite loops
-                    # if len(newpath) > 1000000:
-                    #     sys.exit('newpath is too large')
+    # Don't allow point to repeat any prior point on this path
+    if next_point in this_path:
+        return False
 
-                    # if newpath has higher risk than the best previously discovered that 
-                    # goes to the end so far, skip it ... this speeds up the program
-                    if self.calc_path_risk(newpath) >= self.lowest_path_risk:
+    return True
+
+def replace_path(new_path):
+    # replace the higher risk path with this lower risk path
+    for path_collection in [paths_current, paths_stepped_forward, paths_complete]:
+        for i, old_path in enumerate(path_collection):
+            if new_path[-1] in old_path:
+                # FILL IN HERE !!!
+                # path_collection[i] = 
+                pass
+
+def take_step():
+    while len(paths_current) > 0:
+
+        # consider one path from the list
+        this_path = paths_current.pop()
+        dummy = 123
+        (i,j) = this_path[-1]
+
+        # evaluate if the end has been reached already
+        if i == i_max and j == j_max:
+            dummy = 123
+        # print(this_path)
+
+        # consider the adjacent points in all four directions from (i,j)
+        for next_point in [(i-1,j), (i+1,j), (i,j-1), (i,j+1)]:
+            # if next_point can be added to the path
+            if point_permitted(next_point, this_path):
+                dummy = 123
+                # Look to see if any other path includes this point
+                # If yes, only keep the path with the best known path risk known
+                if next_point in point_risks:
+                    
+                    next_point_path_risk = point_risks[this_path[-1]] \
+                        ['lowest_path_risk'] + point_risks[next_point]['individual_risk']
+
+                    # adding next_point to this_path doesn't yield 
+                    # any improvement to prior paths, therefore skip it
+                    if next_point_path_risk >= point_risks[next_point]['lowest_path_risk']:
                         continue
-                    # do recursive call with the new path
-                    # ret_val = min(ret_val, self.recur_call(newpath))
-                    self.path_stack.append(newpath)
 
-            # return ret_val
-            
+                    # reset point_risks to reflect this lower risk path
+                    point_risks[next_point]['lowest_path_risk'] = next_point_path_risk
 
-    def find_best_path(self):
-        self.path_stack.append([(0,0)])
-        self.recur_call()
+                    # adding next_point to this_path yields improvement to 
+                    # prior paths, therefore replace the prior paths
+                    this_path.append(next_point)
+                    replace_path(this_path)
 
-        print('The smallest total risk for all paths is ', end='')
-        print(self.lowest_path_risk)
-        print()
+                    dummy = 123
 
-        # self.recur_call(0) #, 0, 0)
-        # print( self.recur_call([(0,0)]) )
-        # for i in range(3): # later replace with infinite loop with breakout logic
-        #     dummy = 123
+                # FILL_IN_HERE ......
 
-cavepaths = CavePaths()
+                # 
+
+                # then create newpath by adding next_point
+                # newpath = copy.deepcopy(path)
+                # newpath.append(next_point)
+
+
+print()
+
 # reading input from the input file
-input_filename='input.txt'
+input_filename='input_scenario0.txt'
 with open(input_filename) as f:
     # pull in each line from the input file
-    for in_string in f:
-        cavepaths.input_line(in_string.rstrip())
+    for i, in_string in enumerate(f):
+        for j, risk in enumerate(in_string.rstrip()):
+            # print(risk, end= ' ')
+            point_risks[(i, j)] = {'individual_risk' : int(risk), 'lowest_path_risk' : float('inf')}
+        # cavepaths.input_line(in_string.rstrip())
+        # print()
+    
+(i_max, j_max) = (i,j)
 
-cavepaths.find_best_path()
+# Collection of paths under consideration will be a list of tuples, with each tuple having two integers
+paths_current.append([(0,0)])
+point_risks[(0,0)] = {'individual_risk' : float('inf'), 'lowest_path_risk' : 0}
 
+while len(paths_current) > 0:
+    take_step()
 
-
-# ideas ....
-# start by considering all possible permutations of paths from the start position
-# when all possiblities to a point are exhausted, associate the best path to that point with the point
-# exhaustion happens 
-# even better .... only keep a few groups of paths to the leading edge, and drop paths that are known to be inferior
-#
-# use recursion to consider all paths
-#
-# there will be a grid of objects of a class
-# each object will have risk_level (from input)
-# best currently known path to the object, total path risk
-#
-# flag True/False if the optimal path has been found
-# 
-# leading edge of all paths
-#
-# paths can never switchback, but that will obviously be wasteful
-
-
-
+print()
