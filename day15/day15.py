@@ -26,7 +26,7 @@ point_risks = {}
 def point_permitted(next_point, this_path):
     # Don't allow point to fall off of the grid
     (i,j) = next_point
-    if True in [i<0, j<0, i>i_max, j>=j_max]:
+    if True in [i<0, j<0, i>i_max, j>j_max]:
         return False
 
     # Don't allow point to repeat any prior point on this path
@@ -106,7 +106,7 @@ def take_step():
 # print()
 
 # reading input from the input file
-input_filename='input_sample0.txt'
+input_filename='input.txt'
 with open(input_filename) as f:
     # pull in each line from the input file
     for i, in_string in enumerate(f):
@@ -125,4 +125,6 @@ point_risks[(0,0)] = {'individual_risk' : float('inf'), 'lowest_path_risk' : 0}
 while len(paths_current) > 0:
     take_step()
 
+print('The answer to part a is: ', end='')
+print(point_risks[(i_max, j_max)]['lowest_path_risk'])
 print()

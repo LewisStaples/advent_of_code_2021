@@ -96,7 +96,7 @@ class CavePaths:
 
 cavepaths = CavePaths()
 # reading input from the input file
-input_filename='input.txt'
+input_filename='input_sample0.txt'
 with open(input_filename) as f:
     # pull in each line from the input file
     for in_string in f:
