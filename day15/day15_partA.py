@@ -65,34 +65,22 @@ def take_step():
             # if next_point can be added to the path
             if point_permitted(next_point, this_path):
                 dummy = 123
-                # Look to see if any other path includes this point
-                # If yes, only keep the path with the best known path risk known
-                if next_point in point_risks:
-                    
-                    next_point_path_risk = point_risks[this_path[-1]] \
-                        ['lowest_path_risk'] + point_risks[next_point]['individual_risk']
+    
+                # calculate total risk for path that includes next_point
+                next_point_path_risk = point_risks[this_path[-1]] \
+                    ['lowest_path_risk'] + point_risks[next_point]['individual_risk']
 
-                    # Adding next_point to this_path doesn't yield 
-                    # any improvement to prior paths, therefore skip it
-                    if next_point_path_risk >= point_risks[next_point]['lowest_path_risk']:
-                        continue
+                # If adding next_point to this_path doesn't yield 
+                # any improvement to prior paths, then skip it
+                if next_point_path_risk >= point_risks[next_point]['lowest_path_risk']:
+                    continue
 
-                    # Adding next_point to this_path yields improvement to 
-                    # prior paths, therefore replace the prior paths
-                    new_path = copy.deepcopy(this_path)
-                    new_path.append(next_point)
-                    replace_path(new_path)
+                # Adding next_point to this_path yields improvement to 
+                # prior paths, therefore replace the prior paths
+                new_path = copy.deepcopy(this_path)
+                new_path.append(next_point)
+                replace_path(new_path)
 
-
-
-                    dummy = 123
-
-                # FILL_IN_HERE ......
-
-                else:
-                    # Since next_point is not in any already discovered path,
-                    new_path = copy.deepcopy(this_path)
-                    new_path.append(next_point)
 
                 # Reset point_risks to reflect this lower risk path
                 point_risks[next_point]['lowest_path_risk'] = next_point_path_risk
@@ -106,7 +94,7 @@ def take_step():
 # print()
 
 # reading input from the input file
-input_filename='input.txt'
+input_filename='input_sample0_b.txt'
 with open(input_filename) as f:
     # pull in each line from the input file
     for i, in_string in enumerate(f):
