@@ -46,11 +46,11 @@ class Packet:
         self.binary_string = in_string
         self.version_total = 0
 
-    # this function returns the version of this  ((binary string))
+    # this function returns the version of this Packet
     def get_version(self):
         return binary_to_decimal(self.binary_string[0:3])
 
-    # this function returns the typeID of this packet
+    # this function returns the typeID of this Packet
     def get_typeID(self):
         return binary_to_decimal(self.binary_string[3:6])
 
@@ -82,7 +82,7 @@ class Packet:
             1: math.prod,
             2: min,
             3: max,
-            5: operator.ge,
+            5: operator.gt,
             6: operator.lt,
             7: operator.eq
         }
@@ -106,7 +106,7 @@ class Packet:
     # send it to a magic function that reads the values and splits them
     # 	either condition above will guide it in knowing when to stop
     # then use recursion on it
-    def parse_version(self):
+    def parse_packet(self):
         self.version_total = self.get_version()
 
         if self.get_typeID() == 4:
@@ -144,12 +144,13 @@ class Packet:
                 # make new substring for recursive call (binary)
                 new_string = self.binary_string[char_index:]
                 # make recursive call (probably more than once)
-                ret_val = Packet(new_string).parse_version()
+                ret_val = Packet(new_string).parse_packet()
                 char_index += ret_val['next_character']
                 self.version_total += ret_val['version_total']
                 values_list.append(ret_val['value'])
             dummy = 123
-
+            if char_index != end_of_subpackets:
+                sys.exit('Error: index')
         elif self.get_lengthID() == 1:
             num_of_subpackets = binary_to_decimal(self.binary_string[7:18])
             char_index = 18
@@ -160,7 +161,7 @@ class Packet:
                 # make new substring for recursive call (binary)
                 new_string = self.binary_string[char_index:]
                 # make recursive call (probably more than once)
-                ret_val = Packet(new_string).parse_version()
+                ret_val = Packet(new_string).parse_packet()
                 char_index += ret_val['next_character']
                 self.version_total += ret_val['version_total']
                 values_list.append(ret_val['value'])
@@ -174,7 +175,7 @@ class Packet:
 print()
 
 # read hexadecimal input
-input_filename='input_sample4.txt'
+input_filename='input.txt'
 with open(input_filename) as f:
     in_string = f.readline().rstrip()
 
@@ -192,7 +193,7 @@ in_string = hex_to_binary(in_string)
 print('input string converted to binary: ', end='')
 print(in_string)
 
-ret_val = Packet(in_string).parse_version()
+ret_val = Packet(in_string).parse_packet()
 
 print('The answer to part a is: ', end='')
 print(ret_val['version_total'])
