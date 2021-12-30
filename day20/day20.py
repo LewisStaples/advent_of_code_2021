@@ -27,17 +27,22 @@ def display_image():
     for row in image:
         print(row)
 
-def get_binary_string(image_old, row_num, pixel_num, i):
+def get_binary_string(image_old, row_num, pixel_num, enhancement_number):
     ret_val = ''
     for i in [row_num-1, row_num, row_num+1]:
         for j in [pixel_num-1, pixel_num, pixel_num+1]:
+            
             if True in [i < 0, j < 0, i >= len(image_old), j >= len(image_old[0])]:
-                if i%2 == 0:
+                if image_enhancement_lookup_tbl['000000000'] == '.':
+                    ret_val += '0'
+                    continue
+
+                if enhancement_number%2 == 0:
                     ret_val += '0'
                 else:
                     ret_val += '1'
                 continue
-            # try:
+            
             if image_old[i][j] == '#':
                 ret_val += '1'
             else:
