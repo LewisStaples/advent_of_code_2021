@@ -11,10 +11,11 @@ class CubeResetInstruction:
         for str_input in str_input.split(','):
             axis, str_input = str_input.split('=')
             self.ranges[axis] = str_input.split('..')
-
+            self.ranges[axis] = list(map(int, self.ranges[axis]))
+            pass
 
 # reading input from the input file
-input_filename='input_sample0.txt'
+input_filename='input_scenario0.txt'
 with open(input_filename) as f:
     # pull in each line from the input file
     for in_string in f:
