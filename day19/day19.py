@@ -68,7 +68,21 @@ def handle_transform(scannerIndex1, scannerIndex2, beacon1_si1, si1edge1, si1edg
     print('edges !!!!!')
     print(si1edge1, end=': ')
     print(scannerList[scannerIndex1].point_list[si1edge1[0][0]], end=', ')
-    print(scannerList[scannerIndex1].point_list[si1edge1[0][1]], end=', ')
+    print(scannerList[scannerIndex1].point_list[si1edge1[0][1]], end=',                   ')
+
+    axes_indices = [x for x in range(len(scannerList[scannerIndex2].point_list[si2edge1[0][0]]))]
+    for i in axes_indices:
+        this_axes_index = [x for x in axes_indices if x != i]
+        
+        # SLOPEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
+        slope = \
+        ( scannerList[scannerIndex1].point_list[si1edge1[0][0]][this_axes_index[0]] - scannerList[scannerIndex2].point_list[si1edge1[0][0]][this_axes_index[0]] ) /  \
+        ( scannerList[scannerIndex1].point_list[si1edge1[0][0]][this_axes_index[1]] - scannerList[scannerIndex2].point_list[si1edge1[0][0]][this_axes_index[1]] )
+
+        print(slope)
+        # print(i, end=' out of ')
+        # print(this_axes_index)
+
     print()
     print(si2edge1, end=': ')
     print(scannerList[scannerIndex2].point_list[si2edge1[0][0]], end=', ')
@@ -96,18 +110,6 @@ with open(input_filename) as f:
     # get last line
     scannerList[-1].determine_edges()
 
-# # testing input of points
-# for index, scanner in enumerate(scannerList):
-#     print('Scanner # ' + str(index))
-#     # for point in scanner.point_list:
-#     #     print(point)
-
-#     # # testing calculation of edge squared lengths
-#     # print(scanner.edges)
-
-#     # printing set of lengths_squared
-#     print(scanner.lengths_squared)
-#     print()
 
 # Printing intersections of pairs of sets of lengths_squared from pairs of edges
 # For 12 common beacons there should be 1+2+...+11 = 66 (This is due to recursive logic where adding a new point to a graph of n points creates n new edges. So start with n=1 point with no initial edges)
