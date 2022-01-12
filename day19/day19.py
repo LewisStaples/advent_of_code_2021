@@ -32,10 +32,10 @@ REQUIRED_NUMBER_OF_EQUAL_LENGTH_EDGES = 66
 def handle_transform(scannerIndex1, scannerIndex2, beacon1_si1, si1edge1, si1edge2):
     # Find edges from scannerIndex2 with same length_squared as si1edge1 and si2edge2
     edge_list = []
-    for edge in scannerList[scannerIndex2].edges:
-        length_sq = scannerList[scannerIndex2].edges[edge]
+    for si2edge1 in scannerList[scannerIndex2].edges:
+        length_sq = scannerList[scannerIndex2].edges[si2edge1]
         if length_sq in [si1edge1[1], si1edge2[1]]:
-            edge_list.append(edge)
+            edge_list.append(si2edge1)
 
     # Then find the point from scannerIndex2 which is the same as beacon1_si1 (as soon from the other scanner)
     # Find beacon1_si2 from edge_list ... it appears as a vertex in both edges
@@ -49,8 +49,9 @@ def handle_transform(scannerIndex1, scannerIndex2, beacon1_si1, si1edge1, si1edg
         if scannerList[scannerIndex2].edges[edge] == si1edge1[1]:
             break
     beacon2_si2 = edge[0] if beacon2_si1 == edge[1] else edge[1]
-
+    si2edge1 = (edge, si1edge1[1])
     # Calculate the rotation and displacement between the two scanners
+
 
     # then display the coordinates of the points in scannerIndex2 and confirm that it matches what was given
 
@@ -61,6 +62,18 @@ def handle_transform(scannerIndex1, scannerIndex2, beacon1_si1, si1edge1, si1edg
     print(scannerList[scannerIndex2].point_list[beacon1_si2])
     print(scannerList[scannerIndex1].point_list[beacon2_si1], end='                            ')  # next print the point from the other scanner
     print(scannerList[scannerIndex2].point_list[beacon2_si2], end='                            ') 
+
+    print()
+    print()
+    print('edges !!!!!')
+    print(si1edge1, end=': ')
+    print(scannerList[scannerIndex1].point_list[si1edge1[0][0]], end=', ')
+    print(scannerList[scannerIndex1].point_list[si1edge1[0][1]], end=', ')
+    print()
+    print(si2edge1, end=': ')
+    print(scannerList[scannerIndex2].point_list[si2edge1[0][0]], end=', ')
+    print(scannerList[scannerIndex2].point_list[si2edge1[0][1]], end=', ')
+    print()
 
     print()
 
