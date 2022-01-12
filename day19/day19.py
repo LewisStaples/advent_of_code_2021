@@ -29,32 +29,41 @@ REQUIRED_NUMBER_OF_EQUAL_LENGTH_EDGES = 66
 
 
 # This function will handle the transform.  Parameter beacon is the index in scanner1 of a beacon that is somewhere in scanner2, because it has two edges of lengths that are in both scanners.  Parameters siedge1 and siedge2 have the scanner1 indices of the endpoints of these edges and the square of the edge length.  Parameters scannerIndex1 and scannerIndex2 are the indices of the two scanners being compared.
-def handle_transform(scannerIndex1, scannerIndex2, beacon, si1edge1, si1edge2):
+def handle_transform(scannerIndex1, scannerIndex2, beacon1_si1, si1edge1, si1edge2):
     # Find edges from scannerIndex2 with same length_squared as si1edge1 and si2edge2
-    # Then the point from scannerIndex2 is the same as beacon (as soon from the other scanner)
-
-    dummy = 123
-    edge_set = set()
-
-    # for vertex,length_sq in scannerList[scannerIndex2].edges:
+    edge_list = []
     for edge in scannerList[scannerIndex2].edges:
         length_sq = scannerList[scannerIndex2].edges[edge]
         if length_sq in [si1edge1[1], si1edge2[1]]:
-            dummy = 234
-            edge_set.add(edge)
+            edge_list.append(edge)
 
-    # find vertex/beacon that is in both edges in edge_set
-    # use this to calculate x difference and y difference
+    # Then find the point from scannerIndex2 which is the same as beacon1_si1 (as soon from the other scanner)
+    # Find beacon1_si2 from edge_list ... it appears as a vertex in both edges
+    for beacon1_si2 in edge_list[0]:
+        if beacon1_si2 in edge_list[1]:
+            break # beacon1_si2 has been found
 
-    # from either of the other two vertices/beacons, calculate the rotation
+    # Identify positions for another beacon, called beacon2
+    beacon2_si1 = si1edge1[0][0] if beacon1_si1 == si1edge1[0][1] else si1edge1[0][1]
+    for edge in edge_list:
+        if scannerList[scannerIndex2].edges[edge] == si1edge1[1]:
+            break
+    beacon2_si2 = edge[0] if beacon2_si1 == edge[1] else edge[1]
+
+    # Calculate the rotation and displacement between the two scanners
 
     # then display the coordinates of the points in scannerIndex2 and confirm that it matches what was given
 
 
     # testing only
-    print(scannerList[scannerIndex1].point_list[beacon], end='                            ')  # next print the point from the other scanner
+    print(f'Points from scanner {scannerIndex1}                 The same points from scanner {scannerIndex2}')
+    print(scannerList[scannerIndex1].point_list[beacon1_si1], end='                            ')  # next print the point from the other scanner
+    print(scannerList[scannerIndex2].point_list[beacon1_si2])
+    print(scannerList[scannerIndex1].point_list[beacon2_si1], end='                            ')  # next print the point from the other scanner
+    print(scannerList[scannerIndex2].point_list[beacon2_si2], end='                            ') 
 
     print()
+
     print()
     pass
 
