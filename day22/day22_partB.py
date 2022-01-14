@@ -2,7 +2,7 @@
 # https://adventofcode.com/2021/day/22
 
 input_cube_reset_instructions = []
-cubes_on = set()
+blocks_on = set()
 
 def get_volume_from_block(block):
     ret_val = 1
@@ -10,46 +10,46 @@ def get_volume_from_block(block):
         ret_val *= (block[1][i] - block[0][i])
     return ret_val
 
-# Detects any clash between the two input cubes
+# Detects any clash between the two input blocks
 # Returns None if there is no clash.
-# Returns a cube of the region with a clash if there is any clash
-def get_clash(cube1, cube2):
+# Returns a block of the region with a clash if there is any clash
+def get_clash(block1, block2):
     min_pt = []
     max_pt = []
-    for i in range(len(cube1[0])):
+    for i in range(len(block1[0])):
         # Look for two scenarios without any overlaps in this axis
-        if cube1[1][i] <= cube2[0][i]:
+        if block1[1][i] <= block2[0][i]:
             return None
-        if cube2[1][i] <= cube1[0][i]:
+        if block2[1][i] <= block1[0][i]:
             return None
         
         # Store information about the overlap in this axis
-        min_pt.append(max(cube1[0][i], cube2[0][i]))
-        max_pt.append(min(cube1[1][i], cube2[1][i]))
+        min_pt.append(max(block1[0][i], block2[0][i]))
+        max_pt.append(min(block1[1][i], block2[1][i]))
 
     # Only if all three axes have a clash.
     return (tuple(min_pt), tuple(max_pt))
 
-# This breaks up cube into pieces that completely cover the non-clash region of cube
+# This breaks up block into pieces that completely cover the non-clash region of block
 # Only those pieces (covering non-clash region) are returned
-def break_up(cube_whole, cube_clash):
-    cube_remaining_after_breakup = [list(x) for x in cube_whole]
+def break_up(block_whole, block_clash):
+    block_remaining_after_breakup = [list(x) for x in block_whole]
     ret_val = []
-    for i in range(len(cube_whole[0])):
-        if cube_remaining_after_breakup[0][i] != cube_clash[0][i]:
-            cube_to_add = [list(x) for x in cube_remaining_after_breakup]
-            cube_to_add[1][i] = cube_clash[0][i]
-            cube_to_add = (tuple(x) for x in cube_to_add)
-            ret_val.append(tuple(cube_to_add))
+    for i in range(len(block_whole[0])):
+        if block_remaining_after_breakup[0][i] != block_clash[0][i]:
+            block_to_add = [list(x) for x in block_remaining_after_breakup]
+            block_to_add[1][i] = block_clash[0][i]
+            block_to_add = (tuple(x) for x in block_to_add)
+            ret_val.append(tuple(block_to_add))
 
-        if cube_remaining_after_breakup[1][i] != cube_clash[0][i]:
-            cube_to_add = [list(x) for x in cube_remaining_after_breakup]
-            cube_to_add[0][i] = cube_clash[1][i]
-            cube_to_add = (tuple(x) for x in cube_to_add)
-            ret_val.append(tuple(cube_to_add))
+        if block_remaining_after_breakup[1][i] != block_clash[0][i]:
+            block_to_add = [list(x) for x in block_remaining_after_breakup]
+            block_to_add[0][i] = block_clash[1][i]
+            block_to_add = (tuple(x) for x in block_to_add)
+            ret_val.append(tuple(block_to_add))
 
-        cube_remaining_after_breakup[0][i] = cube_clash[0][i]
-        cube_remaining_after_breakup[1][i] = cube_clash[1][i]
+        block_remaining_after_breakup[0][i] = block_clash[0][i]
+        block_remaining_after_breakup[1][i] = block_clash[1][i]
 
     return ret_val
 
@@ -73,40 +73,39 @@ class CubeResetInstruction:
         for axis in axes:
             min_pt.append(self.ranges[axis][0])
             max_pt.append(self.ranges[axis][1])
-        newest_cube = (tuple(min_pt), tuple(max_pt))
+        newest_block = (tuple(min_pt), tuple(max_pt))
 
         # additional loop needed here .... while True:
         while True:
-            # iterate through cubes_on to seek out clashes
-            for cube in cubes_on:
-                clash_cube = get_clash(cube, newest_cube)
-                # if there's a clash, remove current from set cubes_on and break it up so clash is resolved
-                if clash_cube:
-                    cubes_on.remove(cube)
-                    broken_up_cubes = break_up(cube, clash_cube)
-                    # cubes_on.add(broken_up_cubes)
-                    for broken_cube in broken_up_cubes:
-                        cubes_on.add(broken_cube)
-                    break # end for loop (for cube in cubes_on), since the set is now modified
+            # iterate through blocks_on to seek out clashes
+            for on_block___from_set in blocks_on:
+                clash_block = get_clash(on_block___from_set, newest_block)
+                # if there's a clash, remove current from set blocks_on and break it up so clash is resolved
+                if clash_block:
+                    blocks_on.remove(on_block___from_set)
+                    broken_up_blocks = break_up(on_block___from_set, clash_block)
+                    for broken_block in broken_up_blocks:
+                        blocks_on.add(broken_block)
+                    break # end for loop (for on_block___from_set in blocks_on), since the set is now modified
 
             break # break out of while True loop (only runs if for loop runs to completion)
 
         if self.operation == 'on':
-            cubes_on.add(newest_cube)
+            blocks_on.add(newest_block)
 
             
             # return all broken pieces that comprise non-clash to the set
         # start over with iteration to see if any other elements of the set clash
-        # at end, if on add newest_cube to set of cubes .... alternatively if off, discard newest_cube
+        # at end, if on add newest_block to set of blocks .... alternatively if off, discard newest_block
     
 
 
         # if self.operation == 'on':
         #     if True: # if no clash
-        #         cubes_on.add(  ( (self.ranges['x'][0], self.ranges['y'][0], self.ranges['z'][0])  ,  (self.ranges['x'][1], self.ranges['y'][1], self.ranges['z'][1]) )  )
+        #         blocks_on.add(  ( (self.ranges['x'][0], self.ranges['y'][0], self.ranges['z'][0])  ,  (self.ranges['x'][1], self.ranges['y'][1], self.ranges['z'][1]) )  )
 
 # Reading input from the input file
-input_filename='input_sample2.txt'
+input_filename='input_sample2a.txt'
 with open(input_filename) as f:
     del input_filename
     # pull in each line from the input file
@@ -126,8 +125,8 @@ for icri in input_cube_reset_instructions:
 
 number_of_cubes = 0
 
-for cube in cubes_on:
-    number_of_cubes += get_volume_from_block(cube)
+for block in blocks_on:
+    number_of_cubes += get_volume_from_block(block)
 
 print('The answer to part B is: ', end='')
 # print('To Be Determined') # temporary
