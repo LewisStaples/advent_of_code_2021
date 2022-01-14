@@ -36,7 +36,7 @@ class CubeResetInstruction:
                         reactor.discard(this_cube)
 
 # Reading input from the input file
-input_filename='input.txt'
+input_filename='input_scenario1.txt'
 with open(input_filename) as f:
     del input_filename
     # pull in each line from the input file
