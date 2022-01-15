@@ -18,9 +18,9 @@ def get_clash(block1, block2):
     max_pt = []
     for i in range(len(block1[0])):
         # Look for two scenarios without any overlaps in this axis
-        if block1[1][i] <= block2[0][i]:
+        if block1[1][i] < block2[0][i]:
             return None
-        if block2[1][i] <= block1[0][i]:
+        if block2[1][i] < block1[0][i]:
             return None
         
         # Store information about the overlap in this axis
@@ -44,7 +44,7 @@ def break_up(block_whole, block_clash):
 
         if block_remaining_after_breakup[1][i] != block_clash[1][i]:
             block_to_add = [list(x) for x in block_remaining_after_breakup]
-            block_to_add[0][i] = block_clash[1][i]
+            block_to_add[0][i] = block_clash[1][i] + 1
             block_to_add = [tuple(x) for x in block_to_add]
             ret_val.append(tuple(block_to_add))
 
@@ -103,7 +103,7 @@ class CubeResetInstruction:
     
 
 # Reading input from the input file
-input_filename='input_sample2.txt'
+input_filename='input_sample2a.txt'
 with open(input_filename) as f:
     del input_filename
     # pull in each line from the input file
