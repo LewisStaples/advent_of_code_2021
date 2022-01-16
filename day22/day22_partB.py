@@ -76,12 +76,15 @@ class CubeResetInstruction:
         newest_block = (tuple(min_pt), tuple(max_pt))
 
         # Additional loop needed here .... while True:
-        while True:
+        flag_whileTrue = True
+        while flag_whileTrue:
+            flag_whileTrue = False
             # Iterate through blocks_on to seek out clashes
             for on_block___from_set in blocks_on:
                 clash_block = get_clash(on_block___from_set, newest_block)
                 # if there's a clash, remove current from set blocks_on and break it up so clash is resolved
                 if clash_block:
+                    flag_whileTrue = True
                     blocks_on.remove(on_block___from_set)
                     broken_up_blocks = break_up(on_block___from_set, clash_block)
                     # return all broken pieces that comprise non-clash to the set
@@ -89,8 +92,8 @@ class CubeResetInstruction:
                         blocks_on.add(broken_block)
                     break # Break out of for loop (for on_block___from_set in blocks_on), since the set is now modified
                           # Note that this will repeat the while True loop
-
-            break # Break out of while True loop (only runs if for loop runs to completion)
+            if not flag_whileTrue:
+                break # Break out of while True loop (only runs if for loop runs to completion)
 
         # At end, if on add newest_block to set of blocks .... alternatively if off, discard newest_block
         if self.operation == 'on':
@@ -103,7 +106,7 @@ class CubeResetInstruction:
     
 
 # Reading input from the input file
-input_filename='input_sample2a.txt'
+input_filename='input.txt'
 with open(input_filename) as f:
     del input_filename
     # pull in each line from the input file
