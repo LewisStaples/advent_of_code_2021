@@ -40,9 +40,18 @@ with open(input_filename) as f:
             hallway_characteristics['init_index'] = in_string.find('.')
             hallway_characteristics['final_index'] = in_string.rfind('.')
             hallway_characteristics['row_num'] = row_num
+
+            # For the time being, this program will require that the hallway be at row_num 1
+            if row_num != 1:
+                sys.exit('FAILURE!  The hallway must be in the second line of the input!')
         
         #  If there is at least one amphipod in this row of input....
         if len(re.findall('[A-D]', in_string)) > 0:
+
+            # For the time being, this program will require that all amphipods initiial positions will be either 2 or 3:
+            if row_num not in [2,3]:
+                sys.exit('FAILURE!  All amphipods must start at rows 2 or 3!')
+
             # Iterate through each character in the row of input
             for col_num, this_char in enumerate(in_string):
                 # If there is an amphipod in that location, note that initial position in amphipod_positions
@@ -57,5 +66,19 @@ del in_string
 del row_num
 del col_num
 del this_char
+
+# Determine locations of the four side rooms:
+side_rooms = []
+for value in amphipod_positions.values():
+    s_r = value[0]
+    if s_r not in side_rooms:
+        side_rooms.append(s_r)
+side_rooms.sort(reverse=True)
+for amph in ['A','B','C','D']:
+    amphipod_characteristics[amph].append(side_rooms.pop())
+
+del side_rooms
+del value
+del amph
 
 
