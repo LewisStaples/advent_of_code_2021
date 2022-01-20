@@ -2,7 +2,7 @@
 # https://adventofcode.com/2021/day/23
 
 # Strategy
-# Come up with all permutations of orders for which amphipod is sent out and then back (develop a notation).  This uses the simpliying assumption that blockage in the hallway is a non-issue.
+# Come up with all permutations of orders for which amphipod is sent out and then back (develop a notation).  This uses the simplifying assumption that blockage in the hallway is a non-issue.  It will, however, account for blockage in the side rooms.
 # From this come up with all permutations of spaces where each amphipod could be deposited (maybe some permuatations from the earlier tree could be eliminated)
 # Calculate total energy associated with each permutation above
 # The minimum total energy is the answer to (a)
@@ -84,28 +84,29 @@ del value
 del amph
 
 # Consider all permutations of amphipod sequence
-all_amph_sequences_working = ['']
-all_amph_sequences_complete = []
-# 
-# for seq in all_amph_sequences_working:
-while len(all_amph_sequences_working) > 0:
-    seq = all_amph_sequences_working.pop()
+all_amph_sequences = ['']
+
+while True:
+    seq = all_amph_sequences.pop(0)
+    if len(seq) == 16:
+        break
+
     for amph_key, amph_value in amphipod_positions.items():
         new_seq = seq
         # Skip it if its already in the sequence
         if amph_key in new_seq:
             continue
-        # If amph is blocked:
+        # If amph is blocked (both if conditions)
         if amph_value[1] == 3:
-            if amphipod_positions_rev[(amph_value[0],3)] not in new_seq:
+            if amphipod_positions_rev[(amph_value[0],2)] not in new_seq:
                 continue # Skip it (because it's blocked)
         new_seq += amph_key
-        if len(new_seq) < 10:
-            all_amph_sequences_working.append(new_seq)
-        else:
-            all_amph_sequences_complete.append(new_seq)
 
-dummy = 123
+        if new_seq not in all_amph_sequences:
+            all_amph_sequences.append(new_seq)
+
+print('Permutation count: ')
+print(len(all_amph_sequences))
 
 
     
