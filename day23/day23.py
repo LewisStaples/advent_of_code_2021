@@ -13,8 +13,8 @@ import re
 # This dictionary has index = 'type of amphipod' and value is a list with energy and the hallway location that goes into its destination room.  These are immutable characteristics (it will be populated from the input file and it will not change afterward)
 AMPHIPOD_CHARACTERISTICS = {'A':[1], 'B':[10], 'C':[100], 'D':[1000]}
 
-amphipod_positions = {}
-amphipod_positions_rev = {}
+init_amphipod_positions = {}
+init_amphipod_positions_rev = {}
 
 # This has information about the open spaces in the hallway.
 # These are immutable characteristics (it will be populated from the input file and it will not change afterward)
@@ -55,23 +55,25 @@ with open(input_filename) as f:
 
             # Iterate through each character in the row of input
             for col_num, this_char in enumerate(in_string):
-                # If there is an amphipod in that location, note that initial position in amphipod_positions
+                # If there is an amphipod in that location, note that initial position in init_amphipod_positions
                 if this_char in ['A','B','C','D']:
                     this_char += '1' # first instance of this one seen
-                    if this_char in amphipod_positions:
+                    if this_char in init_amphipod_positions:
                         this_char = this_char[0] + '2' # second instance of this one seen
-                    amphipod_positions[this_char] = [col_num, row_num]
-                    amphipod_positions_rev[(col_num, row_num)] = this_char
+                    init_amphipod_positions[this_char] = [col_num, row_num]
+                    init_amphipod_positions_rev[(col_num, row_num)] = this_char
             
 # delete local variables used when inputting data from the file
 del in_string
 del row_num
 del col_num
 del this_char
+del f
+del input_filename
 
 # Determine locations of the four side rooms:
 side_rooms = []
-for value in amphipod_positions.values():
+for value in init_amphipod_positions.values():
     s_r = value[0]
     if s_r not in side_rooms:
         side_rooms.append(s_r)
@@ -82,6 +84,7 @@ for amph in ['A','B','C','D']:
 del side_rooms
 del value
 del amph
+del s_r
 
 # Consider all permutations of amphipod sequence
 all_amph_sequences = ['']
@@ -91,22 +94,28 @@ while True:
     if len(seq) == 16:
         break
 
-    for amph_key, amph_value in amphipod_positions.items():
+    for amph_key, amph_value in init_amphipod_positions.items():
         new_seq = seq
         # Skip it if its already in the sequence
         if amph_key in new_seq:
             continue
         # If amph is blocked (both if conditions)
         if amph_value[1] == 3:
-            if amphipod_positions_rev[(amph_value[0],2)] not in new_seq:
+            if init_amphipod_positions_rev[(amph_value[0],2)] not in new_seq:
                 continue # Skip it (because it's blocked)
         new_seq += amph_key
 
         if new_seq not in all_amph_sequences:
             all_amph_sequences.append(new_seq)
 
+del amph_key
+del amph_value
+del seq
+del new_seq
+
 print('Permutation count: ')
 print(len(all_amph_sequences))
 
+least_total_energy = float('inf')
 
-    
+
