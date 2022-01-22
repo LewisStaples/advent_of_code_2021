@@ -77,44 +77,73 @@ for value in init_amphipod_positions.values():
     s_r = value[0]
     if s_r not in side_rooms:
         side_rooms.append(s_r)
-side_rooms.sort(reverse=True)
 # Label side rooms' destinations in order ... left to right, as in the spec.
-for amph in ['A','B','C','D']:
-    AMPHIPOD_CHARACTERISTICS[amph].append(side_rooms.pop())
-del side_rooms
+for i, amph in enumerate(['A','B','C','D']):
+    AMPHIPOD_CHARACTERISTICS[amph].append(side_rooms[i])
+# del side_rooms
+del i
 del value
 del amph
 del s_r
 
 # Consider all permutations of amphipod sequence
-all_amph_sequences = ['']
+all_amph_sequences = set()
+all_amph_sequences.add('')
+complete_amph_sequences = set()
 
-while True:
-    seq = all_amph_sequences.pop(0)
-    if len(seq) == 16:
-        break
-
-    for amph_key, amph_value in init_amphipod_positions.items():
-        new_seq = seq
-        # Skip it if its already in the sequence
-        if amph_key in new_seq:
+try:
+    while len(all_amph_sequences)>0:
+        seq = all_amph_sequences.pop()
+        if len(seq) == 16:
+            complete_amph_sequences.add(seq)
             continue
-        # If amph is blocked (both if conditions)
-        if amph_value[1] == 3:
-            if init_amphipod_positions_rev[(amph_value[0],2)] not in new_seq:
-                continue # Skip it (because it's blocked)
-        new_seq += amph_key
 
-        if new_seq not in all_amph_sequences:
-            all_amph_sequences.append(new_seq)
+        # List out all possible moves available for state seq.
+        poss_moves = []
+        # Consider all possible moves where an amphipod leaves a side room
+        # If this happens, it will be added to new_seq with an upper case letter
+        for sr in side_rooms:
+            init_amph_1 = init_amphipod_positions_rev[(sr,2)]
+            init_amph_2 = init_amphipod_positions_rev[(sr,3)]
+            if init_amph_1 not in seq:
+                # Consider if both 1 and 2 are at final destination
+                if sr == AMPHIPOD_CHARACTERISTICS[init_amph_1[0]][1]:
+                    if sr == AMPHIPOD_CHARACTERISTICS[init_amph_2[0]][1]:
+                        break
+                # The top amphipod could leave this side room
+                poss_moves.append(init_amph_1) 
+            elif init_amph_2 not in seq:
+                # Consider if 1 is at final destination
+                if sr == AMPHIPOD_CHARACTERISTICS[init_amph_1[0]][1]:
+                    poss_moves.append(init_amph_2) # The bottom amphipod could leave this side room
 
-del amph_key
-del amph_value
-del seq
-del new_seq
+        del init_amph_1
+        del init_amph_2
+        del sr
 
-print('Permutation count: ')
+        # Also consider possible moves where an amphipod leaves the hallway 
+        # If this happens, it will be added to new_seq with a lower case letter
+        i = 0
+        while i < len(seq):
+            if seq[i].islower():
+                i += 2
+                continue
+            next_poss_move = seq[i:i+2].lower()
+            poss_moves.append(next_poss_move)
+            i += 2
+
+        for move in poss_moves:
+            new_seq = seq
+            new_seq += move
+            all_amph_sequences.add(new_seq)
+
+except KeyboardInterrupt:
+    dummy = 123
+
+print('Permutation counts: ')
+print(len(complete_amph_sequences))
 print(len(all_amph_sequences))
+
 
 least_total_energy = float('inf')
 
