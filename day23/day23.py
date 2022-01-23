@@ -20,7 +20,7 @@ init_amphipod_positions_rev = {}
 # These are immutable characteristics (it will be populated from the input file and it will not change afterward)
 HALLWAY_CHARACTERISTICS = dict()
 
-input_filename='input_sample0.txt'
+input_filename='input.txt'
 # Reading input from the input file
 with open(input_filename) as f:
     # Pull in each line from the input file
@@ -92,11 +92,15 @@ all_amph_sequences.add('')
 complete_amph_sequences = set()
 
 try:
-    while len(all_amph_sequences)>0:
+    while len(all_amph_sequences) > 0:
         seq = all_amph_sequences.pop()
-        if len(seq) == 16:
-            complete_amph_sequences.add(seq)
-            continue
+
+        if len(all_amph_sequences) < 2:
+            dummy = 123
+
+        # if len(seq) == 20:
+        #     complete_amph_sequences.add(seq)
+        #     continue
 
         # List out all possible moves available for state seq.
         poss_moves = []
@@ -106,15 +110,15 @@ try:
             init_amph_1 = init_amphipod_positions_rev[(sr,2)]
             init_amph_2 = init_amphipod_positions_rev[(sr,3)]
             if init_amph_1 not in seq:
-                # Consider if both 1 and 2 are at final destination
+                # If both 1 and 2 are at final destination, then skip them.
                 if sr == AMPHIPOD_CHARACTERISTICS[init_amph_1[0]][1]:
                     if sr == AMPHIPOD_CHARACTERISTICS[init_amph_2[0]][1]:
-                        break
+                        continue # Skip this one.
                 # The top amphipod could leave this side room
                 poss_moves.append(init_amph_1) 
             elif init_amph_2 not in seq:
-                # Consider if 1 is at final destination
-                if sr == AMPHIPOD_CHARACTERISTICS[init_amph_1[0]][1]:
+                # If 2 is not at final destination, then it could leave this side room.
+                if sr != AMPHIPOD_CHARACTERISTICS[init_amph_2[0]][1]:
                     poss_moves.append(init_amph_2) # The bottom amphipod could leave this side room
 
         del init_amph_1
@@ -124,11 +128,18 @@ try:
         # Also consider possible moves where an amphipod leaves the hallway 
         # If this happens, it will be added to new_seq with a lower case letter
         i = 0
+        # Loop through all pairs of characters in seq
         while i < len(seq):
+            # Ignore lower case character (it's a record of having left the hallway already)
             if seq[i].islower():
                 i += 2
                 continue
+
             next_poss_move = seq[i:i+2].lower()
+            # Look for records elsewhere in seq of this having left the hallway already
+            if next_poss_move in seq:
+                i += 2
+                continue
             poss_moves.append(next_poss_move)
             i += 2
 
@@ -136,6 +147,9 @@ try:
             new_seq = seq
             new_seq += move
             all_amph_sequences.add(new_seq)
+
+        if len(poss_moves) == 0:
+            complete_amph_sequences.add(seq)
 
 except KeyboardInterrupt:
     dummy = 123
@@ -146,5 +160,3 @@ print(len(all_amph_sequences))
 
 
 least_total_energy = float('inf')
-
-
