@@ -13,13 +13,17 @@ class ALU:
                 in_string = in_string.rstrip()
                 self.instructions.append(in_string)
 
-    # This executes the ALU program against an input number
-    def execute(self, input_num):
+    # This executes the ALU program against one value in a list of input numbers
+    def execute(self, input_numbers, number_index):
+        # Variables defined in the problem specification:
         w = x = y = z = 0
+        #
+        input_number = 0
         for i_ins in range(len(self.instructions)):
             print(self.instructions[i_ins])
         print('x = ', end='')
         print(x, end=', ')
+
 # Main program
 the_alu = ALU()
 the_alu.execute(2)
