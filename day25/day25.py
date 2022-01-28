@@ -2,6 +2,7 @@
 # https://adventofcode.com/2021/day/25
 
 import re
+import copy
 
 class SeaCucumber:
     def __init__(self):
@@ -12,9 +13,9 @@ class SeaCucumber:
 
         self.sea_cucumbers = dict()
         self.herds = {'>': {'herd':'east_herd', 'motion_direction':(1,0)},
-            'v' : {'herd':'south_herd', 'motion_direction':(0,-1)}}
+            'v' : {'herd':'south_herd', 'motion_direction':(0,1)}}
 
-        # self.ROW_TOTAL = None
+        self.ROW_TOTAL = None
         self.COLUMN_TOTAL = None
 
         # Reading input from the input file
@@ -23,6 +24,7 @@ class SeaCucumber:
             # Pull in each line from the input file
             for row_number, in_string in enumerate(f):
                 in_string = in_string.rstrip()
+                # print(in_string)
 
                 # self.east_herd[row_number] = [m.start() for m in re.finditer('>', in_string)]
                 # self.south_herd[row_number] = [m.start() for m in re.finditer('v', in_string)]
@@ -31,9 +33,19 @@ class SeaCucumber:
                     self.sea_cucumbers[row_number][self.herds[herd_symbol]['herd']] = [m.start() for m in re.finditer(herd_symbol, in_string)]
 
                 # Capture before the variable goes out of scope.
-                # (Unfortunately, it will be unnecessarily noted each time through)
+                # (Unfortunately, it will be unnecessarily calculated each time through)
                 self.COLUMN_TOTAL = len(in_string)
-        pass
+                self.ROW_TOTAL = row_number + 1
+
+    def blocked(self, location):
+        for row_number in self.sea_cucumbers:
+            if location[1] != row_number:
+                continue
+            for herd in self.sea_cucumbers[row_number]:
+                for index_num in self.sea_cucumbers[row_number][herd]:
+                    if index_num == location[0]:
+                        return True
+        return False
 
     def advance_single_herd(self, herd_symbol):
         # herd_old = None
@@ -48,19 +60,31 @@ class SeaCucumber:
 
         # return 42
 
-        sea_cucumbers_old = self.sea_cucumbers
-        sea_cucumbers_new = None
-        for row_num in sea_cucumbers_old:
+        change_count = 0 # value to return
+        # sea_cucumbers_old = self.sea_cucumbers
+        # sea_cucumbers_new = copy.deepcopy(sea_cucumbers_old)
+        for row_num in self.sea_cucumbers:
+            sea_cucumbers_old = self.sea_cucumbers
+            sea_cucumbers_new = copy.deepcopy(sea_cucumbers_old)
             for herd in sea_cucumbers_old[row_num]:
                 if self.herds[herd_symbol]['herd'] != herd:
                     continue
                 for index in sea_cucumbers_old[row_num][herd]:
                     pass
                     # calc new value
-                    # if new value is blocked, then continue (skip to next index)
+                    new_location = (
+                        (index + self.herds[herd_symbol]['motion_direction'][0]) % self.COLUMN_TOTAL ,
+                        (row_num + self.herds[herd_symbol]['motion_direction'][1] ) % self.ROW_TOTAL
+                    )
+                    # if new_location is blocked, then continue (retain the old location)
+                    if self.blocked(new_location):
+                        continue
                     # since new value isn't blocked, remove old value from and add new value to sea_cucumbers_new
-        
-        return 42
+                    sea_cucumbers_new[row_num][herd].remove(index)
+                    sea_cucumbers_new[new_location[1]][herd].append(new_location[0])
+                    change_count += 1
+            self.sea_cucumbers = sea_cucumbers_new
+        return change_count
         
     # This advances the herd by one step
     # It returns the number of sea cucumbers that moved in that step.
@@ -75,7 +99,7 @@ class SeaCucumber:
         return num_sea_cucu_advanced
 
     # This prints out the status of both herds.
-    # This assumes that no position has both a south-bound and an east-bound sea cucumber in that position
+    # This assumes that no location has both a south-bound and an east-bound sea cucumber in that location
     # This is for testing only.  (To compare to the given example)
     def display(self):
         # for row_number in self.east_herd.keys():
@@ -87,9 +111,30 @@ class SeaCucumber:
         #         else:
         #             print('.', end='')
             # print()
-        print(' ' * self.COLUMN_TOTAL)
+        
+        herds_reverse = {}
+        for symbol, name_dict in self.herds.items():
+            herds_reverse[name_dict['herd']] = symbol
+        
+        for row_number in self.sea_cucumbers:
+            line_to_print = ['.'] * self.COLUMN_TOTAL
+            for herd in self.sea_cucumbers[row_number]:
+                pass
+                symbol = herds_reverse[herd]
+                # Note that below is a list to allow for character substitution
+                
+                for index_num in self.sea_cucumbers[row_number][herd]:
+                    line_to_print[index_num] = symbol
+            print ("".join(line_to_print))
+        print()
+        print()
 
+move_count = float('inf')
 seaCucumber = SeaCucumber()
-seaCucumber.display()
-seaCucumber.advance_one_step()
+# while move_count > 0:
+for i in range(10):
+    print('After step # ', end='')
+    print(i, end=':\n')
+    seaCucumber.display()
+    move_count = seaCucumber.advance_one_step()
 seaCucumber.display()
