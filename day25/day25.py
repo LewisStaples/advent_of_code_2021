@@ -16,6 +16,7 @@ class SeaCucumber:
         for symbol, name_dict in self.herds.items():
             self.herds_reverse[name_dict['herd']] = symbol
 
+        # Variables to store the size of the region where the sea cucumbers are.
         self.ROW_TOTAL = None
         self.COLUMN_TOTAL = None
 
@@ -35,26 +36,33 @@ class SeaCucumber:
                 self.COLUMN_TOTAL = len(in_string)
                 self.ROW_TOTAL = row_number + 1
 
+    # This function (likely to be removed shortly) determines if a given location is blocked by a sea cucumber that is arleady there.
     def blocked(self, location):
         for herd in self.sea_cucumbers[location[1]]:
             for index_num in self.sea_cucumbers[location[1]][herd]:
                 if index_num == location[0]:
                     return True
-
         return False
 
+    # This function advances a single herd of sea cucumbers
     def advance_single_herd(self, herd_symbol):
         change_count = 0 # value to return
         sea_cucumbers_new = copy.deepcopy(self.sea_cucumbers)
         
+        # Loop through all rows of sea cucumbers.
         for row_num in self.sea_cucumbers:
             herd = self.herds[herd_symbol]['herd']
+            # Loop through all sea cucumbers in this row.
             for index in self.sea_cucumbers[row_num][herd]:
                 # calc new value
                 new_location = (
                     (index + self.herds[herd_symbol]['motion_direction'][0]) % self.COLUMN_TOTAL ,
                     (row_num + self.herds[herd_symbol]['motion_direction'][1] ) % self.ROW_TOTAL
                 )
+
+                # NEXT CHANGE .... don't loop through the entire row's seacucumbers for every move into this row
+                # Instead determine them for all rows at the outset.
+
                 # if new_location is blocked, then continue (retain the old location)
                 if self.blocked(new_location):
                     continue
