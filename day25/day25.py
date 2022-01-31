@@ -6,17 +6,27 @@ import copy
 
 class SeaCucumber:
     def __init__(self):
-        # # Python dictionaries about east-bound and south-bound herds
-        # # Each will have the row as the index and the value will be a list of all column numbers within that row with that character
+        # This data structure will store information about all sea cucumbers.
+        # The outer dictionary has row numbers as its indices and the values 
+        # are inner dictionaries.  The inner dictionary has the names of the 
+        # two herds as the indices and the values are lists.  These lists 
+        # list the column numbers of all sea cucumbers in that herd in that 
+        # row.
         self.sea_cucumbers = dict()
-        self.herds = {'>': {'herd':'east_herd', 'motion_direction':(1,0)},
+
+        # This data structure lists important unchangeable characteristics 
+        # of each herd.
+        self.HERDS = {'>': {'herd':'east_herd', 'motion_direction':(1,0)},
             'v' : {'herd':'south_herd', 'motion_direction':(0,1)}}
 
+        # This dictionary is used in the display method, which allows for 
+        # the herd name to be used to get the symbol.
         self.herds_reverse = {}
-        for symbol, name_dict in self.herds.items():
+        for symbol, name_dict in self.HERDS.items():
             self.herds_reverse[name_dict['herd']] = symbol
 
-        # Variables to store the size of the region where the sea cucumbers are.
+        # Variables to store the size of the region where 
+        # the sea cucumbers are.
         self.ROW_TOTAL = None
         self.COLUMN_TOTAL = None
 
@@ -28,45 +38,58 @@ class SeaCucumber:
                 in_string = in_string.rstrip()
 
                 self.sea_cucumbers[row_number] = {}
-                for herd_symbol in self.herds:
-                    self.sea_cucumbers[row_number][self.herds[herd_symbol]['herd']] = [m.start() for m in re.finditer(herd_symbol, in_string)]
+                for herd_symbol in self.HERDS:
+                    self.sea_cucumbers[row_number][self.HERDS[herd_symbol] \
+                    ['herd']] = [m.start() for m in re.finditer(herd_symbol, \
+                        in_string)]
 
                 # Capture before the variables go out of scope.
-                # (Unfortunately, both will be unnecessarily calculated each time through)
+                # (Unfortunately, both will be unnecessarily 
+                # calculated each time through)
                 self.COLUMN_TOTAL = len(in_string)
                 self.ROW_TOTAL = row_number + 1
 
-    # This function (likely to be removed shortly) determines if a given location is blocked by a sea cucumber that is arleady there.
-    def blocked(self, location):
-        for herd in self.sea_cucumbers[location[1]]:
-            for index_num in self.sea_cucumbers[location[1]][herd]:
-                if index_num == location[0]:
-                    return True
-        return False
+    # Generate a lookup table listing all blocked locations.
+    def get_all_blocked_locations(self):
+        ret_val = {}
+        for row_num in self.sea_cucumbers:
+            ret_val[row_num] = set()
+            for herd in self.sea_cucumbers[row_num]:
+                for col_num in self.sea_cucumbers[row_num][herd]:
+                    ret_val[row_num].add(col_num)
+        return ret_val
 
     # This function advances a single herd of sea cucumbers
     def advance_single_herd(self, herd_symbol):
-        change_count = 0 # value to return
+        # value to return
+        change_count = 0 
         sea_cucumbers_new = copy.deepcopy(self.sea_cucumbers)
         
+        # Create a data structure for looking up all blocked locations
+        blocked_sc = self.get_all_blocked_locations()
+
         # Loop through all rows of sea cucumbers.
         for row_num in self.sea_cucumbers:
-            herd = self.herds[herd_symbol]['herd']
+            herd = self.HERDS[herd_symbol]['herd']
+
             # Loop through all sea cucumbers in this row.
             for index in self.sea_cucumbers[row_num][herd]:
                 # calc new value
-                new_location = (
-                    (index + self.herds[herd_symbol]['motion_direction'][0]) % self.COLUMN_TOTAL ,
-                    (row_num + self.herds[herd_symbol]['motion_direction'][1] ) % self.ROW_TOTAL
-                )
+                new_location = ( (index + self.HERDS[herd_symbol] \
+                    ['motion_direction'][0]) % self.COLUMN_TOTAL , \
+                        (row_num + self.HERDS[herd_symbol] \
+                            ['motion_direction'][1] ) % \
+                                 self.ROW_TOTAL )
 
-                # NEXT CHANGE .... don't loop through the entire row's seacucumbers for every move into this row
-                # Instead determine them for all rows at the outset.
-
-                # if new_location is blocked, then continue (retain the old location)
-                if self.blocked(new_location):
+                # If the intended destination of the sea cucumber is blocked,
+                # then disallow the move.
+                if new_location[0] in blocked_sc[new_location[1]]:
+                    # Since this move is disallowed, proceed to the next 
+                    # sea cucumber in the loop.
                     continue
-                # since new value isn't blocked, remove old value from and add new value to sea_cucumbers_new
+
+                # since new value isn't blocked, remove old value from 
+                # and add new value to sea_cucumbers_new
                 sea_cucumbers_new[row_num][herd].remove(index)
                 sea_cucumbers_new[new_location[1]][herd].append(new_location[0])
                 change_count += 1
@@ -86,7 +109,8 @@ class SeaCucumber:
         return num_sea_cucu_advanced
 
     # This prints out the status of both herds.
-    # This assumes that no location has both a south-bound and an east-bound sea cucumber in that location
+    # This assumes that no location has both a south-bound and an 
+    # east-bound sea cucumber in that location.
     # This is for testing only.  (To compare to the given example)
     def display(self):
         for row_number in self.sea_cucumbers:
