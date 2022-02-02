@@ -22,27 +22,77 @@ class ALU:
     def inp(self, param):
         print('inp ' + param)
 
+    # def add(self, param):
+    #     print('add', end=' ')
+    #     for par in param.split(' '):
+    #         print(par, end = ' ')
+    #     print()
+
     def mul(self, param):
+        var_str, mult_str = param.split(' ')        
+        var = getattr(self, var_str)
+
+        # If multiplying by zero, discard everything there
+        if mult_str == '0':
+            var = '0'
+        else:
+            var = '(' + var + ')*' + mult_str
+
+        setattr(self, var_str, var)
+
+        # Printing (for testing)
         print('mul', end=' ')
         for par in param.split(' '):
             print(par, end = ' ')
         print()
 
+
+
+    # def div(self, param):
+    #     print('div', end=' ')
+    #     for par in param.split(' '):
+    #         print(par, end = ' ')
+    #     print()
+
+    # def mod(self, param):
+    #     print('mod', end=' ')
+    #     for par in param.split(' '):
+    #         print(par, end = ' ')
+    #     print()
+
     def eql(self, param):
+        var_str, comp_str = param.split(' ')        
+        var = getattr(self, var_str)
+
+        # # If multiplying by zero, discard everything there
+        # if mult_str == '0':
+        #     var = '0'
+        # else:
+        #     var = '(' + var + ')*' + mult_str
+
+        var = '0 unless ' + var + ' equals ' + comp_str
+
+        setattr(self, var_str, var)
+
+        # Printing (for testing)
         print('eql', end=' ')
         for par in param.split(' '):
             print(par, end = ' ')
         print()
 
     def execute(self):
-        for instruction_list in self.instructions:
-            for instruction in instruction_list:
+        dummy = 123
+        for self.input_index in range(len(self.instructions)-1,-1,-1):
+            self.w='w'
+            self.x='x'
+            self.y='y'
+            self.z='z'
+            for instruction in self.instructions[self.input_index]:
                 instruction_line = instruction.split(' ',1)
-                # dummy = 123
-                call_fxn = getattr(self, instruction_line[0]) #(instruction_line[1])
+                call_fxn = getattr(self, instruction_line[0])
                 call_fxn(instruction_line[1])
-            #     print(instruction)
-            # print('------------')
+
+                dummy = 123
 
 # Main program
 the_alu = ALU()
