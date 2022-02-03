@@ -19,16 +19,29 @@ class ALU:
                 this_instruction_list.append(in_string)
         self.instructions.append(this_instruction_list)
 
+    # The specifications indicate that b could either be a value (such as 0) or a variable (such as w).
+    def get_b_value(self, b_value):
+        # Assume that w,x,y,z are the only variables that it could be
+        if b_value in ['w', 'x', 'y', 'z']:
+            # return the value of the variable
+            return getattr(self, b_value)
+
+        # return the value itself, since it is not a variable.
+        return b_value
+
     def inp(self, param):
+        var_str = param
+        setattr(self, var_str, 'input_' + str(self.input_index))
+        # Printing (for testing)
         print('inp ' + param)
 
     def add(self, param):
         var_str, add_str = param.split(' ')        
         var = getattr(self, var_str)
-
+        add_value = self.get_b_value(add_str)
         # Make changes only if adding something other than zero
-        if add_str != '0':
-            var = var + ' + ' + add_str
+        if add_value != '0':
+            var = var + ' + ' + add_value
             setattr(self, var_str, var)
 
         # Printing (for testing)
@@ -40,12 +53,13 @@ class ALU:
     def mul(self, param):
         var_str, mult_str = param.split(' ')        
         var = getattr(self, var_str)
+        mult_value = self.get_b_value(mult_str)
 
         # If multiplying by zero, discard everything there
-        if mult_str == '0':
+        if mult_value == '0':
             var = '0'
         else:
-            var = '(' + var + ')*' + mult_str
+            var = '(' + var + ')*' + mult_value
 
         setattr(self, var_str, var)
 
@@ -60,10 +74,11 @@ class ALU:
     def div(self, param):
         var_str, div_str = param.split(' ')        
         var = getattr(self, var_str)
+        div_value = self.get_b_value(div_str)
 
         # Make changes only if dividing by something other than one
-        if div_str != '1':
-            var = '(' + var + ')/' + div_str
+        if div_value != '1':
+            var = '(' + var + ')/' + div_value
 
         setattr(self, var_str, var)
 
@@ -76,10 +91,11 @@ class ALU:
     def mod(self, param):
         var_str, mod_str = param.split(' ')        
         var = getattr(self, var_str)
+        mod_value = self.get_b_value(mod_str)
 
         # Make changes only if taking modulus by something other than one
-        if mod_str != '1':
-            var = '(' + var + ')%' + mod_str
+        if mod_value != '1':
+            var = '(' + var + ')%' + mod_value
 
         setattr(self, var_str, var)
 
@@ -92,8 +108,8 @@ class ALU:
     def eql(self, param):
         var_str, comp_str = param.split(' ')        
         var = getattr(self, var_str)
-
-        var = '0 unless ' + var + ' equals ' + comp_str
+        comp_value = self.get_b_value(comp_str)
+        var = '0 unless ' + var + ' equals ' + comp_value
 
         setattr(self, var_str, var)
 
