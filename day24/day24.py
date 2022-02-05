@@ -32,23 +32,29 @@ class ALU:
     def inp(self, param):
         var_str = param
         setattr(self, var_str, 'input_' + str(self.input_index))
-        # Printing (for testing)
-        print('inp ' + param)
+        # # Printing (for testing)
+        # print('inp ' + param)
 
     def add(self, param):
         var_str, add_str = param.split(' ')        
         var = getattr(self, var_str)
         add_value = self.get_b_value(add_str)
         # Make changes only if adding something other than zero
+        # (otherwise, keep var as it is)
         if add_value != '0':
-            var = var + ' + ' + add_value
+            if var != '0':
+                # Add var and add_value together, as long as they're both non-zero
+                var = '(' + var + ' + ' + add_value + ')'
+            else:
+                # If var is zero, replace it with add_value
+                var = add_value
             setattr(self, var_str, var)
 
-        # Printing (for testing)
-        print('add', end=' ')
-        for par in param.split(' '):
-            print(par, end = ' ')
-        print()
+        # # Printing (for testing)
+        # print('add', end=' ')
+        # for par in param.split(' '):
+        #     print(par, end = ' ')
+        # print()
 
     def mul(self, param):
         var_str, mult_str = param.split(' ')        
@@ -63,11 +69,11 @@ class ALU:
 
         setattr(self, var_str, var)
 
-        # Printing (for testing)
-        print('mul', end=' ')
-        for par in param.split(' '):
-            print(par, end = ' ')
-        print()
+        # # Printing (for testing)
+        # print('mul', end=' ')
+        # for par in param.split(' '):
+        #     print(par, end = ' ')
+        # print()
 
 
 
@@ -82,11 +88,11 @@ class ALU:
 
         setattr(self, var_str, var)
 
-         # Printing (for testing)
-        print('div', end=' ')
-        for par in param.split(' '):
-            print(par, end = ' ')
-        print()
+        #  # Printing (for testing)
+        # print('div', end=' ')
+        # for par in param.split(' '):
+        #     print(par, end = ' ')
+        # print()
 
     def mod(self, param):
         var_str, mod_str = param.split(' ')        
@@ -99,25 +105,48 @@ class ALU:
 
         setattr(self, var_str, var)
 
-         # Printing (for testing)
-        print('mod', end=' ')
-        for par in param.split(' '):
-            print(par, end = ' ')
-        print()
+        #  # Printing (for testing)
+        # print('mod', end=' ')
+        # for par in param.split(' '):
+        #     print(par, end = ' ')
+        # print()
 
     def eql(self, param):
         var_str, comp_str = param.split(' ')        
         var = getattr(self, var_str)
         comp_value = self.get_b_value(comp_str)
-        var = '0 unless ' + var + ' equals ' + comp_value
+        var = '(0 unless (' + var + ') equals (' + comp_value + '))'
 
         setattr(self, var_str, var)
 
-        # Printing (for testing)
-        print('eql', end=' ')
-        for par in param.split(' '):
-            print(par, end = ' ')
-        print()
+        # # Printing (for testing)
+        # print('eql', end=' ')
+        # for par in param.split(' '):
+        #     print(par, end = ' ')
+        # print()
+
+    def elim_unneeded_parens(self):
+        i_open = -1
+        while True:
+            i_open += 1
+            # 1. find next open parenthesis
+            i_open = self.z.find('(', i_open)
+            if i_open == -1:
+                return
+
+            # 2. look to see if next operator is close parenthesis or any member of '(+*/%ue'
+            # (The u and e are there, because it is they start "unless" and "equals")
+            i_next = float('inf')
+            for ch in '(+%ue':
+                i_next = min(i_next, self.z.find(ch, i_open + 1))
+            i_close = self.z.find(')', i_open + 1)
+            if i_close >= i_next:
+                continue
+     
+            # 3. If the next is a close parenthesis, then remove both parentheses, since they are superflous
+            dummy = 123
+            self.z = self.z[:i_open] + self.z[i_open+1:i_close] + self.z[i_close+1:]
+            dummy = 1235
 
     def execute(self):
         dummy = 123
@@ -132,7 +161,25 @@ class ALU:
                 call_fxn(instruction_line[1])
 
                 dummy = 123
+            
+            print('At end of part ', end='')
+            print(self.input_index, end=' ')
+            print(' of the code: ')
+            print()
+
+            # Only z is printed, because w,x,y are not needed.
+            # w remains the input value.  x and y never impact z
+
+            print('z = ', end='')
+            print(self.z)
+            print()
+            self.elim_unneeded_parens()
+            print('z = ', end='')
+            print(self.z)
+            print()
+            print()
             dummy = 123
+
 
 # Main program
 the_alu = ALU()
