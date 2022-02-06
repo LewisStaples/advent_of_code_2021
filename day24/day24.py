@@ -126,27 +126,70 @@ class ALU:
         # print()
 
     def elim_unneeded_parens(self):
-        i_open = -1
+        # Remove parentheses pairs that don't contain anything inside requiring a parenthesis
         while True:
-            i_open += 1
-            # 1. find next open parenthesis
-            i_open = self.z.find('(', i_open)
-            if i_open == -1:
-                return
+            count_parens_removed = 0
+            i_open = -1
+            while True:
+                i_open += 1
+                # 1. find next open parenthesis
+                i_open = self.z.find('(', i_open)
+                if i_open == -1:
+                    break # There are no more open parentheses.
 
-            # 2. look to see if next operator is close parenthesis or any member of '(+*/%ue'
-            # (The u and e are there, because it is they start "unless" and "equals")
-            i_next = float('inf')
-            for ch in '(+%ue':
-                i_next = min(i_next, self.z.find(ch, i_open + 1))
-            i_close = self.z.find(')', i_open + 1)
-            if i_close >= i_next:
-                continue
-     
-            # 3. If the next is a close parenthesis, then remove both parentheses, since they are superflous
-            dummy = 123
-            self.z = self.z[:i_open] + self.z[i_open+1:i_close] + self.z[i_close+1:]
-            dummy = 1235
+                # 2. look to see if next operator is close parenthesis or any member of '(+%ue'
+                # (The u and e are there, because it is they start "unless" and "equals")
+                i_next = float('inf')
+                for ch in '(+s':
+                    possible_next = self.z.find(ch, i_open + 1)
+                    if possible_next != -1:
+                        i_next = min(i_next, possible_next)
+                i_close = self.z.find(')', i_open + 1)
+                if i_close >= i_next:
+                    continue
+                count_parens_removed += 1
+                
+                # 3. If the next is a close parenthesis, then remove both parentheses, since they are superflous
+                dummy = 123
+                self.z = self.z[:i_open] + self.z[i_open+1:i_close] + self.z[i_close+1:]
+                dummy = 1235
+            if count_parens_removed == 0:
+                break
+
+        # Detect superfluous pairs of parentheses
+        while True:
+            count_parens_removed = 0
+            i_open2 = -1
+            while True:
+                i_open2 += 1
+                # 1. Find a pair of open parenthesis
+                i_open2 = self.z.find('((', i_open2)
+                if i_open2 == -1:
+                    break # There are no more pairs of open parentheses.
+
+                # 2. Find the close parenthesis that matches the second in the pair
+                # i_close = self.z.find(')', i_open2)
+                i_close = i_open2 + 1
+                paren_level = 2
+                while True:
+                    i_close += 1
+                    if self.z[i_close] == '(':
+                        paren_level += 1
+                    if self.z[i_close] == ')':
+                        paren_level -= 1
+                    if paren_level == 1:
+                        break
+
+                # 3. If the character after that close parenthesis is another close parenthesis
+                if self.z[i_close + 1] == ')':
+                    # Remove a pair of parentheses, since they are superflous
+                    dummy = 123
+                    count_parens_removed += 1
+                    self.z = self.z[:i_open2+1] + self.z[i_open2+2:i_close] + self.z[i_close+1:]
+                    dummy = 1235
+                break
+            if count_parens_removed == 0:
+                break
 
     def execute(self):
         dummy = 123
