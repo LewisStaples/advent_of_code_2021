@@ -1,0 +1,34 @@
+At end of part 0  of the code: 
+
+z = (z_init*(25*(0 unless (0 unless (z_init%26 + 13) equals input_0) equals 0) + 1) + (input_0 + 5)*(0 unless (0 unless (z_init%26 + 13) equals input_0) equals 0)) 
+
+Since z_init == 0:
+z = (input_0 + 5)*(0 unless (0 unless 13 equals input_0) equals 0)) 
+
+Since input_0 must be between 0 and 9, 13 cannot equal input_0.  Therefore:
+z = (input_0 + 5)*(0 unless 0 equals 0)) 
+z_0 = (input_0 + 5)
+
+
+At end of part 1  of the code: 
+z = (z_init*(25*(0 unless (0 unless (z_init%26 + 15) equals input_1) equals 0) + 1) + (input_1 + 14)*(0 unless (0 unless (z_init%26 + 15) equals input_1) equals 0))
+
+(z_init%26 + 15) cannot equal input_1, because input_1 must be between 0 and 9.  Therefore:
+z = (z_init*(25*(0 unless 0 equals 0) + 1) + (input_1 + 14)*(0 unless 0  equals 0))
+z = (z_init*(25 + 1) + (input_1 + 14))
+z_1 = 26*z_0 + input_1 + 14
+z_1 = 26*(input_0 + 5) + input_1 + 14
+z_1 = 26*input_0 + 26*5 + input_1 + 14
+z_1 = 26*input_0 + input_1 + 144
+
+
+At end of part 2  of the code: 
+z_2 = (z_1*(25*(0 unless (0 unless (z_1%26 + 15) equals input_2) equals 0) + 1) + (input_2 + 15)*(0 unless (0 unless (z_1%26 + 15) equals input_2) equals 0))
+
+(z_1%26 + 15) equals input_2 cannot equal input_2 (for reasons given in earlier steps).  Therefore:
+z_2 = (z_1*(25 + 1) + (input_2 + 15))
+z_2 = 26*z_1 + input_2 + 15
+z_2 = 26*(26*input_0 + input_1 + 144) + input_2 + 15
+z_2 = 26^2*input_0 + 26*input_1 + 26*144 + input_2 + 15
+z_2 = 26^2*input_0 + 26*input_1 + input_2 + 3759
+

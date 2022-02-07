@@ -137,8 +137,8 @@ class ALU:
                 if i_open == -1:
                     break # There are no more open parentheses.
 
-                # 2. look to see if next operator is close parenthesis or any member of '(+%ue'
-                # (The u and e are there, because it is they start "unless" and "equals")
+                # 2. look to see if next operator is close parenthesis or any member of '(+s'
+                # (The s is there, because this letter is in both "unless" and "equals" and its not in "input")
                 i_next = float('inf')
                 for ch in '(+s':
                     possible_next = self.z.find(ch, i_open + 1)
@@ -193,7 +193,8 @@ class ALU:
 
     def execute(self):
         dummy = 123
-        for self.input_index in range(len(self.instructions)-1,-1,-1):
+        # for self.input_index in range(len(self.instructions)-1,-1,-1): # going through in reverse order
+        for self.input_index in range(len(self.instructions)):
             self.w='w_init'
             self.x='x_init'
             self.y='y_init'
@@ -213,9 +214,9 @@ class ALU:
             # Only z is printed, because w,x,y are not needed.
             # w remains the input value.  x and y never impact z
 
-            print('z = ', end='')
-            print(self.z)
-            print()
+            # print('z = ', end='')
+            # print(self.z)
+            # print()
             self.elim_unneeded_parens()
             print('z = ', end='')
             print(self.z)
