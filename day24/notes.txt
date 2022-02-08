@@ -25,10 +25,39 @@ z_1 = 26*input_0 + input_1 + 144
 At end of part 2  of the code: 
 z_2 = (z_1*(25*(0 unless (0 unless (z_1%26 + 15) equals input_2) equals 0) + 1) + (input_2 + 15)*(0 unless (0 unless (z_1%26 + 15) equals input_2) equals 0))
 
-(z_1%26 + 15) equals input_2 cannot equal input_2 (for reasons given in earlier steps).  Therefore:
+(z_1%26 + 15) cannot equal input_2 (for reasons given in earlier steps).  Therefore:
 z_2 = (z_1*(25 + 1) + (input_2 + 15))
 z_2 = 26*z_1 + input_2 + 15
 z_2 = 26*(26*input_0 + input_1 + 144) + input_2 + 15
 z_2 = 26^2*input_0 + 26*input_1 + 26*144 + input_2 + 15
 z_2 = 26^2*input_0 + 26*input_1 + input_2 + 3759
+
+
+At end of part 3 of the code:
+z_3 = (z_2*(25*(0 unless (0 unless (z_2%26 + 11) equals input_3) equals 0) + 1) + (input_3 + 16)*(0 unless (0 unless (z_2%26 + 11) equals input_3) equals 0))
+
+(z_2%26 + 11) cannot equal input_3 (for reasons given in earlier steps).  Therefore:
+z_3 = (z_2*(25 + 1) + (input_3 + 16))
+z_3 = 26*z_2 + input_3 + 16
+z_3 = 26*(26^2*input_0 + 26*input_1 + input_2 + 3759) + input_3 + 16
+z_3 = 26^3*input_0 + 26^2*input_1 + 26*input_2 + 26*3759) + input_3 + 16
+z_3 = 26^3*input_0 + 26^2*input_1 + 26*input_2 + input_3 + 97750
+
+
+At end of part 4 of the code:
+z_4 = (z_3/26*(25*(0 unless (0 unless (z_3%26 + -16) equals input_4) equals 0) + 1) + (input_4 + 8)*(0 unless (0 unless (z_3%26 + -16) equals input_4) equals 0))
+(z_3%26 + -16) could equal input_4, so either it does or it doesn't.
+
+If (z_3%26 + -16) != input_4:
+z_4 = (z_3/26*(25 + 1) + (input_4 + 8))
+z_4 = z_3 + input_4 + 8
+z_4 = 26^3*input_0 + 26^2*input_1 + 26*input_2 + input_3 + 97750 + input_4 + 8
+z_4 = 26^3*input_0 + 26^2*input_1 + 26*input_2 + input_3 + input_4 + 97758
+
+If (z_3%26 + -16) == input_4:
+z_4 = (z_3/26*(1) + (input_4 + 8)*(1))
+z_4 = 1/26*z_3 + input_4 + 8
+z_4 = 1/26*(26^3*input_0 + 26^2*input_1 + 26*input_2 + input_3 + 97750) + input_4 + 8
+z_4 = 26^2*input_0 + 26*input_1 + input_2 + 1/26*input_3 + 97750/26 + input_4 + 8
+z_4 = 26^2*input_0 + 26*input_1 + input_2 + 1/26*input_3 + 97958/26 + input_4
 
