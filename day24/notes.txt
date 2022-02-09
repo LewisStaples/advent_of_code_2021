@@ -55,9 +55,18 @@ z_4 = 26^3*input_0 + 26^2*input_1 + 26*input_2 + input_3 + 97750 + input_4 + 8
 z_4 = 26^3*input_0 + 26^2*input_1 + 26*input_2 + input_3 + input_4 + 97758
 
 If (z_3%26 + -16) == input_4:
-z_4 = (z_3/26*(1) + (input_4 + 8)*(1))
-z_4 = 1/26*z_3 + input_4 + 8
-z_4 = 1/26*(26^3*input_0 + 26^2*input_1 + 26*input_2 + input_3 + 97750) + input_4 + 8
-z_4 = 26^2*input_0 + 26*input_1 + input_2 + 1/26*input_3 + 97750/26 + input_4 + 8
-z_4 = 26^2*input_0 + 26*input_1 + input_2 + 1/26*input_3 + 97958/26 + input_4
+z_4 = z_3/26
+z_4 = (26^3*input_0 + 26^2*input_1 + 26*input_2 + input_3 + 97750) / 26
+
+Deciding to make an assumption here.  Assuming equality to input_4 above keeps z_4 smaller than if unequal.  Since the eventual goal is for z_13 to equal zero, it will always be equal.
+
+
+At end of part 5  of the code:
+z_5 = (z_4/26*(25*(0 unless (0 unless (z_4%26 + -11) equals input_5) equals 0) + 1) + (input_5 + 9)*(0 unless (0 unless (z_4%26 + -11) equals input_5) equals 0))
+
+Using assumption mentioned earlier, (z_4%26 + -11) == input_5, Therefore
+z_5 = z_4/26
+z_5 = (26^3*input_0 + 26^2*input_1 + 26*input_2 + input_3 + 97750) / 26^2
+
+
 
