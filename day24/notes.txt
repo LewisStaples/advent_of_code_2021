@@ -69,4 +69,41 @@ z_5 = z_4/26
 z_5 = (26^3*input_0 + 26^2*input_1 + 26*input_2 + input_3 + 97750) / 26^2
 
 
+At end of part 6  of the code:
+z_6 = (z_5/26*(25*(0 unless (0 unless (z_5%26 + -6) equals input_6) equals 0) + 1) + (input_6 + 2)*(0 unless (0 unless (z_5%26 + -6) equals input_6) equals 0))
+
+Using assumption mentioned earlier, (z_5%26 + -6) == input_6, Therefore
+z_6 = z_5/26 
+z_6 = (26^3*input_0 + 26^2*input_1 + 26*input_2 + input_3 + 97750) / 26^3
+
+
+At end of part 7  of the code:
+z_7 = (z_6*(25*(0 unless (0 unless (z_6%26 + 11) equals input_7) equals 0) + 1) + (input_7 + 13)*(0 unless (0 unless (z_6%26 + 11) equals input_7) equals 0))
+
+(z_6%26 + 11) cannot equal input_7 (for reasons given in earlier steps).  Therefore:
+z_7 = (z_6*(25 + 1) + (input_7 + 13)*(1))
+z_7 = 26*z_6 + input_7 + 13
+z_7 = (26^3*input_0 + 26^2*input_1 + 26*input_2 + input_3 + 97750) / 26^2 + input_7 + 13
+
+
+At end of part 8  of the code:
+z_8 = (z_7*(25*(0 unless (0 unless (z_7%26 + 10) equals input_8) equals 0) + 1) + (input_8 + 16)*(0 unless (0 unless (z_7%26 + 10) equals input_8) equals 0))
+
+(z_7%26 + 10) cannot equal input_8 (for reasons given in earlier steps).  Therefore:
+z_8 = (z_7*(25 + 1) + (input_8 + 16)*(1))
+z_8 = 26*z_7 + input_8 + 16
+z_8 = 26*( (26^3*input_0 + 26^2*input_1 + 26*input_2 + input_3 + 97750) / 26^2 + input_7 + 13 ) + input_8 + 16
+z_8 = (26^3*input_0 + 26^2*input_1 + 26*input_2 + input_3 + 97750) / 26 + input_7*26 + 13*26 + input_8 + 16
+z_8 = 26^2*input_0 + 26*input_1 + input_2 + input_3/26 + 97750/26 + input_7*26 + 13*26 + input_8 + 16
+
+
+At end of part 9  of the code:
+z_9 = (z_8/26*(25*(0 unless (0 unless (z_8%26 + -10) equals input_9) equals 0) + 1) + (input_9 + 6)*(0 unless (0 unless (z_8%26 + -10) equals input_9) equals 0))
+
+Using assumption mentioned earlier, (z_8%26 + -10) == input_9, Therefore
+z_9 = z_8/26
+z_9 = (26^2*input_0 + 26*input_1 + input_2 + input_3/26 + 97750/26 + input_7*26 + 13*26 + input_8 + 16) / 26
+z_9 = 26*input_0 + input_1 + input_2/26 + input_3/26^2 + 97750/26^2 + input_7 + 13 + input_8/26 + 16/26
+
+
 
