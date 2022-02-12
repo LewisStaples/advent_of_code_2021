@@ -1,5 +1,5 @@
-# adventOfCode 2021 day ??
-# https://adventofcode.com/2021/day/??
+# adventOfCode 2021 day 24
+# https://adventofcode.com/2021/day/24
 
 class ALU:
     # This reads the ALU program from an input file

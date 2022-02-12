@@ -137,3 +137,15 @@ Using assumption mentioned earlier, (z_12%26 + -15) == input_13, Therefore
 z_13 = z_12/26
 z_13 = input_0/26 + input_1/26^2 + input_2/26^3 + input_3/26^4 + 97750/26^5 + input_7/26^2 + 13/26^2 + input_8/26^3 + 16/26^3 + input_12/16 + 11/16
 
+The goal is for z_13 to be zero, so the right hand side of the above expression is zero.
+The choices in the seven input values that calculate z_13 also lead to the below other seven input values:
+(z_3%26 + -16) == input_4
+(z_4%26 + -11) == input_5
+(z_5%26 + -6) == input_6
+(z_8%26 + -10) == input_9
+(z_9%26 + -8) == input_10
+(z_10%26 + -11) == input_11
+(z_12%26 + -15) == input_13
+
+Since the serial number can only be digits 1-9, the possible permutations are 9**7, which is around 4.8 million.  That is should be a small enough number to use brute force to solve the problem.
+
