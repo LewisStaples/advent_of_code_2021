@@ -19,7 +19,6 @@ z = (z_init*(25 + 1) + (input_1 + 14))
 z_1 = 26*z_0 + input_1 + 14
 z_1 = 26*(input_0 + 5) + input_1 + 14
 z_1 = 26*input_0 + 26*5 + input_1 + 14
-z_1 = 26*input_0 + input_1 + 144
 
 
 At end of part 2  of the code: 
@@ -28,9 +27,8 @@ z_2 = (z_1*(25*(0 unless (0 unless (z_1%26 + 15) equals input_2) equals 0) + 1) 
 (z_1%26 + 15) cannot equal input_2 (for reasons given in earlier steps).  Therefore:
 z_2 = (z_1*(25 + 1) + (input_2 + 15))
 z_2 = 26*z_1 + input_2 + 15
-z_2 = 26*(26*input_0 + input_1 + 144) + input_2 + 15
-z_2 = 26^2*input_0 + 26*input_1 + 26*144 + input_2 + 15
-z_2 = 26^2*input_0 + 26*input_1 + input_2 + 3759
+z_2 = 26*(26*input_0 + 26*5 + input_1 + 14) + input_2 + 15
+z_2 = 26^2*input_0 + 26^2*5 + 26*input_1 + 26*14 + input_2 + 15
 
 
 At end of part 3 of the code:
@@ -39,9 +37,8 @@ z_3 = (z_2*(25*(0 unless (0 unless (z_2%26 + 11) equals input_3) equals 0) + 1) 
 (z_2%26 + 11) cannot equal input_3 (for reasons given in earlier steps).  Therefore:
 z_3 = (z_2*(25 + 1) + (input_3 + 16))
 z_3 = 26*z_2 + input_3 + 16
-z_3 = 26*(26^2*input_0 + 26*input_1 + input_2 + 3759) + input_3 + 16
-z_3 = 26^3*input_0 + 26^2*input_1 + 26*input_2 + 26*3759) + input_3 + 16
-z_3 = 26^3*input_0 + 26^2*input_1 + 26*input_2 + input_3 + 97750
+z_3 = 26*(26^2*input_0 + 26^2*5 + 26*input_1 + 26*14 + input_2 + 15) + input_3 + 16
+z_3 = 26^3*input_0 + 26^3*5 + 26^2*input_1 + 26^2*14 + 26*input_2 + 26*15 + input_3 + 16
 
 
 At end of part 4 of the code:
@@ -51,22 +48,20 @@ z_4 = (z_3/26*(25*(0 unless (0 unless (z_3%26 + -16) equals input_4) equals 0) +
 If (z_3%26 + -16) != input_4:
 z_4 = (z_3/26*(25 + 1) + (input_4 + 8))
 z_4 = z_3 + input_4 + 8
-z_4 = 26^3*input_0 + 26^2*input_1 + 26*input_2 + input_3 + 97750 + input_4 + 8
-z_4 = 26^3*input_0 + 26^2*input_1 + 26*input_2 + input_3 + input_4 + 97758
 
 If (z_3%26 + -16) == input_4:
 z_4 = z_3/26
-z_4 = (26^3*input_0 + 26^2*input_1 + 26*input_2 + input_3 + 97750) / 26
 
 Deciding to make an assumption here.  Assuming equality to input_4 above keeps z_4 smaller than if unequal.  Since the eventual goal is for z_13 to equal zero, it will always be equal.
-
+z_4 = z_3/26
+z_4 = 26^2*input_0 + 26^2*5 + 26*input_1 + 26*14 + input_2 + 15 + input_3/26 + 16/26
 
 At end of part 5  of the code:
 z_5 = (z_4/26*(25*(0 unless (0 unless (z_4%26 + -11) equals input_5) equals 0) + 1) + (input_5 + 9)*(0 unless (0 unless (z_4%26 + -11) equals input_5) equals 0))
 
 Using assumption mentioned earlier, (z_4%26 + -11) == input_5, Therefore
 z_5 = z_4/26
-z_5 = (26^3*input_0 + 26^2*input_1 + 26*input_2 + input_3 + 97750) / 26^2
+z_5 = 26*input_0 + 26*5 + input_1 + 14 + input_2/26 + 15/26 + input_3/26^2 + 16/26^2
 
 
 At end of part 6  of the code:
@@ -74,7 +69,7 @@ z_6 = (z_5/26*(25*(0 unless (0 unless (z_5%26 + -6) equals input_6) equals 0) + 
 
 Using assumption mentioned earlier, (z_5%26 + -6) == input_6, Therefore
 z_6 = z_5/26 
-z_6 = (26^3*input_0 + 26^2*input_1 + 26*input_2 + input_3 + 97750) / 26^3
+z_6 = input_0 + 5 + input_1/26 + 14/26 + input_2/26^2 + 15/26^2 + input_3/26^3 + 16/26^3
 
 
 At end of part 7  of the code:
@@ -83,7 +78,7 @@ z_7 = (z_6*(25*(0 unless (0 unless (z_6%26 + 11) equals input_7) equals 0) + 1) 
 (z_6%26 + 11) cannot equal input_7 (for reasons given in earlier steps).  Therefore:
 z_7 = (z_6*(25 + 1) + (input_7 + 13)*(1))
 z_7 = 26*z_6 + input_7 + 13
-z_7 = (26^3*input_0 + 26^2*input_1 + 26*input_2 + input_3 + 97750) / 26^2 + input_7 + 13
+z_7 = 26*input_0 + 26*5 + input_1 + 14 + input_2/26 + 15/26 + input_3/26^2 + 16/26^2 + input_7 + 13
 
 
 At end of part 8  of the code:
@@ -92,18 +87,14 @@ z_8 = (z_7*(25*(0 unless (0 unless (z_7%26 + 10) equals input_8) equals 0) + 1) 
 (z_7%26 + 10) cannot equal input_8 (for reasons given in earlier steps).  Therefore:
 z_8 = (z_7*(25 + 1) + (input_8 + 16)*(1))
 z_8 = 26*z_7 + input_8 + 16
-z_8 = 26*( (26^3*input_0 + 26^2*input_1 + 26*input_2 + input_3 + 97750) / 26^2 + input_7 + 13 ) + input_8 + 16
-z_8 = (26^3*input_0 + 26^2*input_1 + 26*input_2 + input_3 + 97750) / 26 + input_7*26 + 13*26 + input_8 + 16
-z_8 = 26^2*input_0 + 26*input_1 + input_2 + input_3/26 + 97750/26 + input_7*26 + 13*26 + input_8 + 16
-
+z_8 = 26^2*input_0 + 26^2*5 + 26*input_1 + 26*14 + input_2 + 15 + input_3/26 + 16/26 + 26*input_7 + 26*13 + input_8 + 16
 
 At end of part 9  of the code:
 z_9 = (z_8/26*(25*(0 unless (0 unless (z_8%26 + -10) equals input_9) equals 0) + 1) + (input_9 + 6)*(0 unless (0 unless (z_8%26 + -10) equals input_9) equals 0))
 
 Using assumption mentioned earlier, (z_8%26 + -10) == input_9, Therefore
 z_9 = z_8/26
-z_9 = (26^2*input_0 + 26*input_1 + input_2 + input_3/26 + 97750/26 + input_7*26 + 13*26 + input_8 + 16) / 26
-z_9 = 26*input_0 + input_1 + input_2/26 + input_3/26^2 + 97750/26^2 + input_7 + 13 + input_8/26 + 16/26
+z_9 = 26*input_0 + 26*5 + input_1 + 14 + input_2/26 + 15/26 + input_3/26^2 + 16/26^2 + input_7 + 13 + input_8/26 + 16/26
 
 
 At end of part 10  of the code:
@@ -111,15 +102,15 @@ z_10 = (z_9/26*(25*(0 unless (0 unless (z_9%26 + -8) equals input_10) equals 0) 
 
 Using assumption mentioned earlier, (z_9%26 + -8) == input_10, Therefore
 z_10 = z_9/26
-z_10 = input_0 + input_1/26 + input_2/26^2 + input_3/26^3 + 97750/26^4 + input_7/26 + 13/26 + input_8/26^2 + 16/26^2
+z_10 = input_0 + 5 + input_1/26 + 14/26 + input_2/26^2 + 15/26^2 + input_3/26^3 + 16/26^3 + input_7/26 + 13/26 + input_8/26^2 + 16/26^2
 
 
 At end of part 11  of the code: 
 z_11 = (z_10/26*(25*(0 unless (0 unless (z_10%26 + -11) equals input_11) equals 0) + 1) + (input_11 + 9)*(0 unless (0 unless (z_10%26 + -11) equals input_11) equals 0))
 
 Using assumption mentioned earlier, (z_10%26 + -11) == input_11, Therefore
-z_11 = z_10/26  
-z_11 = input_0/26 + input_1/26^2 + input_2/26^3 + input_3/26^4 + 97750/26^5 + input_7/26^2 + 13/26^2 + input_8/26^3 + 16/26^3
+z_11 = z_10/26
+z_11 = input_0/26 + 5/26 + input_1/26^2 + 14/26^2 + input_2/26^3 + 15/26^3 + input_3/26^4 + 16/26^4 + input_7/26^2 + 13/26^2 + input_8/26^3 + 16/26^3
 
 
 At end of part 12  of the code:
@@ -127,7 +118,7 @@ z_12 = (z_11*(25*(0 unless (0 unless (z_11%26 + 12) equals input_12) equals 0) +
 
 (z_11%26 + 12) cannot equal input_12 (for reasons given in earlier steps).  Therefore:
 z_12 = (z_11*(26) + (input_12 + 11)
-z_12 = input_0 + input_1/26 + input_2/26^2 + input_3/26^3 + 97750/26^4 + input_7/26 + 13/26 + input_8/26^2 + 16/26^2 + input_12 + 11
+z_12 = input_0 + 5 + input_1/26 + 14/26 + input_2/26^2 + 15/26^2 + input_3/26^3 + 16/26^3 + input_7/26 + 13/26 + input_8/26^2 + 16/26^2 + input_12 + 11
 
 
 At end of part 13  of the code:
@@ -135,7 +126,12 @@ z_13 = (z_12/26*(25*(0 unless (0 unless (z_12%26 + -15) equals input_13) equals 
 
 Using assumption mentioned earlier, (z_12%26 + -15) == input_13, Therefore
 z_13 = z_12/26
-z_13 = input_0/26 + input_1/26^2 + input_2/26^3 + input_3/26^4 + 97750/26^5 + input_7/26^2 + 13/26^2 + input_8/26^3 + 16/26^3 + input_12/16 + 11/16
+z_13 = input_0/26 + 5/26 + input_1/26^2 + 14/26^2 + input_2/26^3 + 15/26^3 + input_3/26^4 + 16/26^4 + input_7/26^2 + 13/26^2 + input_8/26^3 + 16/26^3 + input_12/26 + 11/26
+
+        
+
+
+
 
 The goal is for z_13 to be zero, so the right hand side of the above expression is zero.
 The choices in the seven input values that calculate z_13 also lead to the below other seven input values:
