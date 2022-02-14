@@ -29,12 +29,14 @@ class ALU:
         # return the value itself, since it is not a variable.
         return b_value
 
+    # This is for the input instruction.
     def inp(self, param):
         var_str = param
         setattr(self, var_str, 'input_' + str(self.input_index))
         # # Printing (for testing)
         # print('inp ' + param)
 
+    # This is for the add instruction.
     def add(self, param):
         var_str, add_str = param.split(' ')        
         var = getattr(self, var_str)
@@ -56,6 +58,7 @@ class ALU:
         #     print(par, end = ' ')
         # print()
 
+    # This is for the multiply instruction.
     def mul(self, param):
         var_str, mult_str = param.split(' ')        
         var = getattr(self, var_str)
@@ -76,7 +79,7 @@ class ALU:
         # print()
 
 
-
+    # This is for the divide instruction.
     def div(self, param):
         var_str, div_str = param.split(' ')        
         var = getattr(self, var_str)
@@ -94,6 +97,7 @@ class ALU:
         #     print(par, end = ' ')
         # print()
 
+    # This is for the modulus instruction.
     def mod(self, param):
         var_str, mod_str = param.split(' ')        
         var = getattr(self, var_str)
@@ -111,6 +115,8 @@ class ALU:
         #     print(par, end = ' ')
         # print()
 
+    # This is for the equal instruction.
+    # (Note that the output doesn't capture that the value is 1 if unequal)
     def eql(self, param):
         var_str, comp_str = param.split(' ')        
         var = getattr(self, var_str)
@@ -125,6 +131,7 @@ class ALU:
         #     print(par, end = ' ')
         # print()
 
+    # This eliminates unneeded parentheses.
     def elim_unneeded_parens(self):
         # Remove parentheses pairs that don't contain anything inside requiring a parenthesis
         while True:
@@ -156,7 +163,8 @@ class ALU:
             if count_parens_removed == 0:
                 break
 
-        # Detect superfluous pairs of parentheses
+        # Remove duplicate pairs of parentheses.
+        # Example:  ((x+1/2)) would become (x+1/2).
         while True:
             count_parens_removed = 0
             i_open2 = -1
