@@ -145,3 +145,5 @@ The choices in the seven input values that calculate z_13 also lead to the below
 
 Since the serial number can only be digits 1-9, the possible permutations are 9**7, which is around 4.8 million.  That is should be a small enough number to use brute force to solve the problem.
 
+Finding ..... The choices of input_0, _1, _2, and _3 should specify input_4, _5, and _6.  Unfortunately, I am not finding any choices of 0,1,2,3 that yield valid choices for 4,5,and 6.  I need to rethink this.  Next step .... look at differences in input.txt and how those are reflected in the results.
+
