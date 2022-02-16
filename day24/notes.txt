@@ -118,6 +118,7 @@ z_12 = (z_11*(25*(0 unless (0 unless (z_11%26 + 12) equals input_12) equals 0) +
 
 (z_11%26 + 12) cannot equal input_12 (for reasons given in earlier steps).  Therefore:
 z_12 = (z_11*(26) + (input_12 + 11)
+z_12 = 26*z_11 + input_12 + 11
 z_12 = input_0 + 5 + input_1/26 + 14/26 + input_2/26^2 + 15/26^2 + input_3/26^3 + 16/26^3 + input_7/26 + 13/26 + input_8/26^2 + 16/26^2 + input_12 + 11
 
 

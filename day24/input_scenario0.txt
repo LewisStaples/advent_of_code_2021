@@ -1,0 +1,5 @@
+inp w
+mul w 3
+mul w 5
+inp x
+mul w x
