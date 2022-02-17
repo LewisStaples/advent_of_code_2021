@@ -1,0 +1,5 @@
+inp w
+div w 5
+div w 3
+inp x
+div w x

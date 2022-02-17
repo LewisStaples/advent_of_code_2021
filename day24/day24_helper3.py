@@ -26,54 +26,119 @@ def set_a(a_string, a_value_string):
 
 
 def inp(param):
+    magic_number_dict = {4: -16, 5: -11, 6: -6, 9: -10, 10: -8, 11: -11, 13: -15}
+
+    evaluate_input()
+
     global model_number_index
     global model_number
+
+    print('Before import # ', end='')
+    print(model_number_index, end='')
+    print(' the variables\' values are:', end='')
+    print(integer_variables)
+    # print()
+
     integer_variables[param] = model_number[model_number_index]
     model_number_index += 1
 
+    if model_number_index == len(model_number):
+        return # None additional are needed
+
+    if model_number[model_number_index] == None:
+        magic_number = magic_number_dict[model_number_index]
+        model_number[model_number_index] = integer_variables['z'] - magic_number
+
 def add(params):
-    pass
+    par1, par2 = params.split(' ')   
+    sum = get_a(par1) + get_b(par2)
+    set_a(par1, sum)
 
 def mul(params):
-    var_str, mult_str = params.split(' ')   
-    multiple = get_a(var_str) * get_b(mult_str)
-    set_a(var_str, multiple)
-    pass
+    par1, par2 = params.split(' ')   
+    product = get_a(par1) * get_b(par2)
+    set_a(par1, product)
 
 def div(params):
-    pass
+    par1, par2 = params.split(' ')   
+    quotient = get_a(par1) // get_b(par2)
+    set_a(par1, quotient)
 
 def mod(params):
-    pass
+    par1, par2 = params.split(' ')   
+    result = get_a(par1) % get_b(par2)
+    set_a(par1, result)
 
 def eql(params):
-    pass
+    par1, par2 = params.split(' ')   
+    if get_a(par1) == get_b(par2):
+        set_a(par1, 1)
+    else:
+        set_a(par1, 0)
 
+def evaluate_input():
+    print('Need to implement input evaluation logic!  ', end='')
+    print('And compare to using equations from notes.txt')
 
 for i in range(1):  # Number of random lists to try out   ... later use 10 or 20
     # ONE ... Randomly create a list of fourteen numbers between 1 and 9
 
-    # model_number = [randint(0, 9) for x in range(14)]
-    model_number = [2,7,11] # development / debug only
+    # model_number = [randint(0, 9) for x in range(14)] # This is for the real program
 
+    model_number = [None for x in range(14)] # This is for the real program
+    for i in [0,1,2,3,7,8,12]:
+        model_number[i] = randint(0, 9)
+
+    # model_number = [3,9] # development / debug only
 
     # TWO ... See results (all z values) from running directly from input.txt
 
-    input_filename='input_scenario0.txt'
+    input_filename='input.txt'
     # Reading input from the input file
     with open(input_filename) as f:
         # Pull in each line from the input file
         for in_string in f:
             in_string = in_string.rstrip()
-            print(in_string)
+
 
             instruction_line = in_string.split(' ',1)
             call_fxn = eval(instruction_line[0])
             call_fxn(instruction_line[1])
 
+            # evaluate_input()
+            # print(in_string)
+
             dummy = 123
 
+        dummy = 123
+    print('final variable values: ', end='')
+    print(integer_variables)
+    print()
+
     # THREE ... See results (all z values) from the equations that I have written up
+    # NEXT ....
+        # (1) Replace i# with model_number elements
+        # (1a) Maybe replace z# with something else .... need to think about this one
+        # (2) Need to change model_number calculation to handle z# constraints ... should be done now
+
+    z0 = model_number[0] + 5
+    z1 = 26*z0 + model_number[1] + 14
+    z2 = 26*z1 + model_number[2] + 15
+    z3 = 26*z2 + model_number[3] + 16
+    z4 = z3//26
+    z5 = z4//26
+    z6 = z5//26 
+    z7 = 26*z6 + model_number[7] + 13
+    z8 = 26*z7 + model_number[8] + 16
+    z9 = z8//26
+    z10 = z9//26
+    z11 = z10//26
+    z12 = 26*z11 + model_number[12] + 11
+    z13 = z12//26
+
+    for i in range(14):
+        print('z' + str(i), end =': ')
+        print(eval('z'+str(i)))
 
     # FOUR ... Compare those z results
 
