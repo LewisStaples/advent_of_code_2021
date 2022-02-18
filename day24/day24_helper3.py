@@ -47,7 +47,7 @@ def inp(param):
 
     if model_number[model_number_index] == None:
         magic_number = magic_number_dict[model_number_index]
-        model_number[model_number_index] = integer_variables['z'] - magic_number
+        model_number[model_number_index] = integer_variables['z'] % 26 + magic_number
 
 def add(params):
     par1, par2 = params.split(' ')   
