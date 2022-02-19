@@ -6,7 +6,7 @@ from random import randint
 w = x = y = z = 0
 integer_variables = {'w':0, 'x':0, 'y':0, 'z':0}
 model_number = None
-model_number_index = 0
+model_number_index = -1
 
 # The specifications indicate that b could either be a value (such as 0) or a variable (such as w).
 def get_b(b_string):
@@ -28,30 +28,39 @@ def set_a(a_string, a_value_string):
 def inp(param):
     magic_number_dict = {4: -16, 5: -11, 6: -6, 9: -10, 10: -8, 11: -11, 13: -15}
 
-    evaluate_input()
+    # evaluate_input()
 
     global model_number_index
     global model_number
 
+    model_number_index += 1
     print('Before import # ', end='')
     print(model_number_index, end='')
     print(' the variables\' values are:', end='')
     print(integer_variables)
     # print()
 
-    integer_variables[param] = model_number[model_number_index]
-    model_number_index += 1
-
     if model_number_index == len(model_number):
         return # None additional are needed
+
+    
+    # model_number_index += 1
+
+
 
     if model_number[model_number_index] == None:
         magic_number = magic_number_dict[model_number_index]
         model_number[model_number_index] = integer_variables['z'] % 26 + magic_number
+        dummy = 123
+
+    integer_variables[param] = model_number[model_number_index]
 
 def add(params):
     par1, par2 = params.split(' ')   
-    sum = get_a(par1) + get_b(par2)
+    try:
+        sum = get_a(par1) + get_b(par2)
+    except TypeError:
+        dummy = 123
     set_a(par1, sum)
 
 def mul(params):
@@ -76,9 +85,10 @@ def eql(params):
     else:
         set_a(par1, 0)
 
-def evaluate_input():
-    print('Need to implement input evaluation logic!  ', end='')
-    print('And compare to using equations from notes.txt')
+# def evaluate_input():
+#     pass
+#     # print('Need to implement input evaluation logic!  ', end='')
+#     # print('And compare to using equations from notes.txt')
 
 for i in range(1):  # Number of random lists to try out   ... later use 10 or 20
     # ONE ... Randomly create a list of fourteen numbers between 1 and 9
@@ -141,5 +151,8 @@ for i in range(1):  # Number of random lists to try out   ... later use 10 or 20
         print(eval('z'+str(i)))
 
     # FOUR ... Compare those z results
+    print()
+    print('Input ... NOMAD digits')
+    print(model_number)
 
 
