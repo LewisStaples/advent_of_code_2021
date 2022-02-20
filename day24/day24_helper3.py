@@ -155,4 +155,11 @@ for i in range(1):  # Number of random lists to try out   ... later use 10 or 20
     print('Input ... NOMAD digits')
     print(model_number)
 
-
+    model_number_valid = True
+    for i in model_number:
+        if i not in [1,9]:
+            model_number_valid = False
+    if model_number_valid:
+        print('Good news ... Valid NOMAD')
+    else:
+        print('Bad news ... Invalid NOMAD')
