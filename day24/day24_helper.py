@@ -1,6 +1,7 @@
 # adventOfCode 2021 day 24 helper
 # https://adventofcode.com/2021/day/24/helper.py
 
+import sys
 max_val = float('-inf')
 min_val = float('inf')
 
@@ -61,29 +62,31 @@ for i0 in range(9,0,-1):
                         z9 = z8//26
                         i9 = z8%26 - 10
                         if i9 not in poss_input:
-                            # break
-
-                            # if i9 == 15:
-                            # if i8 == 9:
-                            if i6 == 9:
-                                break
-                            dummy = 123
+                            continue
 
                         z10 = z9//26
                         i10 = z9%26 - 8
                         if i10 not in poss_input:
-                            break
+                            continue
                         z11 = z10//26
                         i11 = z10%26 - 11
                         if i11 not in poss_input:
-                            break
+                            continue
                         for i12 in range(9,0,-1):
                             z12 = 26*z11 + i12 + 11
                             i13 = z12%26 - 15
                             if i13 not in poss_input:
-                                break
+                                continue
                             z13 = z12//26 # superfluous
 
-                            dummy = 123
+                            # print solution to screen
+                            print('The solution is: ', end='')
+                            for i in range(14):
+                                # var_str = 'i'+str(i)
+
+                                print(eval('i'+str(i)), end='')
+                                # call_fxn(instruction_line[1])
+                            print()
+                            sys.exit(0)
 
 
