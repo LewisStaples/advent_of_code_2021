@@ -202,11 +202,17 @@ class ALU:
     def execute(self):
         dummy = 123
         # for self.input_index in range(len(self.instructions)-1,-1,-1): # going through in reverse order
+
+        self.w='w_init'
+        self.x='x_init'
+        self.y='y_init'
+        self.z='z_init'
+
         for self.input_index in range(len(self.instructions)):
-            self.w='w_init'
-            self.x='x_init'
-            self.y='y_init'
-            self.z='z_init'
+            # self.w='w_init'
+            # self.x='x_init'
+            # self.y='y_init'
+            # self.z='z_init'
             for instruction in self.instructions[self.input_index]:
                 instruction_line = instruction.split(' ',1)
                 call_fxn = getattr(self, instruction_line[0])
@@ -221,17 +227,20 @@ class ALU:
 
             # Only z is printed, because w,x,y are not needed.
             # w remains the input value.  x and y never impact z
-
-            # print('z = ', end='')
-            # print(self.z)
-            # print()
             self.elim_unneeded_parens()
-            print('z = ', end='')
+            # print('z = ', end='')
+            print('z', end='')
+            print(str(self.input_index), end='')
+            print(' = ', end='')
             print(self.z)
             print()
             print()
             dummy = 123
 
+            self.w='w' + str(self.input_index)
+            self.x='x' + str(self.input_index)
+            self.y='y' + str(self.input_index)
+            self.z='z' + str(self.input_index)
 
 # Main program
 the_alu = ALU()

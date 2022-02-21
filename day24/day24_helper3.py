@@ -28,8 +28,6 @@ def set_a(a_string, a_value_string):
 def inp(param):
     magic_number_dict = {4: -16, 5: -11, 6: -6, 9: -10, 10: -8, 11: -11, 13: -15}
 
-    # evaluate_input()
-
     global model_number_index
     global model_number
 
@@ -38,15 +36,9 @@ def inp(param):
     print(model_number_index, end='')
     print(' the variables\' values are:', end='')
     print(integer_variables)
-    # print()
 
     if model_number_index == len(model_number):
         return # None additional are needed
-
-    
-    # model_number_index += 1
-
-
 
     if model_number[model_number_index] == None:
         magic_number = magic_number_dict[model_number_index]
@@ -85,21 +77,17 @@ def eql(params):
     else:
         set_a(par1, 0)
 
-# def evaluate_input():
-#     pass
-#     # print('Need to implement input evaluation logic!  ', end='')
-#     # print('And compare to using equations from notes.txt')
 
-for i in range(1):  # Number of random lists to try out   ... later use 10 or 20
-    # ONE ... Randomly create a list of fourteen numbers between 1 and 9
+for i in range(1):  # Number of random lists to try out   ... had intended to run multiple
+    # ONE ... Randomly select digits in the model number
 
+    # This was developed to randomly select all 14 digits
     # model_number = [randint(0, 9) for x in range(14)] # This is for the real program
 
-    model_number = [None for x in range(14)] # This is for the real program
+    # This randomly selects seven of the fourteen digits
+    model_number = [None for x in range(14)]
     for i in [0,1,2,3,7,8,12]:
         model_number[i] = randint(0, 9)
-
-    # model_number = [3,9] # development / debug only
 
     # TWO ... See results (all z values) from running directly from input.txt
 
