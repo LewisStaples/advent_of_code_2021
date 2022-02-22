@@ -131,6 +131,43 @@ class ALU:
         #     print(par, end = ' ')
         # print()
 
+    # This resolves any unless statements.
+    # The unless statements to parse are always   (something0 unless something1 equals something2)
+    def process_unless_statements(self):
+        # # Keeping looping through
+        # while True:
+
+        i_unless = 0
+        # look for an unless/equals statement 
+        i_unless = self.z.find('unless', i_unless)
+
+        # if none found, break out of the loop
+        # if i_unless == -1:
+        #   break
+
+        # if found, look for any sub-unless/equals statements
+        # keep moving one element to the left
+        # any close parenthesis increases the parenthesis level
+        # any open parenthesis reduces the parenthesis level
+
+        # move to the right, with logic similar to above, identify
+        # the contents in parentheses between unless and equals
+        
+        # keep moving to the right, similar to above, and identify the equals substring
+
+        # if another unless appears anywhere in the above range, that is a lower unless statement
+
+        # resolve the lowest level unless/equals statement (then continue looping)
+        # --- automate the logic in notes.txt
+        
+
+        # Output to remind me to finish this
+        print('---------------------------------------')
+        print('process_unless_statements')
+        print('NOT  YET  WORKING !!!!!!!!!!!!')
+        print('---------------------------------------')
+
+
     # This eliminates unneeded parentheses.
     def elim_unneeded_parens(self):
         # Remove parentheses pairs that don't contain anything inside requiring a parenthesis
@@ -228,15 +265,17 @@ class ALU:
             # Only z is printed, because w,x,y are not needed.
             # w remains the input value.  x and y never impact z
             self.elim_unneeded_parens()
-            # print('z = ', end='')
+            self.process_unless_statements()
+            self.elim_unneeded_parens()
+
             print('z', end='')
             print(str(self.input_index), end='')
             print(' = ', end='')
             print(self.z)
             print()
             print()
-            dummy = 123
 
+            # Reset four variables for the next round
             self.w='w' + str(self.input_index)
             self.x='x' + str(self.input_index)
             self.y='y' + str(self.input_index)
