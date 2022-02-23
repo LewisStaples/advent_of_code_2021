@@ -137,29 +137,55 @@ class ALU:
         # # Keeping looping through
         # while True:
 
-        i_unless = 0
         # look for an unless/equals statement 
-        i_unless = self.z.find('unless', i_unless)
+        i_unless = self.z.find('unless', 0)
+        while True:
+            # if none found, end this function
+            # if i_unless == -1:
+            #   return
 
-        # if none found, break out of the loop
-        # if i_unless == -1:
-        #   break
+            # if found, look for any sub-unless/equals statements
+            # keep moving one element to the left
 
-        # if found, look for any sub-unless/equals statements
-        # keep moving one element to the left
-        # any close parenthesis increases the parenthesis level
-        # any open parenthesis reduces the parenthesis level
+            l_paren_info = {'level': 0, 'index': i_unless}
+            r_paren_info = {'level': 0, 'index': i_unless}
 
-        # move to the right, with logic similar to above, identify
-        # the contents in parentheses between unless and equals
-        
-        # keep moving to the right, similar to above, and identify the equals substring
+            while l_paren_info['level'] < 1:
+                l_paren_info['index'] -= 1
+                if self.z[l_paren_info['index']] == '(':
+                    l_paren_info['level'] += 1
+                elif self.z[l_paren_info['index']] == ')':
+                    l_paren_info['level'] -= 1
+            
 
-        # if another unless appears anywhere in the above range, that is a lower unless statement
+            # move to the right, with logic similar to above, identify
+            # the end of the unless/equals statement
+            while r_paren_info['level'] > -1:
+                r_paren_info['index'] += 1
+                if self.z[r_paren_info['index']] == '(':
+                    r_paren_info['level'] += 1
+                elif self.z[r_paren_info['index']] == ')':
+                    r_paren_info['level'] -= 1
 
-        # resolve the lowest level unless/equals statement (then continue looping)
-        # --- automate the logic in notes.txt
-        
+            # if another unless appears anywhere in the above range, that is a lower unless statement
+            dummy = 123
+            i_unless_new = self.z[l_paren_info['index']:r_paren_info['index']+1].find('unless',0,i_unless)
+            # i_unless_new = self.z.find('unless', i_unless+1)
+            if i_unless_new != -1:
+                i_unless += i_unless_new
+                continue
+            
+            #     pass
+            # else:
+            #     i_unless_new = self.z[l_paren_info['index']:r_paren_info['index']+1].find('unless',i_unless+1)
+            # if i_unless_new != -1:
+            #     i_unless = i_unless_new
+            #     continue
+
+            # resolve the lowest level unless/equals statement (then continue looping)
+            # --- automate the logic in notes.txt
+            dummy = 123
+            break
 
         # Output to remind me to finish this
         print('---------------------------------------')
