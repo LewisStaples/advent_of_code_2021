@@ -196,11 +196,15 @@ class ALU:
         if statement_c.find('input_') != -1:
             pass # replace with below logic ....
             # if statement b has [any_numerator % any_denominator + anything_greater than nine]
-            # Try detecting either of the below .....
-            # 'z_', digits,'%26 + ', followed by two digits
-            # 'z_', digits,'%26 + -', followed by two digits
-
+            # Try detecting any of the below, perhaps using regular expressions
+            # 'z_', digits,'%26 + ', followed by two digits # This cannot be a single digit number
                 # then statement_b can never equal statement_c, therefore the answer is statement_a
+
+            # Either one below could be a single digit number
+            # 'z_', digits,'%26 + ', followed by one digit
+            # 'z_', digits,'%26 + -', followed by one or two digits
+                # assumption that that statement_b equals statement_c (to help get the ending value of z back down to zero)
+                
 
 
         # break
