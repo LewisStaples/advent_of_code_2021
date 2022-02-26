@@ -193,18 +193,20 @@ class ALU:
         statement_b = self.z[i_unless+8:i_equals-2]
         statement_c = self.z[i_equals+7:r_paren_info['index']]
 
-        if statement_c.find('input_') != -1:
-            pass # replace with below logic ....
+        # if statement_c is an input
+        if re.match('input_\d+$', statement_c):
             # if statement b has [any_numerator % any_denominator + anything_greater than nine]
             # Try detecting any of the below, perhaps using regular expressions
             # 'z_', digits,'%26 + ', followed by two digits # This cannot be a single digit number
+            if re.match('z\d+%26 \+ \d\d', statement_b):
                 # then statement_b can never equal statement_c, therefore the answer is statement_a
-
+                dummy = 123
             # Either one below could be a single digit number
             # 'z_', digits,'%26 + ', followed by one digit
             # 'z_', digits,'%26 + -', followed by one or two digits
+            elif re.match('z\d+%26 \+ -?\d{1,2}', statement_b):
                 # assumption that that statement_b equals statement_c (to help get the ending value of z back down to zero)
-                
+                dummy = 123
 
 
         # break
@@ -316,9 +318,9 @@ class ALU:
             self.process_unless_statements()
             self.elim_unneeded_parens()
 
-            print('z', end='')
-            print(str(self.input_index), end='')
-            print(' = ', end='')
+            # print('z', end='')
+            # print(str(self.input_index), end='')
+            # print(' = ', end='')
             print(self.z)
             print()
             print()
