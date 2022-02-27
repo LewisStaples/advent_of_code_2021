@@ -198,15 +198,20 @@ class ALU:
             # if statement b has [any_numerator % any_denominator + anything_greater than nine]
             # Try detecting any of the below, perhaps using regular expressions
             # 'z_', digits,'%26 + ', followed by two digits # This cannot be a single digit number
-            if re.match('z\d+%26 \+ \d\d', statement_b):
-                # then statement_b can never equal statement_c, therefore the answer is statement_a
+            if re.match('z([\d]|[_init])+%26 \+ \d\d', statement_b):
+                # then statement_b can never equal statement_c, therefore the answer is 0
+                self.z = self.z[:l_paren_info['index']] + '0' + self.z[r_paren_info['index']+1:]
                 dummy = 123
             # Either one below could be a single digit number
             # 'z_', digits,'%26 + ', followed by one digit
             # 'z_', digits,'%26 + -', followed by one or two digits
             elif re.match('z\d+%26 \+ -?\d{1,2}', statement_b):
                 # assumption that that statement_b equals statement_c (to help get the ending value of z back down to zero)
+                self.z = self.z[:l_paren_info['index']] + '1' + self.z[r_paren_info['index']+1:]
                 dummy = 123
+
+        print(self.z)
+        dummy = 123
 
 
         # break
