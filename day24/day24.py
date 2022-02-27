@@ -137,90 +137,85 @@ class ALU:
     # The unless statements to parse are always   (something0 unless something1 equals something2)
     def process_unless_statements(self):
         # Keeping looping through
-        # while True:
-
-        # look for an unless/equals statement 
-        i_unless = self.z.find('unless')
-
-        # if none found, end this function
-        # if i_unless == -1:
-        #   return
-
-        i_equals = None
-        # loop until an inner unless/equals is found
-        # (caveat:  This does not solve the general problem where a sub-unless command could be anywhere in the unless statement. It only solves for sub-unless between the parent's 'unless' and 'equals' keywords)
         while True:
-            # Look to see what comes next: i_equals or i_unless
-            i_equals = self.z.find('equals', i_unless)
-            i_unless_next = self.z.find('unless', i_unless+1)
-            if i_unless_next == -1: # if there are no additional unless-es
-                break
-            if i_equals < i_unless_next: # if the next equals comes before the unless
-                break
-            i_unless = i_unless_next
+            # look for an unless/equals statement 
+            i_unless = self.z.find('unless')
 
-            # if found, look for any sub-unless/equals statements
-            # keep moving one element to the left
-
-        # move to the left
-        # identify the end of the unless/equals statement
-        l_paren_info = {'level': 0, 'index': i_unless}
-        r_paren_info = {'level': 0, 'index': i_equals}
-        while l_paren_info['level'] < 1:
-            l_paren_info['index'] -= 1
-            if self.z[l_paren_info['index']] == '(':
-                l_paren_info['level'] += 1
-            elif self.z[l_paren_info['index']] == ')':
-                l_paren_info['level'] -= 1
-            
-        # move to the right, with logic similar to above, 
-        # identify the end of the unless/equals statement
-        while r_paren_info['level'] > -1:
-            r_paren_info['index'] += 1
-            if self.z[r_paren_info['index']] == '(':
-                r_paren_info['level'] += 1
-            elif self.z[r_paren_info['index']] == ')':
-                r_paren_info['level'] -= 1
-
-
-            
-        # resolve the lowest level unless/equals statement (then continue looping)
-        # --- automate the logic in notes.txt
-        dummy = 123
-        print(self.z)
-        i_equals = self.z.find('equals',i_unless)
-        statement_a = self.z[l_paren_info['index']+1:i_unless-1]
-        statement_b = self.z[i_unless+8:i_equals-2]
-        statement_c = self.z[i_equals+7:r_paren_info['index']]
-
-        # if statement_c is an input
-        if re.match('input_\d+$', statement_c):
-            # if statement b has [any_numerator % any_denominator + anything_greater than nine]
-            # Try detecting any of the below, perhaps using regular expressions
-            # 'z_', digits,'%26 + ', followed by two digits # This cannot be a single digit number
-            if re.match('z([\d]|[_init])+%26 \+ \d\d', statement_b):
-                # then statement_b can never equal statement_c, therefore the answer is 0
-                self.z = self.z[:l_paren_info['index']] + '0' + self.z[r_paren_info['index']+1:]
+            # if none found, end this function
+            if i_unless == -1:
+                # print(self.z)
                 dummy = 123
-            # Either one below could be a single digit number
-            # 'z_', digits,'%26 + ', followed by one digit
-            # 'z_', digits,'%26 + -', followed by one or two digits
-            elif re.match('z\d+%26 \+ -?\d{1,2}', statement_b):
-                # assumption that that statement_b equals statement_c (to help get the ending value of z back down to zero)
+                return
+
+            i_equals = None
+            # loop until an inner unless/equals is found
+            # (caveat:  This does not solve the general problem where a sub-unless command could be anywhere in the unless statement. It only solves for sub-unless between the parent's 'unless' and 'equals' keywords)
+            while True:
+                # Look to see what comes next: i_equals or i_unless
+                i_equals = self.z.find('equals', i_unless)
+                i_unless_next = self.z.find('unless', i_unless+1)
+                if i_unless_next == -1: # if there are no additional unless-es
+                    break
+                if i_equals < i_unless_next: # if the next equals comes before the unless
+                    break
+                i_unless = i_unless_next
+
+                # if found, look for any sub-unless/equals statements
+                # keep moving one element to the left
+
+            # move to the left
+            # identify the end of the unless/equals statement
+            l_paren_info = {'level': 0, 'index': i_unless}
+            r_paren_info = {'level': 0, 'index': i_equals}
+            while l_paren_info['level'] < 1:
+                l_paren_info['index'] -= 1
+                if self.z[l_paren_info['index']] == '(':
+                    l_paren_info['level'] += 1
+                elif self.z[l_paren_info['index']] == ')':
+                    l_paren_info['level'] -= 1
+                
+            # move to the right, with logic similar to above, 
+            # identify the end of the unless/equals statement
+            while r_paren_info['level'] > -1:
+                r_paren_info['index'] += 1
+                if self.z[r_paren_info['index']] == '(':
+                    r_paren_info['level'] += 1
+                elif self.z[r_paren_info['index']] == ')':
+                    r_paren_info['level'] -= 1
+
+
+                
+            # resolve the lowest level unless/equals statement (then continue looping)
+            # --- automate the logic in notes.txt
+            dummy = 123
+            # print(self.z)
+            i_equals = self.z.find('equals',i_unless)
+            statement_a = self.z[l_paren_info['index']+1:i_unless-1]
+            statement_b = self.z[i_unless+7:i_equals-1]
+            statement_c = self.z[i_equals+7:r_paren_info['index']]
+
+            # if statement_c is an input
+            if re.match('input_\d+$', statement_c):
+                # if statement b has [any_numerator % any_denominator + anything_greater than nine]
+                # Try detecting any of the below, perhaps using regular expressions
+                # 'z_', digits,'%26 + ', followed by two digits # This cannot be a single digit number
+                # if re.match('\(z([\d]|[_init])+%26 \+ \d\d\)', statement_b):
+                if re.match('\([z\d+]|[0]%26\) \+ \d\d', statement_b):
+                    # then statement_b can never equal statement_c, therefore the answer is 0
+                    self.z = self.z[:l_paren_info['index']] + '0' + self.z[r_paren_info['index']+1:]
+                    dummy = 123
+                # Either one below could be a single digit number
+                # 'z_', digits,'%26 + ', followed by one digit
+                # 'z_', digits,'%26 + -', followed by one or two digits
+                elif re.match('z\d+%26 \+ -?\d{1,2}', statement_b):
+                    # assumption that that statement_b equals statement_c (to help get the ending value of z back down to zero)
+                    self.z = self.z[:l_paren_info['index']] + '1' + self.z[r_paren_info['index']+1:]
+                    dummy = 123
+            elif statement_b == statement_c:
                 self.z = self.z[:l_paren_info['index']] + '1' + self.z[r_paren_info['index']+1:]
-                dummy = 123
-
-        print(self.z)
-        dummy = 123
 
 
-        # break
 
-        # Output to remind me to finish this
-        print('---------------------------------------')
-        print('process_unless_statements')
-        print('NOT  YET  WORKING !!!!!!!!!!!!')
-        print('---------------------------------------')
 
 
     # This eliminates unneeded parentheses.
@@ -295,16 +290,14 @@ class ALU:
         dummy = 123
         # for self.input_index in range(len(self.instructions)-1,-1,-1): # going through in reverse order
 
-        self.w='w_init'
-        self.x='x_init'
-        self.y='y_init'
-        self.z='z_init'
+        # self.w='w_init'
+        # self.x='x_init'
+        # self.y='y_init'
+        # self.z='z_init'
+
+        self.w = self.x = self.y = self.z = '0'
 
         for self.input_index in range(len(self.instructions)):
-            # self.w='w_init'
-            # self.x='x_init'
-            # self.y='y_init'
-            # self.z='z_init'
             for instruction in self.instructions[self.input_index]:
                 instruction_line = instruction.split(' ',1)
                 call_fxn = getattr(self, instruction_line[0])
@@ -323,9 +316,9 @@ class ALU:
             self.process_unless_statements()
             self.elim_unneeded_parens()
 
-            # print('z', end='')
-            # print(str(self.input_index), end='')
-            # print(' = ', end='')
+            print('z', end='')
+            print(str(self.input_index), end='')
+            print(' = ', end='')
             print(self.z)
             print()
             print()
