@@ -1,6 +1,7 @@
 # adventOfCode 2021 day 23
 # https://adventofcode.com/2021/day/23
 
+import enum
 import sys
 import copy
 
@@ -69,10 +70,12 @@ with open(input_filename) as f:
 dummy = 123
 
 
-def attempt_transfer(burrow_state_list, amp_origin, i_origin, amp_dest, i_dest):
-    # if there are no obstacles on the journey
-    # create a new state in state_list but with the amphipod transferred and increase the energy
-    pass
+def transfer_amphipod(amp_position_list, i_origin, i_dest):
+    # If there are no obstacles on the journey, create a new state in state_list but with the amphipod transferred and increase the energy and add this to the end of the list.
+
+    # Return True if the transfer happened.  Otherwise, return False.
+
+    return False
 
 
 # Loop through function to try each possible move
@@ -87,28 +90,61 @@ def next_move(burrow_state_list):
     # 3. Move from sideroom to hallway (if conditions allow it, and if 1 isn't possible)
     #   (3) is skipped if (1) is possible, because (1) must be faster
 
-    # Check all siderooms, if eligible to receive an amphipod.
+    # Check all siderooms if eligible to receive an amphipod.
     for sideroom_dest in sideroom_indices:
         eligible = True
-        for i_dest, amp_dest in enumerate(burrow_state_list[-1][0][sideroom_dest][1]):
+        for i_dest, amp_dest in enumerate(burrow_state_list[0][0][sideroom_dest][1]):
             # if any that aren't the destination amphipod, then it's ineligible
             # otherwise it's eligible (if empty or with 1+ destination amphipods)
-            if amp_dest != burrow_state_list[-1][0][sideroom_dest][0]:
+            if amp_dest != burrow_state_list[0][0][sideroom_dest][0]:
                 eligible = False
         if eligible:
             for sideroom_origin in sideroom_indices:
                 if sideroom_dest==sideroom_origin:
                     continue
-                for i_origin,amp_origin in enumerate(burrow_state_list[-1][0][sideroom_origin][1]):
+                for i_origin,amp_origin in enumerate(burrow_state_list[0][0][sideroom_origin][1]):
                     if amp_origin is None:
                         continue
                     if amp_origin == amp_dest:
-                        attempt_transfer(burrow_state_list, amp_origin, i_origin, amp_dest, i_dest)
+                        # if transfer_amphipod(burrow_state_list[0][0][sideroom_origin][1], i_origin, burrow_state_list[0][0], i_dest):
+                        if True:
+                            return
                     break
 
-    continue_condition = True
-    while continue_condition:
-        continue_condition = False
+    # Check all hallway locations for amphipods that could be sent to destination sideroom.
+    pass
 
-next_move(burrow_state_list)
+    # Send an amphipod to a hallway location
+    for sideroom_origin in sideroom_indices:
+        for i_origin, amp_origin in enumerate(burrow_state_list[0][0][sideroom_origin][1]):
+            # Skip over any open slots in sideroom_origin
+            if amp_origin is None:
+                continue
+            # If the first amphipod isn't the destination, then
+            if amp_origin != burrow_state_list[0][0][sideroom_origin][0]:
+                # send to a hallway location
+                for i_dest, hallway_dest in enumerate(burrow_state_list[0][0]):
+                    if hallway_dest is None:
+                        # if transfer_amphipod(burrow_state_list[0][0][sideroom_origin], i_origin, burrow_state_list[0][0], i_dest):
+                        if transfer_amphipod(burrow_state_list[0][0], (sideroom_origin, i_origin), i_dest):
+                            return
+            else:
+                # Try the next amphipod in sideroom_origin
+                continue
+            # Do not try any amphipods in sideroom_origin after the first one
+            break
+    
+    # When this point gets reached, remove the 0th element from the list, because all next moves have been exhausted
+    burrow_state_list.pop(0)
+
+    # continue_condition = True
+    # while continue_condition:
+    #     continue_condition = False
+
+while len(burrow_state_list)>0:
+    next_move(burrow_state_list)
+
+# continue_condition = True
+# while continue_condition:
+#     continue_condition = next_move(burrow_state_list)
 
