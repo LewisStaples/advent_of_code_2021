@@ -5,6 +5,8 @@ import enum
 import sys
 import copy
 
+from numpy import isin
+
 # List of all amphipods (in alphabetical order, which is the desired order when the process will be completed)
 AMPHIPOD_LIST = ['A', 'B', 'C', 'D']
 
@@ -29,6 +31,10 @@ sideroom_indices = []
 
 input_filename='input.txt'
 # Reading input from the input file
+print('Reading input from ', end='')
+print(input_filename)
+print()
+
 with open(input_filename) as f:
     line_length = None
     side_room_position = dict()
@@ -70,12 +76,42 @@ with open(input_filename) as f:
 dummy = 123
 
 
-def transfer_amphipod(amp_position_list, i_origin, i_dest):
+# i_origin and i_dest will both be 2-tuples of int.  If either is a hallway then element 1 will be None.  Otherwise, if they are a sideroom then element 1 will be the sideroom index.  Element 0 will always be the hallway index.
+# def transfer_amphipod(amp_position_list, i_origin, i_dest):
+def transfer_amphipod(burrow_state_list, i_origin, i_dest):
     # If there are no obstacles on the journey, create a new state in state_list but with the amphipod transferred and increase the energy and add this to the end of the list.
+    energy_diff = 0
+    # Logic if origin is a sideroom
+    if i_origin[1] is not None:
+        sideroom_position = i_origin[1]
+        while sideroom_position > 1:
+            sideroom_position -= 1
+            # NEED TO ADD ... CHECK IF PRIOR IS OCCUPIED, INCREMENT ENERGY_DIFF
+            # if amp_position_list[hallway_position][1]
 
-    # Return True if the transfer happened.  Otherwise, return False.
+        # Increment energy for step from sideroom to the hallway
+        energy_diff += 1
+    
 
-    return False
+    
+    tran_dir = 1 if i_origin[0] < i_dest[0] else -1
+    hallway_posn = i_origin[0] + tran_dir
+    energy_diff += 1
+    while hallway_posn != i_dest[0]:
+        if isinstance(burrow_state_list[0][0][hallway_posn], str):
+            return False
+        hallway_posn += tran_dir
+        energy_diff += 1
+
+
+    # Logic if destination is a sideroom
+    # (To be added later)
+
+
+    # The transfer will happen (because otherwise False would have been returned earlier)
+    new_hallway = copy.deepcopy(burrow_state_list[0][0])
+    # NEED TO ADD ... replace origin amph. with None, add dest amph. (replace the None there) in the copy.  Then put energy in with a tuple
+    return True
 
 
 # Loop through function to try each possible move
@@ -120,17 +156,20 @@ def next_move(burrow_state_list):
             # Skip over any open slots in sideroom_origin
             if amp_origin is None:
                 continue
-            # If the first amphipod isn't the destination, then
-            if amp_origin != burrow_state_list[0][0][sideroom_origin][0]:
-                # send to a hallway location
-                for i_dest, hallway_dest in enumerate(burrow_state_list[0][0]):
-                    if hallway_dest is None:
-                        # if transfer_amphipod(burrow_state_list[0][0][sideroom_origin], i_origin, burrow_state_list[0][0], i_dest):
-                        if transfer_amphipod(burrow_state_list[0][0], (sideroom_origin, i_origin), i_dest):
-                            return
-            else:
-                # Try the next amphipod in sideroom_origin
-                continue
+
+
+            # If the first amphipod is the destination, then
+            if amp_origin == burrow_state_list[0][0][sideroom_origin][0]:
+                # Breaking from inner loop should continue the outer loop
+                break
+            # if amp_origin != burrow_state_list[0][0][sideroom_origin][0]:
+            # Since the first amphipod isn't the destination ...
+            # send to a hallway location
+            for i_dest, hallway_dest in enumerate(burrow_state_list[0][0]):
+                if hallway_dest is None:
+                    if transfer_amphipod(burrow_state_list, (sideroom_origin, i_origin), (i_dest, None)):
+                        return
+
             # Do not try any amphipods in sideroom_origin after the first one
             break
     
