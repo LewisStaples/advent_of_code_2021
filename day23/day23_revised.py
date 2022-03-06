@@ -111,6 +111,15 @@ def transfer_amphipod(burrow_state_list, i_origin, i_dest):
     # The transfer will happen (because otherwise False would have been returned earlier)
     new_hallway = copy.deepcopy(burrow_state_list[0][0])
     # NEED TO ADD ... replace origin amph. with None, add dest amph. (replace the None there) in the copy.  Then put energy in with a tuple
+    amph_to_transfer = new_hallway[i_origin[0]] if i_origin[1] == None else new_hallway[i_origin[0]][1][i_origin[1]]
+    if i_origin[1] == None:
+        new_hallway[i_origin[0]] = None  
+    else:
+        new_hallway[i_origin[0]][1][i_origin[1]] = None
+    if i_dest[1] == None:
+        new_hallway[i_dest[0]] = amph_to_transfer
+    else:
+        new_hallway[i_dest[0]][1][i_dest[1]] = amph_to_transfer
     return True
 
 
@@ -144,7 +153,7 @@ def next_move(burrow_state_list):
                     if amp_origin == amp_dest:
                         # if transfer_amphipod(burrow_state_list[0][0][sideroom_origin][1], i_origin, burrow_state_list[0][0], i_dest):
                         if True:
-                            return
+                            break
                     break
 
     # Check all hallway locations for amphipods that could be sent to destination sideroom.
@@ -168,7 +177,7 @@ def next_move(burrow_state_list):
             for i_dest, hallway_dest in enumerate(burrow_state_list[0][0]):
                 if hallway_dest is None:
                     if transfer_amphipod(burrow_state_list, (sideroom_origin, i_origin), (i_dest, None)):
-                        return
+                        break
 
             # Do not try any amphipods in sideroom_origin after the first one
             break
