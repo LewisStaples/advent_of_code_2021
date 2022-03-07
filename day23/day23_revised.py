@@ -80,28 +80,29 @@ dummy = 123
 # def transfer_amphipod(amp_position_list, i_origin, i_dest):
 def transfer_amphipod(burrow_state_list, i_origin, i_dest):
     # If there are no obstacles on the journey, create a new state in state_list but with the amphipod transferred and increase the energy and add this to the end of the list.
-    energy_diff = 0
+    energy_total = burrow_state_list[0][1]
     # Logic if origin is a sideroom
     if i_origin[1] is not None:
         sideroom_position = i_origin[1]
-        while sideroom_position > 1:
+        while sideroom_position > -1:
             sideroom_position -= 1
-            # NEED TO ADD ... CHECK IF PRIOR IS OCCUPIED, INCREMENT ENERGY_DIFF
-            # if amp_position_list[hallway_position][1]
+            energy_total += 1
+            if sideroom_position > -1 and isinstance(burrow_state_list[0][0][sideroom_position], str):
+                return False
 
         # Increment energy for step from sideroom to the hallway
-        energy_diff += 1
+        energy_total += 1
     
 
     
     tran_dir = 1 if i_origin[0] < i_dest[0] else -1
     hallway_posn = i_origin[0] + tran_dir
-    energy_diff += 1
+    energy_total += 1
     while hallway_posn != i_dest[0]:
         if isinstance(burrow_state_list[0][0][hallway_posn], str):
             return False
         hallway_posn += tran_dir
-        energy_diff += 1
+        energy_total += 1
 
 
     # Logic if destination is a sideroom
@@ -120,6 +121,7 @@ def transfer_amphipod(burrow_state_list, i_origin, i_dest):
         new_hallway[i_dest[0]] = amph_to_transfer
     else:
         new_hallway[i_dest[0]][1][i_dest[1]] = amph_to_transfer
+    burrow_state_list.append((new_hallway, energy_total))
     return True
 
 
@@ -161,38 +163,52 @@ def next_move(burrow_state_list):
 
     # Send an amphipod to a hallway location
     for sideroom_origin in sideroom_indices:
-        for i_origin, amp_origin in enumerate(burrow_state_list[0][0][sideroom_origin][1]):
-            # Skip over any open slots in sideroom_origin
-            if amp_origin is None:
+        # Abbreviate content about the sideroom origin. 
+        siderm_orgn = burrow_state_list[0][0][sideroom_origin]
+        # Try another sideroom unless there is at least one amphipod (not None) that isn't already at its destination.
+        i_origin = None
+        for i_origin, amp_origin in enumerate(siderm_orgn[1]):
+            if amp_origin is None or amp_origin == siderm_orgn[0]:
                 continue
 
+        # Send to a hallway location
+        for i_dest, hallway_dest in enumerate(burrow_state_list[0][0]):
+            if hallway_dest is None:
+                if transfer_amphipod(burrow_state_list, (sideroom_origin, i_origin), (i_dest, None)):
+                    break
 
-            # If the first amphipod is the destination, then
-            if amp_origin == burrow_state_list[0][0][sideroom_origin][0]:
-                # Breaking from inner loop should continue the outer loop
-                break
-            # if amp_origin != burrow_state_list[0][0][sideroom_origin][0]:
-            # Since the first amphipod isn't the destination ...
-            # send to a hallway location
-            for i_dest, hallway_dest in enumerate(burrow_state_list[0][0]):
-                if hallway_dest is None:
-                    if transfer_amphipod(burrow_state_list, (sideroom_origin, i_origin), (i_dest, None)):
-                        break
+        #     # Do not try any amphipods in sideroom_origin after the first one
+        #     break
 
-            # Do not try any amphipods in sideroom_origin after the first one
-            break
+
+        pass
+
+        # for i_origin, amp_origin in enumerate(burrow_state_list[0][0][sideroom_origin][1]):
+        #     # Skip over any open slots in sideroom_origin
+        #     if amp_origin is None:
+        #         continue
+        #     # Skip if the amphipod is already at its destination
+        #     if amp_origin == burrow_state_list[0][0][sideroom_origin][0]:
+        #         continue
+        #     # Send to a hallway location
+        #     for i_dest, hallway_dest in enumerate(burrow_state_list[0][0]):
+        #         if hallway_dest is None:
+        #             if transfer_amphipod(burrow_state_list, (sideroom_origin, i_origin), (i_dest, None)):
+        #                 break
+
+        #     # Do not try any amphipods in sideroom_origin after the first one
+        #     break
     
+
+
     # When this point gets reached, remove the 0th element from the list, because all next moves have been exhausted
     burrow_state_list.pop(0)
 
-    # continue_condition = True
-    # while continue_condition:
-    #     continue_condition = False
+# Code to use for real ....
+# while len(burrow_state_list)>0:
+#     next_move(burrow_state_list)
 
-while len(burrow_state_list)>0:
-    next_move(burrow_state_list)
-
-# continue_condition = True
-# while continue_condition:
-#     continue_condition = next_move(burrow_state_list)
+# Code for testing / development onlyq
+next_move(burrow_state_list)
+pass
 
