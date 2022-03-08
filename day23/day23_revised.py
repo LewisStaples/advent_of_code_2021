@@ -29,7 +29,7 @@ least_total_energy = float('inf')
 sideroom_indices = []
 
 
-input_filename='input.txt'
+input_filename='input_sample0.txt'
 # Reading input from the input file
 print('Reading input from ', end='')
 print(input_filename)
@@ -169,13 +169,18 @@ def next_move(burrow_state_list):
         i_origin = None
         for i_origin, amp_origin in enumerate(siderm_orgn[1]):
             if amp_origin is None or amp_origin == siderm_orgn[0]:
-                continue
+                break
+            # (implicit else)
+            break
+
+
 
         # Send to a hallway location
         for i_dest, hallway_dest in enumerate(burrow_state_list[0][0]):
             if hallway_dest is None:
                 if transfer_amphipod(burrow_state_list, (sideroom_origin, i_origin), (i_dest, None)):
                     break
+                continue
 
         #     # Do not try any amphipods in sideroom_origin after the first one
         #     break
