@@ -31,6 +31,7 @@ sideroom_indices = []
 
 input_filename='input_sample0.txt'
 # Reading input from the input file
+print()
 print('Reading input from ', end='')
 print(input_filename)
 print()
@@ -161,29 +162,32 @@ def next_move(burrow_state_list):
     # Check all hallway locations for amphipods that could be sent to destination sideroom.
     pass
 
-    # Send an amphipod to a hallway location
+    # Send an amphipod from a sideroom to a hallway location
     for sideroom_origin in sideroom_indices:
+        send_to_hallway = True
         # Abbreviate content about the sideroom origin. 
         siderm_orgn = burrow_state_list[0][0][sideroom_origin]
         # Try another sideroom unless there is at least one amphipod (not None) that isn't already at its destination.
         i_origin = None
         for i_origin, amp_origin in enumerate(siderm_orgn[1]):
-            if amp_origin is None or amp_origin == siderm_orgn[0]:
+            if amp_origin == siderm_orgn[0]:
+                send_to_hallway = False
                 break
+            if amp_origin is None:
+                continue
             # (implicit else)
-            break
-
-
+            # break
 
         # Send to a hallway location
-        for i_dest, hallway_dest in enumerate(burrow_state_list[0][0]):
-            if hallway_dest is None:
-                if transfer_amphipod(burrow_state_list, (sideroom_origin, i_origin), (i_dest, None)):
-                    break
-                continue
+        if send_to_hallway:
+            for i_dest, hallway_dest in enumerate(burrow_state_list[0][0]):
+                if hallway_dest is None:
+                    transfer_amphipod(burrow_state_list, (sideroom_origin, i_origin), (i_dest, None))
+                        # break
+                    # continue
 
-        #     # Do not try any amphipods in sideroom_origin after the first one
-        #     break
+            #     # Do not try any amphipods in sideroom_origin after the first one
+            #     break
 
 
         pass
@@ -206,6 +210,9 @@ def next_move(burrow_state_list):
     
 
 
+    
+
+
     # When this point gets reached, remove the 0th element from the list, because all next moves have been exhausted
     burrow_state_list.pop(0)
 
@@ -213,7 +220,22 @@ def next_move(burrow_state_list):
 # while len(burrow_state_list)>0:
 #     next_move(burrow_state_list)
 
-# Code for testing / development onlyq
+# Code for testing / development only
 next_move(burrow_state_list)
+# next_move(burrow_state_list)
+
+for i in range(len(burrow_state_list)):
+    # display = False
+    # for ele in burrow_state_list[i][0]:
+    #     if isinstance(ele,tuple):
+    #         if ele[1][0] is None:
+    #             display = True
+    # if display:
+    print([i for i in burrow_state_list[i][0]])
+print()
+
+
 pass
+
+
 
