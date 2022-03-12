@@ -1,11 +1,12 @@
 # adventOfCode 2021 day 23
 # https://adventofcode.com/2021/day/23
 
-import enum
+# import enum
+# from hashlib import new
 import sys
 import copy
 
-from numpy import isin
+# from numpy import isin
 
 # List of all amphipods (in alphabetical order, which is the desired order when the process will be completed)
 AMPHIPOD_LIST = ['A', 'B', 'C', 'D']
@@ -29,7 +30,7 @@ least_total_energy = float('inf')
 sideroom_indices = []
 
 
-input_filename='input_scenario2.txt'
+input_filename='input.txt'
 # Reading input from the input file
 print()
 print('Reading input from ', end='')
@@ -82,6 +83,33 @@ with open(input_filename) as f:
 
 dummy = 123
 
+def add_burrow_to_list(burrow_state_list, new_hallway, energy_total):
+    # burrow_state_list.append((new_hallway, energy_total))
+    # consider using https://zepworks.com/deepdiff/current/
+
+    dummy = 123
+    # Traverse list to look for any duplicates
+    for i_list,old_list in enumerate(burrow_state_list):
+        for i_element, element in enumerate(old_list[0]):
+            if not isinstance(element, tuple):
+                if element != new_hallway[i_element]:
+                    break # Try next element from burrow_state_list
+            else:
+                # compare element to new_hallway[i_element], which are lists of values
+                if element[1] != new_hallway[i_element][1]:
+                    break # Try next element from burrow_state_list
+        # If this point reached, there is a match.
+        # If the newer of the match has less energy ...
+        if energy_total < old_list[1]:
+            # remove the original and replace it with the lower energy one
+            burrow_state_list[i_list] = (new_hallway, energy_total)
+
+        # # Keep the smallest total energy from the two matching lists
+        # burrow_state_list[i_list][0] = min(old_list[1], energy_total)
+        return
+    # If this point reached, no matches found.  Therefore, add it as a new one
+    burrow_state_list.append((new_hallway, energy_total))
+
 
 # i_origin and i_dest will both be 2-tuples of int.  If either is a hallway then element 1 will be None.  Otherwise, if they are a sideroom then element 1 will be the sideroom index.  Element 0 will always be the hallway index.
 # def transfer_amphipod(amp_position_list, i_origin, i_dest):
@@ -124,7 +152,7 @@ def transfer_amphipod(burrow_state_list, i_origin, i_dest):
     # Logic if destination is a sideroom
     if i_dest[1] is not None:
         # Verify that this destination sideroom is where the amphipod should be going
-        if amph_to_transfer != burrow_state_list[0][0][i_dest[0]][1]:
+        if amph_to_transfer != burrow_state_list[0][0][i_dest[0]][0]:
             return False
 
         # Repeating commands used for origin
@@ -161,7 +189,8 @@ def transfer_amphipod(burrow_state_list, i_origin, i_dest):
     else:
         new_hallway[i_dest[0]][1][i_dest[1]] = amph_to_transfer
 
-    burrow_state_list.append((new_hallway, energy_total))
+    # burrow_state_list.append((new_hallway, energy_total))
+    add_burrow_to_list(burrow_state_list, new_hallway, energy_total)
     return True
 
 def get_siderooms(burrow_state_list, in_str):
@@ -186,7 +215,6 @@ def get_siderooms(burrow_state_list, in_str):
             else:
                 lowest_occupied = min(lowest_occupied, i_amphipod)
 
-        # NOT YET TESTED, SO COMMENTING IT OUT FOR NOW
         if in_str == 'dest':
             # Since all amphipods that are here belong here, any None can be used
             # Traverse all slots in the sideroom, from bottom to top
@@ -225,8 +253,8 @@ def next_move(burrow_state_list):
     # Send an amphipod from origin sideroom directly to destination sideroom
     for tran_origin in get_siderooms(burrow_state_list, 'origin'):
         for tran_dest in get_siderooms(burrow_state_list, 'dest'):
-            if transfer_amphipod(burrow_state_list, tran_origin, tran_dest):
-                return
+            transfer_amphipod(burrow_state_list, tran_origin, tran_dest)
+                # return
 
     # Send an amphipod from the hallway directly to destination sideroom
     # !!! NEEDED !!!
@@ -237,7 +265,7 @@ def next_move(burrow_state_list):
             transfer_amphipod(burrow_state_list, tran_origin, tran_dest)
 
     # When this point gets reached, remove the 0th element from the list, because all next moves have been exhausted
-    burrow_state_list.pop(0)
+    # burrow_state_list.pop(0)
 
 # Code to use for real ....
 # while len(burrow_state_list)>0:
@@ -254,7 +282,8 @@ for i in range(len(burrow_state_list)):
     #         if ele[1][0] is None:
     #             display = True
     # if display:
-    print([i for i in burrow_state_list[i][0]])
+    print([i for i in burrow_state_list[i][0]], end=', ')
+    print(burrow_state_list[i][1])
 print()
 
 
