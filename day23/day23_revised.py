@@ -30,7 +30,7 @@ least_total_energy = float('inf')
 sideroom_indices = []
 
 
-input_filename='input.txt'
+input_filename='input_scenario1.txt'
 # Reading input from the input file
 print()
 print('Reading input from ', end='')
@@ -87,32 +87,30 @@ def add_burrow_to_list(burrow_state_list, new_hallway, energy_total):
     # burrow_state_list.append((new_hallway, energy_total))
     # consider using https://zepworks.com/deepdiff/current/
 
-    dummy = 123
     # Traverse list to look for any duplicates
     for i_list,old_list in enumerate(burrow_state_list):
+        match = True
         for i_element, element in enumerate(old_list[0]):
             if not isinstance(element, tuple):
                 if element != new_hallway[i_element]:
-                    break # Try next element from burrow_state_list
+                    match = False
             else:
                 # compare element to new_hallway[i_element], which are lists of values
                 if element[1] != new_hallway[i_element][1]:
-                    break # Try next element from burrow_state_list
-        # If this point reached, there is a match.
-        # If the newer of the match has less energy ...
-        if energy_total < old_list[1]:
-            # remove the original and replace it with the lower energy one
-            burrow_state_list[i_list] = (new_hallway, energy_total)
-
-        # # Keep the smallest total energy from the two matching lists
-        # burrow_state_list[i_list][0] = min(old_list[1], energy_total)
-        return
+                    match = False
+        # If there is a match ...
+        if match:
+            # If the newer of the match has less energy ...
+            if energy_total < old_list[1]:
+                # remove the original and replace it with the lower energy one
+                burrow_state_list[i_list] = (new_hallway, energy_total)
+            # Assumption is that there can only be one match
+            return
     # If this point reached, no matches found.  Therefore, add it as a new one
     burrow_state_list.append((new_hallway, energy_total))
 
 
 # i_origin and i_dest will both be 2-tuples of int.  If either is a hallway then element 1 will be None.  Otherwise, if they are a sideroom then element 1 will be the sideroom index.  Element 0 will always be the hallway index.
-# def transfer_amphipod(amp_position_list, i_origin, i_dest):
 def transfer_amphipod(burrow_state_list, i_origin, i_dest):
     # If there are no obstacles on the journey, create a new state in state_list but with the amphipod transferred and increase the energy and add this to the end of the list.
     energy_total = burrow_state_list[0][1]
@@ -134,9 +132,6 @@ def transfer_amphipod(burrow_state_list, i_origin, i_dest):
                 # Blocking amphipod detected, therefore cancel the transfer
                 return False
 
-        # Increment energy for step from sideroom to the hallway
-        energy_total += 1
-    
     # Logic used in all transfers
     # Determine transfer direction in hallway (left or right)
     tran_dir = 1 if i_origin[0] < i_dest[0] else -1 
@@ -147,6 +142,7 @@ def transfer_amphipod(burrow_state_list, i_origin, i_dest):
             return False
         hallway_posn += tran_dir
         energy_total += 1
+        dummy = 123
 
 
     # Logic if destination is a sideroom
@@ -170,8 +166,9 @@ def transfer_amphipod(burrow_state_list, i_origin, i_dest):
                 # Blocking amphipod detected, therefore cancel the transfer
                 return False
 
-        # Increment energy for step from sideroom to the hallway
-        energy_total += 1
+        # # Increment energy for step from sideroom to the hallway
+        # energy_total += 1
+        # dummy = 123
 
 
     # The transfer will happen (because otherwise False would have been returned earlier)
@@ -199,21 +196,22 @@ def get_siderooms(burrow_state_list, in_str):
     for sideroom_index in sideroom_indices:
         # Variable pointing to this sideroom
         sideroom = burrow_state_list[0][0][sideroom_index]
-        lowest_occupied = float('inf')
-        for i_amphipod, amphipod in enumerate(sideroom[1]):
+
+        if in_str == 'origin':
+            lowest_occupied = float('inf')
+            for i_amphipod, amphipod in enumerate(sideroom[1]):
             # If sideroom slot unoccupied, look for an occupied slot
-            if amphipod is None:
-                continue
+                if amphipod is None:
+                    continue
             # Look for an amphipod that should end up elsewhere
             # (This should not have other amphipods put on top of it)
-            if amphipod != sideroom[0]:
-                if in_str == 'origin':
+                if amphipod != sideroom[0]:
                     # This needs to use last variable as lowest index of an occupied slot
-
                     ret_val.append((sideroom_index, min(lowest_occupied, i_amphipod)))
-                break
-            else:
-                lowest_occupied = min(lowest_occupied, i_amphipod)
+                    break
+                else:
+                    lowest_occupied = min(lowest_occupied, i_amphipod)
+
 
         if in_str == 'dest':
             # Since all amphipods that are here belong here, any None can be used
@@ -222,7 +220,7 @@ def get_siderooms(burrow_state_list, in_str):
                 if sideroom[1][i_amphipod] is None:
                     ret_val.append((sideroom_index, i_amphipod))
                     break
-            ret_val.append((sideroom_index, i_amphipod))
+            # ret_val.append((sideroom_index, i_amphipod))
 
     return ret_val
 
@@ -273,6 +271,10 @@ def next_move(burrow_state_list):
 
 # Code for testing / development only
 next_move(burrow_state_list)
+# next_move(burrow_state_list)
+# next_move(burrow_state_list)
+# next_move(burrow_state_list)
+# next_move(burrow_state_list)
 # next_move(burrow_state_list)
 
 for i in range(len(burrow_state_list)):
