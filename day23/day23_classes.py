@@ -51,6 +51,12 @@ class BurrowState:
                 Burrow.SIDEROOM_INDICES.append(i-1)
 
     def sideroom_append(self, sideroom_str):
+        has_no_amphipods = True
+        for ch in Burrow.AMPHIPOD_LIST:
+            if ch in sideroom_str:
+                has_no_amphipods = False
+        if has_no_amphipods:
+            return
         for i in Burrow.SIDEROOM_INDICES:
             self.hallway[i].append(sideroom_str[i+1])
 
