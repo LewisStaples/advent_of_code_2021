@@ -5,16 +5,15 @@
 
 import sys
 
-from day23_revised import AMPHIPOD_LIST
-
 class SideRoom:
-    pass
+    def __init__(self, amphipod_init):
+        self.amphipod_list = [amphipod_init]
 
-class HallwayRoom:
-    pass
+    def append(self, amphipod_next):
+        self.amphipod_list.append(amphipod_next)
 
 class BurrowState:
-    # This code is only run once ... while reading from input.
+    #  This reads from input.  It is only run once.
     def __init__(self, hallway_init):
         self.hallway = []
         if isinstance(hallway_init, str):
@@ -35,7 +34,8 @@ class BurrowState:
             self.energy_total = hallway_init.energy_total
         
     def sideroom_init(self, sideroom_str):
-        # Discover where the side rooms are
+        # Process line of input with start of the siderooms.
+        # Label each sideroom by which amphipods seek that as their destination.
         #
         # Note that my input samples include a '.' in siderooms,
         # because I wanted to test an alternate scenario where
@@ -46,17 +46,16 @@ class BurrowState:
             if ch.isalpha() or ch == '.':
                 # This hallway position is a side room.  Add first amphipod
                 al_index += 1
-                self.hallway[i-1] = ([ch])
+                # self.hallway[i-1] = ([ch])
+                self.hallway[i-1] = SideRoom(ch)
                 Burrow.SIDEROOM_INDICES.append(i-1)
 
     def sideroom_append(self, sideroom_str):
-                    # for i,ch in enumerate(in_string):
-                    #     if ch.isalpha():
-                    #         # burrow_state_list[0][0][i-1][1].append(ch)
-                    #         pass
-        pass
+        for i in Burrow.SIDEROOM_INDICES:
+            self.hallway[i].append(sideroom_str[i+1])
 
-# Burrow will
+# Class Burrow will contain information that always applies to the burrow, whereas clas BurrowState has information that captures the momentary state of a burrow.
+
 class Burrow:
     # List of all amphipods (in alphabetical order, which is the desired order when the process will be completed)
     AMPHIPOD_LIST = ['A', 'B', 'C', 'D']
@@ -102,11 +101,18 @@ class Burrow:
                     self.all_burrowStates[0].sideroom_append(in_string)
 
         for i in range(len(Burrow.AMPHIPOD_LIST)):
-            Burrow.DEST_AMPH__SIDEROOM_INDEX[AMPHIPOD_LIST[i]] = Burrow.SIDEROOM_INDICES[i]
-            Burrow.SIDEROOM_INDEX__DEST_AMPH[Burrow.SIDEROOM_INDICES[i]] = AMPHIPOD_LIST[i]
+            Burrow.DEST_AMPH__SIDEROOM_INDEX[Burrow.AMPHIPOD_LIST[i]] = Burrow.SIDEROOM_INDICES[i]
+            Burrow.SIDEROOM_INDEX__DEST_AMPH[Burrow.SIDEROOM_INDICES[i]] = Burrow.AMPHIPOD_LIST[i]
 
-class HallwayRoom:
-    pass
+    def next_move(self):
+        pass
+        # Send an amphipod from origin sideroom directly to destination sideroom
+
+        # Send an amphipod from the hallway directly to destination sideroom
+
+        # Send an amphipod from a sideroom to a hallway location
 
 theBurrow = Burrow('input_scenario2.txt')
 
+# while len(theBurrow.all_burrowStates) > 0:
+theBurrow.next_move()
