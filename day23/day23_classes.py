@@ -2,8 +2,13 @@
 # https://adventofcode.com/2021/day/23
 #
 # This version of the code for Day 23 will use classes and OOP
-
+from enum import Enum
 import sys
+import copy
+
+class Location(Enum):
+    ORIGIN = 1
+    DEST = 2
 
 class SideRoom:
     def __init__(self, amphipod_init):
@@ -12,10 +17,32 @@ class SideRoom:
     def append(self, amphipod_next):
         self.amphipod_list.append(amphipod_next)
 
+    def show(self, location, amphipod_final_dest):
+        if location == Location.ORIGIN:
+            for i, amphipod in enumerate(self.amphipod_list):
+                if amphipod in Burrow.AMPHIPOD_LIST:
+                    # Index of a slot with an amphipod, which can be sent elsewhere
+                    return i
+        elif location == Location.DEST:
+            for i in range(self.amphipod_list, -1, -1):
+                if self.amphipod_list[i] is None:
+                    # Index of an empty slot.  An amphipod could be sent here.
+                    return i
+        return None
+        
+    def pop(self):
+        for amphipod in self.amphipod_list:
+            for i, amphipod in enumerate(Burrow.AMPHIPOD_LIST):
+                if amphipod in Burrow.AMPHIPOD_LIST:
+                    self.amphipod_list[i] = None
+                    return amphipod
+        return None
+
 class BurrowState:
-    #  This reads from input.  It is only run once.
     def __init__(self, hallway_init):
         self.hallway = []
+
+        #  This reads from input.  It is only run once.
         if isinstance(hallway_init, str):
             self.energy_total = 0
             # Remove # and newline characters
@@ -32,6 +59,8 @@ class BurrowState:
         # This code is run multiple times ... whenever duplicating a BurrowState.
         elif isinstance(hallway_init, BurrowState):
             self.energy_total = hallway_init.energy_total
+            print('Still need to copy/test self.hallway and all siderooms !!!')
+            self.hallway = copy.deepcopy(hallway_init.hallway)
         
     def sideroom_init(self, sideroom_str):
         # Process line of input with start of the siderooms.
@@ -41,14 +70,16 @@ class BurrowState:
         # because I wanted to test an alternate scenario where
         # amphipods were already in the hallway.
 
-        al_index = 0 # temp. variable:  index in Burrow.AMPHIPOD_LIST
+        i_sideroom = 0
         for i,ch in enumerate(sideroom_str):
             if ch.isalpha() or ch == '.':
                 # This hallway position is a side room.  Add first amphipod
-                al_index += 1
-                # self.hallway[i-1] = ([ch])
                 self.hallway[i-1] = SideRoom(ch)
                 Burrow.SIDEROOM_INDICES.append(i-1)
+
+                Burrow.DEST_AMPH__SIDEROOM_INDEX[Burrow.AMPHIPOD_LIST[i_sideroom]] = i_sideroom
+                i_sideroom += 1
+        dummy = 123
 
     def sideroom_append(self, sideroom_str):
         has_no_amphipods = True
@@ -68,9 +99,10 @@ class Burrow:
     # List of indices of siderooms
     SIDEROOM_INDICES = []
 
-    # Create pair of dictionaries to lookup destination amphipod by sideroom index and vice versa.
+    # Create pair of dictionaries to lookup destination amphipod by sideroom index 
+    # ????????????? and vice versa. ??????????????
     DEST_AMPH__SIDEROOM_INDEX = dict()
-    SIDEROOM_INDEX__DEST_AMPH = dict()
+    # SIDEROOM_INDEX__DEST_AMPH = dict()
 
     # This dictionary has index = 'type of amphipod' and value is the energy.
     AMPHIPOD_ENERGY = {'A':[1], 'B':[10], 'C':[100], 'D':[1000]}
@@ -106,19 +138,45 @@ class Burrow:
                 else:
                     self.all_burrowStates[0].sideroom_append(in_string)
 
-        for i in range(len(Burrow.AMPHIPOD_LIST)):
-            Burrow.DEST_AMPH__SIDEROOM_INDEX[Burrow.AMPHIPOD_LIST[i]] = Burrow.SIDEROOM_INDICES[i]
-            Burrow.SIDEROOM_INDEX__DEST_AMPH[Burrow.SIDEROOM_INDICES[i]] = Burrow.AMPHIPOD_LIST[i]
-
     def next_move(self):
-        pass
+        burrowState = self.all_burrowStates[0]
         # Send an amphipod from origin sideroom directly to destination sideroom
 
         # Send an amphipod from the hallway directly to destination sideroom
 
         # Send an amphipod from a sideroom to a hallway location
 
-theBurrow = Burrow('input_scenario2.txt')
+        for tran_origin in self.list_siderooms(burrowState, Location.ORIGIN):
+            for tran_dest in self.get_hallways(burrowState, Location.DEST):
+                next_state = self.make_move(burrowState, tran_origin, tran_dest)
+                if next_state:
+                    self.all_burrowStates.append(next_state)
+
+    def list_siderooms(self, burrowState, location):
+        ret_val = []
+        for sideroom_index in Burrow.SIDEROOM_INDICES:
+            new_sr = burrowState.hallway[sideroom_index].show(location, Burrow.DEST_AMPH__SIDEROOM_INDEX[sideroom_index])
+            if new_sr is not None: # sideroom space has an amphipod
+                ret_val.append((sideroom_index, new_sr))
+        dummy = 123
+        return ret_val
+
+    def get_hallways(self, burrowState, location):
+        ret_val = []
+        for hallway_index, hallway_space in enumerate(burrowState.hallway):
+            if location == Location.DEST:
+                if hallway_space is None:
+                    ret_val.append(hallway_index)
+        return ret_val
+
+    def make_move(self, burrowState, tran_origin, tran_dest):
+        energy_total = burrowState.energy_total
+
+        # If origin is a sideroom, calculate energy use and look out for ostacles
+
+        dummy = 123
+
+theBurrow = Burrow('input_scenario1.txt')
 
 # while len(theBurrow.all_burrowStates) > 0:
 theBurrow.next_move()
