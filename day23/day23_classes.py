@@ -77,7 +77,7 @@ class BurrowState:
                 self.hallway[i-1] = SideRoom(ch)
                 Burrow.SIDEROOM_INDICES.append(i-1)
 
-                Burrow.DEST_AMPH__SIDEROOM_INDEX[Burrow.AMPHIPOD_LIST[i_sideroom]] = i_sideroom
+                Burrow.DEST_AMPH__SIDEROOM_INDEX[i-1] = Burrow.AMPHIPOD_LIST[i_sideroom]
                 i_sideroom += 1
         dummy = 123
 
@@ -99,10 +99,8 @@ class Burrow:
     # List of indices of siderooms
     SIDEROOM_INDICES = []
 
-    # Create pair of dictionaries to lookup destination amphipod by sideroom index 
-    # ????????????? and vice versa. ??????????????
+    # Create dictionary to lookup destination amphipod by sideroom's hallway index 
     DEST_AMPH__SIDEROOM_INDEX = dict()
-    # SIDEROOM_INDEX__DEST_AMPH = dict()
 
     # This dictionary has index = 'type of amphipod' and value is the energy.
     AMPHIPOD_ENERGY = {'A':[1], 'B':[10], 'C':[100], 'D':[1000]}
