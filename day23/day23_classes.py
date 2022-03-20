@@ -50,6 +50,7 @@ class SideRoom:
 class BurrowState:
     def __init__(self, hallway_init):
         self.hallway = []
+        self.children = []
 
         #  This reads from input.  It is only run once.
         if isinstance(hallway_init, str):
@@ -114,7 +115,8 @@ class Burrow:
     AMPHIPOD_ENERGY = {'A':[1], 'B':[10], 'C':[100], 'D':[1000]}
 
     def __init__(self, input_filename):
-        self.active_burrowStates = []
+        # self.active_burrowStates = []
+        self.initial_burrowState = None
 
         # Open the input file
         print('Using input file: ', end='')
@@ -136,16 +138,22 @@ class Burrow:
                         sys.exit('Bad input!')
                     
                     # Create the first BurrowState
-                    self.active_burrowStates.append(BurrowState(in_string))
+                    # self.active_burrowStates.append(BurrowState(in_string))
+                    self.initial_burrowState = BurrowState(in_string)
+                    self.states_awaiting_next_move_analysis = [self.initial_burrowState]
 
                 elif row_num == 2:
-                    self.active_burrowStates[0].sideroom_init(in_string)
+                    # self.active_burrowStates[0].sideroom_init(in_string)
+                    self.initial_burrowState.sideroom_init(in_string)
 
                 else:
-                    self.active_burrowStates[0].sideroom_append(in_string)
+                    # self.active_burrowStates[0].sideroom_append(in_string)
+                    self.initial_burrowState.sideroom_append(in_string)
+
 
     def next_move(self):
-        burrowState = self.active_burrowStates[0]
+        # burrowState = self.active_burrowStates[0]
+        burrowState = self.states_awaiting_next_move_analysis[0]
         # Send an amphipod from origin sideroom directly to destination sideroom
 
         # Send an amphipod from the hallway directly to destination sideroom
@@ -156,7 +164,10 @@ class Burrow:
             for tran_dest in self.get_hallways(burrowState, Location.DEST):
                 next_state = self.make_move(burrowState, tran_origin, tran_dest)
                 if next_state is not None:
-                    self.active_burrowStates.append(next_state)
+                    # self.active_burrowStates.append(next_state)
+                    burrowState.children.append(next_state)
+                    self.states_awaiting_next_move_analysis.append(next_state)
+                    
 
     # This gets a list of siderooms that can give up an amphipod (origin) or receive an amphipod (dest)
     def list_siderooms(self, burrowState, location):
@@ -241,18 +252,32 @@ class Burrow:
 
         # See if the state is already in the list of states
         # If state is already there, use the lowest energy_total
-        for state in self.active_burrowStates:
-            if state.hallway == new_burrowState.hallway:
-                # Use the lowest energy_total
-                state.energy_total = min(state.energy_total, new_burrowState.energy_total)
-                return None
+        
+        # for state in self.active_burrowStates:
+        #     if state.hallway == new_burrowState.hallway:
+        #         # Use the lowest energy_total
+        #         state.energy_total = min(state.energy_total, new_burrowState.energy_total)
+        #         return None
+        # dummy = 123
+        # return new_burrowState
 
-        dummy = 123
-        return new_burrowState
+        # Call function that accepts new_burrowState.
+        # The function will traverse the list of all burrowStates to look for a matching hallway
+        # If a match is found, then ensure that that match has the lowest_energy total and then return None
+        # Otherwise, return newBurrowState
+        return self.verify_state_is_new(new_burrowState)
+
+    # Call function that accepts new_burrowState.
+    # The function will traverse the list of all burrowStates to look for a matching hallway
+    # If a match is found, then ensure that that match has the lowest_energy total and then return None
+    # Otherwise, return newBurrowState
+    def verify_state_is_new(self, new_burrowState):
+        pass
 
 theBurrow = Burrow('input_scenario3.txt')
 
 # while len(theBurrow.active_burrowStates) > 0:
+# while len(self.states_awaiting_next_move_analysis) > 0:
 theBurrow.next_move()
 theBurrow.next_move()
 dummy = 123
