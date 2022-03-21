@@ -3,7 +3,6 @@
 #
 # This version of the code for Day 23 will use classes and OOP
 from enum import Enum
-from hashlib import new
 import sys
 import copy
 
@@ -14,6 +13,12 @@ class Location(Enum):
 class SideRoom:
     def __init__(self, amphipod_init):
         self.amphipod_list = [amphipod_init]
+
+    def __ne__(self, other):
+        for i in range(len(self.amphipod_list)):
+            if self.amphipod_list[i] != other.amphipod_list[i]:
+                return True
+        return False
 
     def append(self, amphipod_next):
         self.amphipod_list.append(amphipod_next)
@@ -153,7 +158,7 @@ class Burrow:
 
     def next_move(self):
         # burrowState = self.active_burrowStates[0]
-        burrowState = self.states_awaiting_next_move_analysis[0]
+        burrowState = self.states_awaiting_next_move_analysis.pop()
         # Send an amphipod from origin sideroom directly to destination sideroom
 
         # Send an amphipod from the hallway directly to destination sideroom
@@ -250,6 +255,8 @@ class Burrow:
         else:
             new_burrowState.hallway[tran_dest[0]].amphipod_list[tran_origin[1]] = None
 
+        new_burrowState.energy_total += energy_added
+
         # See if the state is already in the list of states
         # If state is already there, use the lowest energy_total
         
@@ -272,13 +279,29 @@ class Burrow:
     # If a match is found, then ensure that that match has the lowest_energy total and then return None
     # Otherwise, return newBurrowState
     def verify_state_is_new(self, new_burrowState):
-        pass
+        stack = [self.initial_burrowState]
+        while len(stack) > 0:
+            this_state = stack.pop()
+            # if this_state.hallway == new_burrowState.hallway:
+            if hallway_compare(this_state.hallway, new_burrowState.hallway):
+                this_state.energy_total = min(this_state.energy_total, new_burrowState.energy_total)
+                return None
+            for child in this_state.children:
+                stack.append(child)
+        return new_burrowState
+
+def hallway_compare(this_hallway, new_hallway):
+    for i in range(len(this_hallway)):
+        if this_hallway[i] != new_hallway[i]:
+            return False
+    return True
 
 theBurrow = Burrow('input_scenario3.txt')
 
 # while len(theBurrow.active_burrowStates) > 0:
-# while len(self.states_awaiting_next_move_analysis) > 0:
-theBurrow.next_move()
-theBurrow.next_move()
+while len(theBurrow.states_awaiting_next_move_analysis) > 0:
+    theBurrow.next_move()
+
+# theBurrow.next_move()
 dummy = 123
 
