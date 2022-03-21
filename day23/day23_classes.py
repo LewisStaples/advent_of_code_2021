@@ -9,6 +9,7 @@ import copy
 class Location(Enum):
     ORIGIN = 1
     DEST = 2
+# End of class Location
 
 class SideRoom:
     def __init__(self, amphipod_init):
@@ -51,6 +52,7 @@ class SideRoom:
                     self.amphipod_list[i] = None
                     return amphipod
         return None
+# End of class SideRoom
 
 class BurrowState:
     def __init__(self, hallway_init):
@@ -104,9 +106,34 @@ class BurrowState:
             return
         for i in Burrow.SIDEROOM_INDICES:
             self.hallway[i].append(sideroom_str[i+1])
+    
+    # Display contents of BurrowState (by printing)
+    def display(self):
+        print()
+        print('Total Energy: ', end='')
+        print(self.energy_total)
+        
+        # Display top line of '#' characters
+        for i in range(len(self.hallway) + 2):
+            print('#', end='')
+        print()
+
+        # Display hallway
+        print('#', end='')
+        for ch in self.hallway:
+            if ch is None:
+                print('.', end='')
+            if isinstance(ch, SideRoom):
+                print('.', end='')
+            if isinstance(ch, str):
+                print(ch, end='')
+        print('#')
+
+        print()
+
+# End of class BurrowState
 
 # Class Burrow will contain information that always applies to the burrow, whereas clas BurrowState has information that captures the momentary state of a burrow.
-
 class Burrow:
     # List of all amphipods (in alphabetical order, which is the desired order when the process will be completed)
     AMPHIPOD_LIST = ['A', 'B', 'C', 'D']
@@ -289,6 +316,7 @@ class Burrow:
             for child in this_state.children:
                 stack.append(child)
         return new_burrowState
+# End of class Burrow
 
 def hallway_compare(this_hallway, new_hallway):
     for i in range(len(this_hallway)):
@@ -297,6 +325,7 @@ def hallway_compare(this_hallway, new_hallway):
     return True
 
 theBurrow = Burrow('input_scenario3.txt')
+theBurrow.initial_burrowState.display()
 
 # while len(theBurrow.active_burrowStates) > 0:
 while len(theBurrow.states_awaiting_next_move_analysis) > 0:
