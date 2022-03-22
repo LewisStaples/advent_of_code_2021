@@ -107,7 +107,8 @@ class BurrowState:
         for i in Burrow.SIDEROOM_INDICES:
             self.hallway[i].append(sideroom_str[i+1])
     
-    # Display contents of BurrowState (by printing)
+    # Display contents of BurrowState (by printing)'
+    # Note that this version should handle siderooms with varying numbers of indices
     def display(self):
         print()
         print('Total Energy: ', end='')
@@ -118,19 +119,38 @@ class BurrowState:
             print('#', end='')
         print()
 
-        # Display hallway
+        # Traverse the hallway, and display hallway one character at a time
+        # 
         print('#', end='')
-        for ch in self.hallway:
-            if ch is None:
+        for hallway_space in self.hallway:
+            if hallway_space is None:
                 print('.', end='')
-            if isinstance(ch, SideRoom):
+            if isinstance(hallway_space, SideRoom):
                 print('.', end='')
-            if isinstance(ch, str):
-                print(ch, end='')
+            if isinstance(hallway_space, str):
+                print(hallway_space, end='')
         print('#')
 
+        j = 0
+        while True:
+            # amp counts siderooms with amphipods visible
+            amp_count = 0
+            print('#', end='')
+            for i in range(len(self.hallway)):
+                if i not in Burrow.SIDEROOM_INDICES:
+                    print('#', end='')
+                else:
+                    if j < len(self.hallway[i].amphipod_list):
+                        print(self.hallway[i].amphipod_list[j], end='')
+                        amp_count += 1
+                    else:
+                        print('#', end='')
+            print('#')
+            j += 1
+            # If amp_count is zero, then the length of all siderooms has been exceeded.
+            if amp_count == 0:
+                break
         print()
-
 # End of class BurrowState
 
 # Class Burrow will contain information that always applies to the burrow, whereas clas BurrowState has information that captures the momentary state of a burrow.
@@ -265,22 +285,27 @@ class Burrow:
         # Create a new burrowState object
         new_burrowState = BurrowState(burrowState)
 
+        transfer_amphipod = None
+
         # Remove amphipod from origin
         if tran_origin[1] is None:
-            # Remove origin amphipod from a sideroom
+            # Remove origin amphipod from hallway
             pass # TO BE DEFINED LATER ... probably below code
             # burrowState.hallway[tran_origin[0]] = None
         else:
             # Remove origin amphipod from a sideroom
-            new_burrowState.hallway[tran_origin[0]].amphipod_list[tran_origin[1]] = None
+            # new_burrowState.hallway[tran_origin[0]].amphipod_list[tran_origin[1]] = None
+            transfer_amphipod = new_burrowState.hallway[tran_origin[0]].pop()
         dummy = 123
 
         # Add amphipod at destination
         if tran_dest[1] is None:
             # new_burrowState.hallway[tran_dest[0]] = None
+            new_burrowState.hallway[tran_dest[0]] = transfer_amphipod
             pass
         else:
-            new_burrowState.hallway[tran_dest[0]].amphipod_list[tran_origin[1]] = None
+            # new_burrowState.hallway[tran_dest[0]].amphipod_list[tran_origin[1]] = None
+            pass
 
         new_burrowState.energy_total += energy_added
 
