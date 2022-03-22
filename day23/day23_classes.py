@@ -45,9 +45,9 @@ class SideRoom:
                 # elif there is an amphipod and it wants to go elsewhere, then return None
         # return None
         
-    def pop(self):
+    def sideroom_pop(self):
         for amphipod in self.amphipod_list:
-            for i, amphipod in enumerate(Burrow.AMPHIPOD_LIST):
+            for i, amphipod in enumerate(self.amphipod_list):
                 if amphipod in Burrow.AMPHIPOD_LIST:
                     self.amphipod_list[i] = None
                     return amphipod
@@ -141,7 +141,10 @@ class BurrowState:
                     print('#', end='')
                 else:
                     if j < len(self.hallway[i].amphipod_list):
-                        print(self.hallway[i].amphipod_list[j], end='')
+                        if self.hallway[i].amphipod_list[j] is None:
+                            print('.', end='')
+                        else:
+                            print(self.hallway[i].amphipod_list[j], end='')
                         amp_count += 1
                     else:
                         print('#', end='')
@@ -295,8 +298,8 @@ class Burrow:
         else:
             # Remove origin amphipod from a sideroom
             # new_burrowState.hallway[tran_origin[0]].amphipod_list[tran_origin[1]] = None
-            transfer_amphipod = new_burrowState.hallway[tran_origin[0]].pop()
-        dummy = 123
+            transfer_amphipod = new_burrowState.hallway[tran_origin[0]].sideroom_pop()
+            dummy = 123
 
         # Add amphipod at destination
         if tran_dest[1] is None:
@@ -340,6 +343,7 @@ class Burrow:
                 return None
             for child in this_state.children:
                 stack.append(child)
+        new_burrowState.display()
         return new_burrowState
 # End of class Burrow
 
@@ -352,10 +356,9 @@ def hallway_compare(this_hallway, new_hallway):
 theBurrow = Burrow('input_scenario3.txt')
 theBurrow.initial_burrowState.display()
 
-# while len(theBurrow.active_burrowStates) > 0:
-while len(theBurrow.states_awaiting_next_move_analysis) > 0:
-    theBurrow.next_move()
+# while len(theBurrow.states_awaiting_next_move_analysis) > 0:
+#     theBurrow.next_move()
 
-# theBurrow.next_move()
+theBurrow.next_move()
 dummy = 123
 
