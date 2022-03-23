@@ -5,6 +5,7 @@
 from enum import Enum
 import sys
 import copy
+import logging
 
 class Location(Enum):
     ORIGIN = 1
@@ -106,11 +107,67 @@ class BurrowState:
             return
         for i in Burrow.SIDEROOM_INDICES:
             self.hallway[i].append(sideroom_str[i+1])
-    
+
+    # Log contents of BurrowState (write to log file)'
+    # Note that this version should handle siderooms with varying numbers of indices
+    def logging_BurrowState(self):
+        logging.debug(' ID: ' + str(hex(id(self))))
+        logging.debug(' Total Energy: ' + str(self.energy_total))
+
+        # Display top line of '#' characters
+        logging.debug(' ' + '#'*(len(self.hallway)+2))
+
+        # Traverse the hallway, and display hallway one character at a time
+        str_to_log = ' #'
+        for hallway_space in self.hallway:
+            if hallway_space is None:
+                str_to_log += '.'
+            if isinstance(hallway_space, SideRoom):
+                str_to_log += '.'
+            if isinstance(hallway_space, str):
+                str_to_log += hallway_space
+        str_to_log += '#'
+        logging.debug(str_to_log)
+
+        j = 0
+        while True:
+            # amp counts siderooms with amphipods visible
+            amp_count = 0
+            # print('#', end='')
+            str_to_log = ' #'
+            for i in range(len(self.hallway)):
+                if i not in Burrow.SIDEROOM_INDICES:
+                    # print('#', end='')
+                    str_to_log += '#'
+                else:
+                    if j < len(self.hallway[i].amphipod_list):
+                        if self.hallway[i].amphipod_list[j] is None:
+                            # print('.', end='')
+                            str_to_log += '.'
+                        else:
+                            # print(self.hallway[i].amphipod_list[j], end='')
+                            str_to_log += self.hallway[i].amphipod_list[j]
+                        amp_count += 1
+                    else:
+                        # print('#', end='')
+                        str_to_log += '#'
+            # print('#')
+            str_to_log += '#'
+            logging.debug(str_to_log)
+
+            j += 1
+            # If amp_count is zero, then the length of all siderooms has been exceeded.
+            if amp_count == 0:
+                break
+
+        logging.debug('')
+
     # Display contents of BurrowState (by printing)'
     # Note that this version should handle siderooms with varying numbers of indices
     def display(self):
         print()
+        print('ID: ', end='')
+        print(hex(id(self)))
         print('Total Energy: ', end='')
         print(self.energy_total)
         
@@ -170,7 +227,7 @@ class Burrow:
     AMPHIPOD_ENERGY = {'A':[1], 'B':[10], 'C':[100], 'D':[1000]}
 
     def __init__(self, input_filename):
-        # self.active_burrowStates = []
+        logging.basicConfig(filename='debug.log', filemode = "w", level=logging.DEBUG)
         self.initial_burrowState = None
 
         # Open the input file
@@ -222,6 +279,12 @@ class Burrow:
                     # self.active_burrowStates.append(next_state)
                     burrowState.children.append(next_state)
                     self.states_awaiting_next_move_analysis.append(next_state)
+
+                    # If logging, log id's of burrowState, next_state
+                    logging.debug(' ' + str(hex(id(burrowState))) + ' ---> ' + str(hex(id(next_state))))
+                    next_state.logging_BurrowState()
+        dummy = 123
+
                     
 
     # This gets a list of siderooms that can give up an amphipod (origin) or receive an amphipod (dest)
@@ -343,7 +406,7 @@ class Burrow:
                 return None
             for child in this_state.children:
                 stack.append(child)
-        new_burrowState.display()
+        # new_burrowState.display()
         return new_burrowState
 # End of class Burrow
 
@@ -354,11 +417,15 @@ def hallway_compare(this_hallway, new_hallway):
     return True
 
 theBurrow = Burrow('input_scenario3.txt')
-theBurrow.initial_burrowState.display()
+# theBurrow.initial_burrowState.display()
+logging.debug(' Initial Burrow State:')
+theBurrow.initial_burrowState.logging_BurrowState()
 
 # while len(theBurrow.states_awaiting_next_move_analysis) > 0:
 #     theBurrow.next_move()
 
 theBurrow.next_move()
+theBurrow.next_move()
+# theBurrow.next_move()
 dummy = 123
 
