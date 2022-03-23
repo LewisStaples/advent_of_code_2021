@@ -262,18 +262,10 @@ class Burrow:
                     # self.active_burrowStates[0].sideroom_append(in_string)
                     self.initial_burrowState.sideroom_append(in_string)
 
-
-    def next_move(self):
-        # burrowState = self.active_burrowStates[0]
+    def move_location(self, origin_fxn, dest_fxn):
         burrowState = self.states_awaiting_next_move_analysis.pop()
-        # Send an amphipod from origin sideroom directly to destination sideroom
-
-        # Send an amphipod from the hallway directly to destination sideroom
-
-        # Send an amphipod from a sideroom to a hallway location
-
-        for tran_origin in self.list_siderooms(burrowState, Location.ORIGIN):
-            for tran_dest in self.get_hallways(burrowState, Location.DEST):
+        for tran_origin in origin_fxn(burrowState, Location.ORIGIN):
+            for tran_dest in dest_fxn(burrowState, Location.DEST):
                 next_state = self.make_move(burrowState, tran_origin, tran_dest)
                 if next_state is not None:
                     # self.active_burrowStates.append(next_state)
@@ -283,6 +275,27 @@ class Burrow:
                     # If logging, log id's of burrowState, next_state
                     logging.debug(' ' + str(hex(id(burrowState))) + ' ---> ' + str(hex(id(next_state))))
                     next_state.logging_BurrowState()
+
+
+    def next_move(self):
+        # burrowState = self.states_awaiting_next_move_analysis.pop()
+        # Send an amphipod from origin sideroom directly to destination sideroom
+
+        # Send an amphipod from the hallway directly to destination sideroom
+
+        # # Send an amphipod from a sideroom to a hallway location
+        self.move_location(self.list_siderooms, self.get_hallways)
+        # for tran_origin in self.list_siderooms(burrowState, Location.ORIGIN):
+        #     for tran_dest in self.get_hallways(burrowState, Location.DEST):
+        #         next_state = self.make_move(burrowState, tran_origin, tran_dest)
+        #         if next_state is not None:
+        #             # self.active_burrowStates.append(next_state)
+        #             burrowState.children.append(next_state)
+        #             self.states_awaiting_next_move_analysis.append(next_state)
+
+        #             # If logging, log id's of burrowState, next_state
+        #             logging.debug(' ' + str(hex(id(burrowState))) + ' ---> ' + str(hex(id(next_state))))
+        #             next_state.logging_BurrowState()
         dummy = 123
 
                     
@@ -421,11 +434,11 @@ theBurrow = Burrow('input_scenario3.txt')
 logging.debug(' Initial Burrow State:')
 theBurrow.initial_burrowState.logging_BurrowState()
 
-# while len(theBurrow.states_awaiting_next_move_analysis) > 0:
-#     theBurrow.next_move()
+while len(theBurrow.states_awaiting_next_move_analysis) > 0:
+    theBurrow.next_move()
 
-theBurrow.next_move()
-theBurrow.next_move()
+# theBurrow.next_move()
+# theBurrow.next_move()
 # theBurrow.next_move()
 dummy = 123
 
