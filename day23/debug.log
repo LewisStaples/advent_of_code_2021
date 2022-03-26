@@ -1,297 +1,153 @@
 DEBUG:root: Initial Burrow State:
-DEBUG:root: ID: 0x271cf433610
+DEBUG:root: ID: 0x1f10c0c3610
 DEBUG:root: Total Energy: 0
 DEBUG:root: #############
-DEBUG:root: #.A.........#
-DEBUG:root: ###B#.#B#C###
-DEBUG:root: ###C#A#D#D###
-DEBUG:root: #############
-DEBUG:root:
-DEBUG:root: 0x271cf433610 ---> 0x271cf433c10
-DEBUG:root: ID: 0x271cf433c10
-DEBUG:root: Total Energy: 2
-DEBUG:root: #############
-DEBUG:root: #.A.B.......#
+DEBUG:root: #.A.....B.C.#
 DEBUG:root: ###.#.#B#C###
-DEBUG:root: ###C#A#D#D###
+DEBUG:root: ###.#A#D#D###
 DEBUG:root: #############
 DEBUG:root:
-DEBUG:root: 0x271cf433610 ---> 0x271cf433b80
-DEBUG:root: ID: 0x271cf433b80
-DEBUG:root: Total Energy: 4
-DEBUG:root: #############
-DEBUG:root: #.A...B.....#
-DEBUG:root: ###.#.#B#C###
-DEBUG:root: ###C#A#D#D###
-DEBUG:root: #############
-DEBUG:root:
-DEBUG:root: 0x271cf433610 ---> 0x271cf433e20
-DEBUG:root: ID: 0x271cf433e20
+DEBUG:root: 0x1f10c0c3610 ---> 0x1f10c0c3c10
+DEBUG:root: ID: 0x1f10c0c3c10
 DEBUG:root: Total Energy: 6
 DEBUG:root: #############
-DEBUG:root: #.A.....B...#
+DEBUG:root: #.A.....B.C.#
 DEBUG:root: ###.#.#B#C###
-DEBUG:root: ###C#A#D#D###
+DEBUG:root: ###A#.#D#D###
 DEBUG:root: #############
 DEBUG:root:
-DEBUG:root: 0x271cf433610 ---> 0x271cf44d130
-DEBUG:root: ID: 0x271cf44d130
-DEBUG:root: Total Energy: 8
-DEBUG:root: #############
-DEBUG:root: #.A.......B.#
-DEBUG:root: ###.#.#B#C###
-DEBUG:root: ###C#A#D#D###
-DEBUG:root: #############
-DEBUG:root:
-DEBUG:root: 0x271cf433610 ---> 0x271cf44d3d0
-DEBUG:root: ID: 0x271cf44d3d0
-DEBUG:root: Total Energy: 9
-DEBUG:root: #############
-DEBUG:root: #.A........B#
-DEBUG:root: ###.#.#B#C###
-DEBUG:root: ###C#A#D#D###
-DEBUG:root: #############
-DEBUG:root:
-DEBUG:root: 0x271cf433610 ---> 0x271cf44d670
-DEBUG:root: ID: 0x271cf44d670
+DEBUG:root: 0x1f10c0c3610 ---> 0x1f10c0c3b80
+DEBUG:root: ID: 0x1f10c0c3b80
 DEBUG:root: Total Energy: 3
 DEBUG:root: #############
-DEBUG:root: #.A.A.......#
-DEBUG:root: ###B#.#B#C###
-DEBUG:root: ###C#.#D#D###
+DEBUG:root: #.A.A...B.C.#
+DEBUG:root: ###.#.#B#C###
+DEBUG:root: ###.#.#D#D###
 DEBUG:root: #############
 DEBUG:root:
-DEBUG:root: 0x271cf433610 ---> 0x271cf433940
-DEBUG:root: ID: 0x271cf433940
+DEBUG:root: 0x1f10c0c3610 ---> 0x1f10c0c3f40
+DEBUG:root: ID: 0x1f10c0c3f40
 DEBUG:root: Total Energy: 3
 DEBUG:root: #############
-DEBUG:root: #.A...A.....#
-DEBUG:root: ###B#.#B#C###
-DEBUG:root: ###C#.#D#D###
+DEBUG:root: #.A...A.B.C.#
+DEBUG:root: ###.#.#B#C###
+DEBUG:root: ###.#.#D#D###
 DEBUG:root: #############
 DEBUG:root:
-DEBUG:root: 0x271cf433610 ---> 0x271cf44d5b0
-DEBUG:root: ID: 0x271cf44d5b0
-DEBUG:root: Total Energy: 5
+DEBUG:root: 0x1f10c0c3610 ---> 0x1f10c0dd1f0
+DEBUG:root: ID: 0x1f10c0dd1f0
+DEBUG:root: Total Energy: 40
 DEBUG:root: #############
-DEBUG:root: #.A.....A...#
-DEBUG:root: ###B#.#B#C###
-DEBUG:root: ###C#.#D#D###
-DEBUG:root: #############
-DEBUG:root:
-DEBUG:root: 0x271cf433610 ---> 0x271cf44d850
-DEBUG:root: ID: 0x271cf44d850
-DEBUG:root: Total Energy: 7
-DEBUG:root: #############
-DEBUG:root: #.A.......A.#
-DEBUG:root: ###B#.#B#C###
-DEBUG:root: ###C#.#D#D###
+DEBUG:root: #.A.B...B.C.#
+DEBUG:root: ###.#.#.#C###
+DEBUG:root: ###.#A#D#D###
 DEBUG:root: #############
 DEBUG:root:
-DEBUG:root: 0x271cf433610 ---> 0x271cf44dd60
-DEBUG:root: ID: 0x271cf44dd60
-DEBUG:root: Total Energy: 8
+DEBUG:root: 0x1f10c0c3610 ---> 0x1f10c0dd490
+DEBUG:root: ID: 0x1f10c0dd490
+DEBUG:root: Total Energy: 20
 DEBUG:root: #############
-DEBUG:root: #.A........A#
-DEBUG:root: ###B#.#B#C###
-DEBUG:root: ###C#.#D#D###
-DEBUG:root: #############
-DEBUG:root:
-DEBUG:root: 0x271cf433610 ---> 0x271cf44f040
-DEBUG:root: ID: 0x271cf44f040
-DEBUG:root: Total Energy: 4
-DEBUG:root: #############
-DEBUG:root: #.A.B.......#
-DEBUG:root: ###B#.#.#C###
-DEBUG:root: ###C#A#D#D###
+DEBUG:root: #.A...B.B.C.#
+DEBUG:root: ###.#.#.#C###
+DEBUG:root: ###.#A#D#D###
 DEBUG:root: #############
 DEBUG:root:
-DEBUG:root: 0x271cf433610 ---> 0x271cf44f2e0
-DEBUG:root: ID: 0x271cf44f2e0
-DEBUG:root: Total Energy: 2
+DEBUG:root: 0x1f10c0dd490 ---> 0x1f10c0dd730
+DEBUG:root: ID: 0x1f10c0dd730
+DEBUG:root: Total Energy: 26
 DEBUG:root: #############
-DEBUG:root: #.A...B.....#
-DEBUG:root: ###B#.#.#C###
-DEBUG:root: ###C#A#D#D###
-DEBUG:root: #############
-DEBUG:root:
-DEBUG:root: 0x271cf433610 ---> 0x271cf44f580
-DEBUG:root: ID: 0x271cf44f580
-DEBUG:root: Total Energy: 2
-DEBUG:root: #############
-DEBUG:root: #.A.....B...#
-DEBUG:root: ###B#.#.#C###
-DEBUG:root: ###C#A#D#D###
+DEBUG:root: #.A...B.B.C.#
+DEBUG:root: ###.#.#.#C###
+DEBUG:root: ###A#.#D#D###
 DEBUG:root: #############
 DEBUG:root:
-DEBUG:root: 0x271cf433610 ---> 0x271cf44f820
-DEBUG:root: ID: 0x271cf44f820
-DEBUG:root: Total Energy: 4
+DEBUG:root: 0x1f10c0dd490 ---> 0x1f10c0dd9d0
+DEBUG:root: ID: 0x1f10c0dd9d0
+DEBUG:root: Total Energy: 23
 DEBUG:root: #############
-DEBUG:root: #.A.......B.#
-DEBUG:root: ###B#.#.#C###
-DEBUG:root: ###C#A#D#D###
-DEBUG:root: #############
-DEBUG:root:
-DEBUG:root: 0x271cf433610 ---> 0x271cf44fac0
-DEBUG:root: ID: 0x271cf44fac0
-DEBUG:root: Total Energy: 5
-DEBUG:root: #############
-DEBUG:root: #.A........B#
-DEBUG:root: ###B#.#.#C###
-DEBUG:root: ###C#A#D#D###
+DEBUG:root: #.A.A.B.B.C.#
+DEBUG:root: ###.#.#.#C###
+DEBUG:root: ###.#.#D#D###
 DEBUG:root: #############
 DEBUG:root:
-DEBUG:root: 0x271cf433610 ---> 0x271cf44fd60
-DEBUG:root: ID: 0x271cf44fd60
-DEBUG:root: Total Energy: 6
+DEBUG:root: 0x1f10c0dd1f0 ---> 0x1f10c0ddc70
+DEBUG:root: ID: 0x1f10c0ddc70
+DEBUG:root: Total Energy: 43
 DEBUG:root: #############
-DEBUG:root: #.A.C.......#
-DEBUG:root: ###B#.#B#.###
-DEBUG:root: ###C#A#D#D###
-DEBUG:root: #############
-DEBUG:root:
-DEBUG:root: 0x271cf433610 ---> 0x271cf451040
-DEBUG:root: ID: 0x271cf451040
-DEBUG:root: Total Energy: 4
-DEBUG:root: #############
-DEBUG:root: #.A...C.....#
-DEBUG:root: ###B#.#B#.###
-DEBUG:root: ###C#A#D#D###
+DEBUG:root: #.A.B.A.B.C.#
+DEBUG:root: ###.#.#.#C###
+DEBUG:root: ###.#.#D#D###
 DEBUG:root: #############
 DEBUG:root:
-DEBUG:root: 0x271cf433610 ---> 0x271cf4512e0
-DEBUG:root: ID: 0x271cf4512e0
-DEBUG:root: Total Energy: 2
+DEBUG:root: 0x1f10c0dd1f0 ---> 0x1f10c0ddbb0
+DEBUG:root: ID: 0x1f10c0ddbb0
+DEBUG:root: Total Energy: 3040
 DEBUG:root: #############
-DEBUG:root: #.A.....C...#
-DEBUG:root: ###B#.#B#.###
-DEBUG:root: ###C#A#D#D###
-DEBUG:root: #############
-DEBUG:root:
-DEBUG:root: 0x271cf433610 ---> 0x271cf451580
-DEBUG:root: ID: 0x271cf451580
-DEBUG:root: Total Energy: 2
-DEBUG:root: #############
-DEBUG:root: #.A.......C.#
-DEBUG:root: ###B#.#B#.###
-DEBUG:root: ###C#A#D#D###
+DEBUG:root: #.A.B.D.B.C.#
+DEBUG:root: ###.#.#.#C###
+DEBUG:root: ###.#A#.#D###
 DEBUG:root: #############
 DEBUG:root:
-DEBUG:root: 0x271cf433610 ---> 0x271cf451820
-DEBUG:root: ID: 0x271cf451820
-DEBUG:root: Total Energy: 3
+DEBUG:root: 0x1f10c0c3b80 ---> 0x1f10c0c3df0
+DEBUG:root: ID: 0x1f10c0c3df0
+DEBUG:root: Total Energy: 53
 DEBUG:root: #############
-DEBUG:root: #.A........C#
-DEBUG:root: ###B#.#B#.###
-DEBUG:root: ###C#A#D#D###
-DEBUG:root: #############
-DEBUG:root:
-DEBUG:root: 0x271cf451820 ---> 0x271cf451ac0
-DEBUG:root: ID: 0x271cf451ac0
-DEBUG:root: Total Energy: 5
-DEBUG:root: #############
-DEBUG:root: #.A.B......C#
-DEBUG:root: ###.#.#B#.###
-DEBUG:root: ###C#A#D#D###
+DEBUG:root: #.A.A...B.C.#
+DEBUG:root: ###.#.#.#C###
+DEBUG:root: ###.#B#D#D###
 DEBUG:root: #############
 DEBUG:root:
-DEBUG:root: 0x271cf451820 ---> 0x271cf451d60
-DEBUG:root: ID: 0x271cf451d60
-DEBUG:root: Total Energy: 7
+DEBUG:root: 0x1f10c0c3df0 ---> 0x1f10c0df1f0
+DEBUG:root: ID: 0x1f10c0df1f0
+DEBUG:root: Total Energy: 3053
 DEBUG:root: #############
-DEBUG:root: #.A...B....C#
-DEBUG:root: ###.#.#B#.###
-DEBUG:root: ###C#A#D#D###
-DEBUG:root: #############
-DEBUG:root:
-DEBUG:root: 0x271cf451820 ---> 0x271cf454040
-DEBUG:root: ID: 0x271cf454040
-DEBUG:root: Total Energy: 9
-DEBUG:root: #############
-DEBUG:root: #.A.....B..C#
-DEBUG:root: ###.#.#B#.###
-DEBUG:root: ###C#A#D#D###
+DEBUG:root: #.A.A.D.B.C.#
+DEBUG:root: ###.#.#.#C###
+DEBUG:root: ###.#B#.#D###
 DEBUG:root: #############
 DEBUG:root:
-DEBUG:root: 0x271cf451820 ---> 0x271cf4542e0
-DEBUG:root: ID: 0x271cf4542e0
-DEBUG:root: Total Energy: 11
+DEBUG:root: 0x1f10c0c3c10 ---> 0x1f10c0df7f0
+DEBUG:root: ID: 0x1f10c0df7f0
+DEBUG:root: Total Energy: 56
 DEBUG:root: #############
-DEBUG:root: #.A.......BC#
-DEBUG:root: ###.#.#B#.###
-DEBUG:root: ###C#A#D#D###
-DEBUG:root: #############
-DEBUG:root:
-DEBUG:root: 0x271cf451820 ---> 0x271cf454580
-DEBUG:root: ID: 0x271cf454580
-DEBUG:root: Total Energy: 6
-DEBUG:root: #############
-DEBUG:root: #.A.A......C#
-DEBUG:root: ###B#.#B#.###
-DEBUG:root: ###C#.#D#D###
+DEBUG:root: #.A.....B.C.#
+DEBUG:root: ###.#.#.#C###
+DEBUG:root: ###A#B#D#D###
 DEBUG:root: #############
 DEBUG:root:
-DEBUG:root: 0x271cf451820 ---> 0x271cf454820
-DEBUG:root: ID: 0x271cf454820
-DEBUG:root: Total Energy: 6
+DEBUG:root: 0x1f10c0c3c10 ---> 0x1f10c0dfaf0
+DEBUG:root: ID: 0x1f10c0dfaf0
+DEBUG:root: Total Energy: 46
 DEBUG:root: #############
-DEBUG:root: #.A...A....C#
-DEBUG:root: ###B#.#B#.###
-DEBUG:root: ###C#.#D#D###
-DEBUG:root: #############
-DEBUG:root:
-DEBUG:root: 0x271cf451820 ---> 0x271cf454ac0
-DEBUG:root: ID: 0x271cf454ac0
-DEBUG:root: Total Energy: 8
-DEBUG:root: #############
-DEBUG:root: #.A.....A..C#
-DEBUG:root: ###B#.#B#.###
-DEBUG:root: ###C#.#D#D###
+DEBUG:root: #.A.B...B.C.#
+DEBUG:root: ###.#.#.#C###
+DEBUG:root: ###A#.#D#D###
 DEBUG:root: #############
 DEBUG:root:
-DEBUG:root: 0x271cf451820 ---> 0x271cf454d60
-DEBUG:root: ID: 0x271cf454d60
-DEBUG:root: Total Energy: 10
+DEBUG:root: 0x1f10c0dfaf0 ---> 0x1f10c0dfb50
+DEBUG:root: ID: 0x1f10c0dfb50
+DEBUG:root: Total Energy: 3046
 DEBUG:root: #############
-DEBUG:root: #.A.......AC#
-DEBUG:root: ###B#.#B#.###
-DEBUG:root: ###C#.#D#D###
-DEBUG:root: #############
-DEBUG:root:
-DEBUG:root: 0x271cf451820 ---> 0x271cf457040
-DEBUG:root: ID: 0x271cf457040
-DEBUG:root: Total Energy: 7
-DEBUG:root: #############
-DEBUG:root: #.A.B......C#
-DEBUG:root: ###B#.#.#.###
-DEBUG:root: ###C#A#D#D###
+DEBUG:root: #.A.B.D.B.C.#
+DEBUG:root: ###.#.#.#C###
+DEBUG:root: ###A#.#.#D###
 DEBUG:root: #############
 DEBUG:root:
-DEBUG:root: 0x271cf451820 ---> 0x271cf4572e0
-DEBUG:root: ID: 0x271cf4572e0
-DEBUG:root: Total Energy: 5
+DEBUG:root: 0x1f10c0df7f0 ---> 0x1f10c0dfdc0
+DEBUG:root: ID: 0x1f10c0dfdc0
+DEBUG:root: Total Energy: 5056
 DEBUG:root: #############
-DEBUG:root: #.A...B....C#
-DEBUG:root: ###B#.#.#.###
-DEBUG:root: ###C#A#D#D###
-DEBUG:root: #############
-DEBUG:root:
-DEBUG:root: 0x271cf451820 ---> 0x271cf457580
-DEBUG:root: ID: 0x271cf457580
-DEBUG:root: Total Energy: 5
-DEBUG:root: #############
-DEBUG:root: #.A.....B..C#
-DEBUG:root: ###B#.#.#.###
-DEBUG:root: ###C#A#D#D###
+DEBUG:root: #.A.D...B.C.#
+DEBUG:root: ###.#.#.#C###
+DEBUG:root: ###A#B#.#D###
 DEBUG:root: #############
 DEBUG:root:
-DEBUG:root: 0x271cf451820 ---> 0x271cf457820
-DEBUG:root: ID: 0x271cf457820
-DEBUG:root: Total Energy: 7
+DEBUG:root: 0x1f10c0df7f0 ---> 0x1f10c0e1670
+DEBUG:root: ID: 0x1f10c0e1670
+DEBUG:root: Total Energy: 3056
 DEBUG:root: #############
-DEBUG:root: #.A.......BC#
-DEBUG:root: ###B#.#.#.###
-DEBUG:root: ###C#A#D#D###
+DEBUG:root: #.A...D.B.C.#
+DEBUG:root: ###.#.#.#C###
+DEBUG:root: ###A#B#.#D###
 DEBUG:root: #############
 DEBUG:root:

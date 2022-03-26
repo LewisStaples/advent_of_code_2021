@@ -245,7 +245,7 @@ class Burrow:
     DEST_AMPH__SIDEROOM_INDEX = dict()
 
     # This dictionary has index = 'type of amphipod' and value is the energy.
-    AMPHIPOD_ENERGY = {'A':[1], 'B':[10], 'C':[100], 'D':[1000]}
+    AMPHIPOD_ENERGY = {'A':1, 'B':10, 'C':100, 'D':1000}
 
     def __init__(self, input_filename):
         logging.basicConfig(filename='debug.log', filemode = "w", level=logging.DEBUG)
@@ -359,13 +359,13 @@ class Burrow:
         return ret_val
 
     def make_move(self, burrowState, tran_origin, tran_dest):
-        energy_added = 0
+        step_count = 0
 
         # If origin is a sideroom, calculate energy use
         # Don't need to look out for obstacles while traversing sideroom, because 
         # only top level amphipods have been used
         if tran_origin[1] is not None:
-            energy_added += 1 + tran_origin[1]
+            step_count += 1 + tran_origin[1]
         dummy = 123
 
 
@@ -375,13 +375,13 @@ class Burrow:
         # Determine transfer direction in hallway (left or right)
         tran_dir = 1 if tran_origin[0] < tran_dest[0] else -1 
         hallway_posn = tran_origin[0] + tran_dir
-        energy_added += 1
+        step_count += 1
         while hallway_posn != tran_dest[0] and hallway_posn > -1:
             if isinstance(burrowState.hallway[hallway_posn], str):
                 # Amphipod obstacle detected
                 return None
             hallway_posn += tran_dir
-            energy_added += 1
+            step_count += 1
             dummy = 123
 
         # hallway transit should be complete
@@ -394,7 +394,9 @@ class Burrow:
         #   calculate energy use
         #   verify that it is the destination sideroom (unless done elsewhere)
         # TO BE ADDED LATER !!!!
-
+        if tran_dest[1] is not None:
+            step_count += 1 + tran_dest[1]
+        dummy = 123
 
         # Create a new burrowState object
         new_burrowState = BurrowState(burrowState)
@@ -428,7 +430,7 @@ class Burrow:
             new_burrowState.hallway[tran_dest[0]].amphipod_list[tran_dest[1]] = transfer_amphipod
             pass
 
-        new_burrowState.energy_total += energy_added
+        new_burrowState.energy_total += step_count * Burrow.AMPHIPOD_ENERGY[transfer_amphipod]
 
         # See if the state is already in the list of states
         # If state is already there, use the lowest energy_total
