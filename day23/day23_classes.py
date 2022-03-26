@@ -25,9 +25,17 @@ class SideRoom:
     def append(self, amphipod_next):
         self.amphipod_list.append(amphipod_next)
 
-    # This tests if the sideroom can be use
+    # This tests if the amphipods in this given SideRoom can be used as origin 
+    # (to send elsewhere), or if the sideroom can be used as a destination 
+    # (to send amphipods to here)
+    #
+    # If the sideroom can be used, the index (an integer) of what can be used is returned.
+    # If the sideroom cannot be used, None is returned
     def get_sideroom_index(self, location, sideroom_dest_amph):
         if location == Location.ORIGIN:
+            # If the sideroom has no amphipods in it, then it returns None
+            # If any amphipods are in the sideroom, and if all amphipods here intend to stay here, it returns None
+            # Otherwise the index of the first encountered amphipod (starting from index 0) is returned
             for i, amphipod in enumerate(self.amphipod_list):
                 if amphipod in Burrow.AMPHIPOD_LIST:
                     # Skip sideroom if all amphipods are at their intended destination
@@ -39,12 +47,20 @@ class SideRoom:
             return None
 
         elif location == Location.DEST:
-            for i in range(self.amphipod_list, -1, -1):
+            # Starting from the bottom ...
+            # If any amphipods are found and if they wish to be sent to elsehwere, return None
+            # If an empty slot is discovered, its index is returned
+            # If the top is reached without encountering any empty slots, return None
+
+            for i in range(len(self.amphipod_list) - 1, -1, -1):
                 if self.amphipod_list[i] is None:
                     # Index of an empty slot.  An amphipod could be sent here.
                     return i
                 # elif there is an amphipod and it wants to go elsewhere, then return None
-        # return None
+                elif self.amphipod_list[i] != sideroom_dest_amph:
+                    return None
+            dummy = 123
+            return None
         
     def sideroom_pop(self):
         for amphipod in self.amphipod_list:
@@ -91,7 +107,8 @@ class BurrowState:
         for i,ch in enumerate(sideroom_str):
             if ch.isalpha() or ch == '.':
                 # This hallway position is a side room.  Add first amphipod
-                self.hallway[i-1] = SideRoom(ch)
+                # self.hallway[i-1] = SideRoom(ch)
+                self.hallway[i-1] = SideRoom(None) if ch=='.' else SideRoom(ch)
                 Burrow.SIDEROOM_INDICES.append(i-1)
 
                 Burrow.DEST_AMPH__SIDEROOM_INDEX[i-1] = Burrow.AMPHIPOD_LIST[i_sideroom]
@@ -106,7 +123,11 @@ class BurrowState:
         if has_no_amphipods:
             return
         for i in Burrow.SIDEROOM_INDICES:
-            self.hallway[i].append(sideroom_str[i+1])
+            if sideroom_str[i+1] == '.':
+                self.hallway[i].append(None)
+            else:
+                self.hallway[i].append(sideroom_str[i+1])
+            dummy = 123
 
     # Log contents of BurrowState (write to log file)'
     # Note that this version should handle siderooms with varying numbers of indices
@@ -262,8 +283,11 @@ class Burrow:
                     # self.active_burrowStates[0].sideroom_append(in_string)
                     self.initial_burrowState.sideroom_append(in_string)
 
-    def move_location(self, origin_fxn, dest_fxn):
-        burrowState = self.states_awaiting_next_move_analysis.pop()
+    def move_location(self, origin_fxn, dest_fxn, burrowState):
+        # if len(self.states_awaiting_next_move_analysis) > 0:
+        #     burrowState = self.states_awaiting_next_move_analysis.pop()
+        # else:
+        #     return
         for tran_origin in origin_fxn(burrowState, Location.ORIGIN):
             for tran_dest in dest_fxn(burrowState, Location.DEST):
                 next_state = self.make_move(burrowState, tran_origin, tran_dest)
@@ -278,15 +302,22 @@ class Burrow:
 
 
     def next_move(self):
+        if len(self.states_awaiting_next_move_analysis) > 0:
+            burrowState = self.states_awaiting_next_move_analysis.pop()
+        else:
+            return
         # burrowState = self.states_awaiting_next_move_analysis.pop()
+
         # Send an amphipod from origin sideroom directly to destination sideroom
+        self.move_location(self.list_siderooms, self.list_siderooms, burrowState)
 
         # Send an amphipod from the hallway directly to destination sideroom
 
         # # Send an amphipod from a sideroom to a hallway location
-        self.move_location(self.list_siderooms, self.get_hallways)
+        self.move_location(self.list_siderooms, self.list_hallways, burrowState)
+
         # for tran_origin in self.list_siderooms(burrowState, Location.ORIGIN):
-        #     for tran_dest in self.get_hallways(burrowState, Location.DEST):
+        #     for tran_dest in self.list_hallways(burrowState, Location.DEST):
         #         next_state = self.make_move(burrowState, tran_origin, tran_dest)
         #         if next_state is not None:
         #             # self.active_burrowStates.append(next_state)
@@ -306,21 +337,25 @@ class Burrow:
         for hallway_index in Burrow.SIDEROOM_INDICES:
             sideroom_dest_amph = Burrow.DEST_AMPH__SIDEROOM_INDEX[hallway_index]  
             sideroom_index = burrowState.hallway[hallway_index].get_sideroom_index(location, sideroom_dest_amph)
-            # Identifies which amphipod type wants to end up in this sideroom
             
-            if sideroom_index is not None: # sideroom space has an amphipod
-                ret_val.append((hallway_index, sideroom_index))
+            if location == Location.ORIGIN:
+                if sideroom_index is not None: # sideroom space has an amphipod
+                    ret_val.append((hallway_index, sideroom_index))
+            else: # if destination
+                if sideroom_index is not None:
+                    ret_val.append((hallway_index, sideroom_index))
+
         dummy = 123
         return ret_val
 
-    def get_hallways(self, burrowState, location):
+    def list_hallways(self, burrowState, location):
         ret_val = []
         for hallway_index, hallway_space in enumerate(burrowState.hallway):
             if location == Location.DEST:
                 if hallway_space is None:
                     ret_val.append((hallway_index, None))
-            # elif location == Location.ORIGIN:
-            # DOOOOOOOO
+            elif location == Location.ORIGIN:
+                dummy = 123
         return ret_val
 
     def make_move(self, burrowState, tran_origin, tran_dest):
@@ -379,11 +414,18 @@ class Burrow:
 
         # Add amphipod at destination
         if tran_dest[1] is None:
-            # new_burrowState.hallway[tran_dest[0]] = None
+            # NEED TO TEST ....
             new_burrowState.hallway[tran_dest[0]] = transfer_amphipod
-            pass
+
+            # if new_burrowState.hallway[tran_dest[0]] is None:
+            #     dummy = 123
+            # else:
+            #     new_burrowState.hallway[tran_dest[0]].append(transfer_amphipod)
+            # pass
         else:
-            # new_burrowState.hallway[tran_dest[0]].amphipod_list[tran_origin[1]] = None
+            if transfer_amphipod != Burrow.DEST_AMPH__SIDEROOM_INDEX[tran_dest[0]]:
+                return None
+            new_burrowState.hallway[tran_dest[0]].amphipod_list[tran_dest[1]] = transfer_amphipod
             pass
 
         new_burrowState.energy_total += energy_added
@@ -429,7 +471,7 @@ def hallway_compare(this_hallway, new_hallway):
             return False
     return True
 
-theBurrow = Burrow('input_scenario3.txt')
+theBurrow = Burrow('input_scenario4.txt')
 # theBurrow.initial_burrowState.display()
 logging.debug(' Initial Burrow State:')
 theBurrow.initial_burrowState.logging_BurrowState()
