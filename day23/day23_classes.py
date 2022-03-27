@@ -7,6 +7,8 @@ import sys
 import copy
 import logging
 
+from numpy import isin
+
 class Location(Enum):
     ORIGIN = 1
     DEST = 2
@@ -284,10 +286,6 @@ class Burrow:
                     self.initial_burrowState.sideroom_append(in_string)
 
     def move_location(self, origin_fxn, dest_fxn, burrowState):
-        # if len(self.states_awaiting_next_move_analysis) > 0:
-        #     burrowState = self.states_awaiting_next_move_analysis.pop()
-        # else:
-        #     return
         for tran_origin in origin_fxn(burrowState, Location.ORIGIN):
             for tran_dest in dest_fxn(burrowState, Location.DEST):
                 next_state = self.make_move(burrowState, tran_origin, tran_dest)
@@ -306,30 +304,15 @@ class Burrow:
             burrowState = self.states_awaiting_next_move_analysis.pop()
         else:
             return
-        # burrowState = self.states_awaiting_next_move_analysis.pop()
 
         # Send an amphipod from origin sideroom directly to destination sideroom
         self.move_location(self.list_siderooms, self.list_siderooms, burrowState)
 
         # Send an amphipod from the hallway directly to destination sideroom
+        self.move_location(self.list_hallways, self.list_siderooms, burrowState)
 
         # # Send an amphipod from a sideroom to a hallway location
         self.move_location(self.list_siderooms, self.list_hallways, burrowState)
-
-        # for tran_origin in self.list_siderooms(burrowState, Location.ORIGIN):
-        #     for tran_dest in self.list_hallways(burrowState, Location.DEST):
-        #         next_state = self.make_move(burrowState, tran_origin, tran_dest)
-        #         if next_state is not None:
-        #             # self.active_burrowStates.append(next_state)
-        #             burrowState.children.append(next_state)
-        #             self.states_awaiting_next_move_analysis.append(next_state)
-
-        #             # If logging, log id's of burrowState, next_state
-        #             logging.debug(' ' + str(hex(id(burrowState))) + ' ---> ' + str(hex(id(next_state))))
-        #             next_state.logging_BurrowState()
-        dummy = 123
-
-                    
 
     # This gets a list of siderooms that can give up an amphipod (origin) or receive an amphipod (dest)
     def list_siderooms(self, burrowState, location):
@@ -355,48 +338,36 @@ class Burrow:
                 if hallway_space is None:
                     ret_val.append((hallway_index, None))
             elif location == Location.ORIGIN:
-                dummy = 123
+                if isinstance(hallway_space, str):
+                    ret_val.append((hallway_index, None))
         return ret_val
 
     def make_move(self, burrowState, tran_origin, tran_dest):
         step_count = 0
 
-        # If origin is a sideroom, calculate energy use
+        # (1) If origin is a sideroom, calculate steps taken
         # Don't need to look out for obstacles while traversing sideroom, because 
         # only top level amphipods have been used
         if tran_origin[1] is not None:
             step_count += 1 + tran_origin[1]
         dummy = 123
 
+        # (2) Take steps in hallway
 
-
-
-        # Logic used in all transfers
         # Determine transfer direction in hallway (left or right)
         tran_dir = 1 if tran_origin[0] < tran_dest[0] else -1 
         hallway_posn = tran_origin[0] + tran_dir
         step_count += 1
         while hallway_posn != tran_dest[0] and hallway_posn > -1:
             if isinstance(burrowState.hallway[hallway_posn], str):
-                # Amphipod obstacle detected
+                # Amphipod obstacle in hallway detected
                 return None
             hallway_posn += tran_dir
             step_count += 1
-            dummy = 123
 
-        # hallway transit should be complete
-        dummy = 123
-
-
-
-
-        # If destination is a sideroom, 
-        #   calculate energy use
-        #   verify that it is the destination sideroom (unless done elsewhere)
-        # TO BE ADDED LATER !!!!
+        # (3) If destination is a sideroom, calculate step counts
         if tran_dest[1] is not None:
             step_count += 1 + tran_dest[1]
-        dummy = 123
 
         # Create a new burrowState object
         new_burrowState = BurrowState(burrowState)
@@ -407,23 +378,15 @@ class Burrow:
         if tran_origin[1] is None:
             # Remove origin amphipod from hallway
             pass # TO BE DEFINED LATER ... probably below code
-            # burrowState.hallway[tran_origin[0]] = None
+            transfer_amphipod = new_burrowState.hallway[tran_origin[0]]
+            new_burrowState.hallway[tran_origin[0]] = None
         else:
             # Remove origin amphipod from a sideroom
-            # new_burrowState.hallway[tran_origin[0]].amphipod_list[tran_origin[1]] = None
             transfer_amphipod = new_burrowState.hallway[tran_origin[0]].sideroom_pop()
-            dummy = 123
 
         # Add amphipod at destination
         if tran_dest[1] is None:
-            # NEED TO TEST ....
             new_burrowState.hallway[tran_dest[0]] = transfer_amphipod
-
-            # if new_burrowState.hallway[tran_dest[0]] is None:
-            #     dummy = 123
-            # else:
-            #     new_burrowState.hallway[tran_dest[0]].append(transfer_amphipod)
-            # pass
         else:
             if transfer_amphipod != Burrow.DEST_AMPH__SIDEROOM_INDEX[tran_dest[0]]:
                 return None
@@ -433,20 +396,8 @@ class Burrow:
         new_burrowState.energy_total += step_count * Burrow.AMPHIPOD_ENERGY[transfer_amphipod]
 
         # See if the state is already in the list of states
-        # If state is already there, use the lowest energy_total
-        
-        # for state in self.active_burrowStates:
-        #     if state.hallway == new_burrowState.hallway:
-        #         # Use the lowest energy_total
-        #         state.energy_total = min(state.energy_total, new_burrowState.energy_total)
-        #         return None
-        # dummy = 123
-        # return new_burrowState
-
-        # Call function that accepts new_burrowState.
-        # The function will traverse the list of all burrowStates to look for a matching hallway
-        # If a match is found, then ensure that that match has the lowest_energy total and then return None
-        # Otherwise, return newBurrowState
+        # If state is already there, then keep it but
+        # if the new energy_total is lower than change it to the new lower value.
         return self.verify_state_is_new(new_burrowState)
 
     # Call function that accepts new_burrowState.
@@ -457,13 +408,11 @@ class Burrow:
         stack = [self.initial_burrowState]
         while len(stack) > 0:
             this_state = stack.pop()
-            # if this_state.hallway == new_burrowState.hallway:
             if hallway_compare(this_state.hallway, new_burrowState.hallway):
                 this_state.energy_total = min(this_state.energy_total, new_burrowState.energy_total)
                 return None
             for child in this_state.children:
                 stack.append(child)
-        # new_burrowState.display()
         return new_burrowState
 # End of class Burrow
 
@@ -473,7 +422,7 @@ def hallway_compare(this_hallway, new_hallway):
             return False
     return True
 
-theBurrow = Burrow('input_scenario4.txt')
+theBurrow = Burrow('input_sample0.txt')
 # theBurrow.initial_burrowState.display()
 logging.debug(' Initial Burrow State:')
 theBurrow.initial_burrowState.logging_BurrowState()
