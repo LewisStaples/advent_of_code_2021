@@ -234,6 +234,14 @@ class BurrowState:
             if amp_count == 0:
                 break
         print()
+    
+    def detect_completion(self):
+        # Shortcut to detect completion, detect if hallway is empty.
+        if len(self.hallway) == self.hallway.count(None) + len(Burrow.AMPHIPOD_LIST):
+            return True
+        else:
+            return False
+
 # End of class BurrowState
 
 # Class Burrow will contain information that always applies to the burrow, whereas clas BurrowState has information that captures the momentary state of a burrow.
@@ -400,9 +408,21 @@ class Burrow:
         # if the new energy_total is lower than change it to the new lower value.
         return self.verify_state_is_new(new_burrowState)
 
+    # detect difference between parent/child and recalculate child's energy
+    # Traverse both hallways, one space/SideRoom at a time
+    # until first discrepancy detected
+    # continue traversal but count the energy difference along the way
+    def energy_diff(self, parent_state, child_state):
+        # dummy implementation ... fill in later
+        return 42
+
+
+
     # Call function that accepts new_burrowState.
     # The function will traverse the list of all burrowStates to look for a matching hallway
-    # If a match is found, then ensure that that match has the lowest_energy total and then return None
+    # If a match is found,
+    #    ensure that that match has the lowest_energy total,
+    #    and then return None
     # Otherwise, return newBurrowState
     def verify_state_is_new(self, new_burrowState):
         stack = [self.initial_burrowState]
@@ -410,9 +430,25 @@ class Burrow:
             this_state = stack.pop()
             if hallway_compare(this_state.hallway, new_burrowState.hallway):
                 this_state.energy_total = min(this_state.energy_total, new_burrowState.energy_total)
-                return None
+                stack.clear()
+
+                    
+
+                while True:
+                    # put all children in the stack, as a pair (with its parent)
+                    for child in this_state.children:
+                        stack.append((this_state, child))
+                    if len(stack) == 0:
+                        return None
+                    # pop out one parent / child pair at a time
+                    this_state, child = stack.pop()
+                    child.energy_total = min(child.energy_total, this_state.energy_total + self.energy_diff(child, this_state))
+                    this_state = child
+
             for child in this_state.children:
                 stack.append(child)
+
+        # new_burrowState.detect_completion()
         return new_burrowState
 # End of class Burrow
 
