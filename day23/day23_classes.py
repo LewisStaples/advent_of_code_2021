@@ -7,7 +7,6 @@ import sys
 import copy
 import logging
 
-from numpy import isin
 
 class Location(Enum):
     ORIGIN = 1
@@ -237,6 +236,7 @@ class BurrowState:
     
     def detect_completion(self):
         # Shortcut to detect completion, detect if hallway is empty.
+        # if self.hallway == [None]*13:
         if len(self.hallway) == self.hallway.count(None) + len(Burrow.AMPHIPOD_LIST):
             return True
         else:
@@ -408,14 +408,37 @@ class Burrow:
         # if the new energy_total is lower than change it to the new lower value.
         return self.verify_state_is_new(new_burrowState)
 
-    # detect difference between parent/child and recalculate child's energy
-    # Traverse both hallways, one space/SideRoom at a time
-    # until first discrepancy detected
-    # continue traversal but count the energy difference along the way
-    def energy_diff(self, parent_state, child_state):
-        # dummy implementation ... fill in later
-        return 42
 
+    # # detect difference between parent/child and recalculate child's energy
+    def energy_diff(self, parent_state, child_state):
+        discrepancy_list = []
+        amph = None
+        for i in range(len(parent_state.hallway)):
+            # If parent hallway is SideRoom
+            # 	Compare all SideRoom slots in the parent vs the child
+            # 		If the one is None and the other is str
+            # 			You have found one of the discrepancies
+            # 			You have also identified the amphipod (do for parent only)
+            if isinstance(parent_state.hallway[i], SideRoom):
+                for j in range(len(parent_state.hallway[i].amphipod_list)):
+                    if parent_state.hallway[i].amphipod_list[j] != child_state.hallway[i].amphipod_list[j]:
+                        discrepancy_list.append((i,j+1))
+                        if type(parent_state.hallway[i].amphipod_list[j]) == str:
+                            amph = parent_state.hallway[i].amphipod_list[j]
+            # If parent hallway is a None or str
+            # 	If child is different (or alternatively .... opposite type)
+            # 		You have found one of the discrepancies
+            # 		You have also identified the amphipod (do for parent only)
+            else:  # parent_state.hallway[i] is either str or None
+                if parent_state.hallway[i] != child_state.hallway[i]:
+                    discrepancy_list.append((i,0))
+                    if type(parent_state.hallway[i]) == str:
+                        amph = parent_state.hallway[i]
+
+        steps_traversed = abs(discrepancy_list[0][0] - discrepancy_list[1][0]) + discrepancy_list[0][1] + discrepancy_list[1][1]
+        dummy = 123
+
+        return steps_traversed * Burrow.AMPHIPOD_ENERGY[amph]
 
 
     # Call function that accepts new_burrowState.
@@ -458,7 +481,7 @@ def hallway_compare(this_hallway, new_hallway):
             return False
     return True
 
-theBurrow = Burrow('input_sample0.txt')
+theBurrow = Burrow('input_scenario4.txt')
 # theBurrow.initial_burrowState.display()
 logging.debug(' Initial Burrow State:')
 theBurrow.initial_burrowState.logging_BurrowState()
