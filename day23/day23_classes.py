@@ -298,11 +298,12 @@ class Burrow:
     def move_location(self, origin_fxn, dest_fxn, burrowState):
         for tran_origin in origin_fxn(burrowState, Location.ORIGIN):
             for tran_dest in dest_fxn(burrowState, Location.DEST):
-                next_state = self.make_move(burrowState, tran_origin, tran_dest)
-                if next_state is not None:
-                    # self.active_burrowStates.append(next_state)
+                original, next_state = self.make_move(burrowState, tran_origin, tran_dest)
+                # if next_state is not None: # this is correct but less readable than below replacement
+                if isinstance(next_state, BurrowState):
                     burrowState.children.append(next_state)
-                    self.states_awaiting_next_move_analysis.append(next_state)
+                    if original:
+                        self.states_awaiting_next_move_analysis.append(next_state)
 
                     # If logging, log id's of burrowState, next_state
                     logging.debug(' ' + str(hex(id(burrowState))) + ' ---> ' + str(hex(id(next_state))))
@@ -371,7 +372,7 @@ class Burrow:
         while hallway_posn != tran_dest[0] and hallway_posn > -1:
             if isinstance(burrowState.hallway[hallway_posn], str):
                 # Amphipod obstacle in hallway detected
-                return None
+                return (False, None)
             hallway_posn += tran_dir
             step_count += 1
 
@@ -399,19 +400,15 @@ class Burrow:
             new_burrowState.hallway[tran_dest[0]] = transfer_amphipod
         else:
             if transfer_amphipod != Burrow.DEST_AMPH__SIDEROOM_INDEX[tran_dest[0]]:
-                return None
+                return (False, None)
             new_burrowState.hallway[tran_dest[0]].amphipod_list[tran_dest[1]] = transfer_amphipod
             pass
 
         new_burrowState.energy_total += step_count * Burrow.AMPHIPOD_ENERGY[transfer_amphipod]
 
-        # See if the state is already in the list of states
-        # If state is already there, then keep it but
-        # if the new energy_total is lower than change it to the new lower value.
-
-        # Returns None if it the state already been seen
-        # Returns state if it is completely new, so its childrens' states can be determined
+        # See documentation for function verify_state_is_new
         return self.verify_state_is_new(new_burrowState)
+    
 
 
     # # detect difference between parent/child and recalculate child's energy
@@ -451,10 +448,10 @@ class Burrow:
     #   stack1 helps to traverse the tree of all burrowStates by listing all child states
     #   whose parent has been seen and the child hasn't.
     #
-    # If a match is found,
-    #   ensure that that match has the lowest_energy total, using stack2
-    #   and then return None
-    # Return newBurrowState only if it is new, so its chuldren may be analyzed
+    # If no match is found, return (True, new_burrowState)
+    # If a match is found, the return 2-tuple's index 0 will be False
+    # If the new_burrowState's energy is greater or equal than what was found in stack1, return (False, this_state) to keep using what was found on stack1.
+    # If the new_burrowState's energy is greater or equal than what was found using stack1, reset the energy of what was found using stack1 to the newest (lower) energy, and then use stack2 to traverse the subtree of its descendants and recalculate their energies.  When stack2 traversal is complete return (False, this_state) to keep using the memory location found on stack1.
     def verify_state_is_new(self, new_burrowState):
         stack1 = [self.initial_burrowState]
         while len(stack1) > 0:
@@ -464,7 +461,7 @@ class Burrow:
                 stack2 = []
 
                 if this_state.energy_total <= new_burrowState.energy_total:
-                    return None # match found has the lower energy than the new one
+                    return (False, this_state) # match found has the lower energy than the new one
 
                 this_state.energy_total = new_burrowState.energy_total
                 while True:
@@ -472,7 +469,7 @@ class Burrow:
                     for child in this_state.children:
                         stack2.append((this_state, child))
                     if len(stack2) == 0:
-                        return None # The match found had higher energy than the new one, so its descendants' energies were recalculated
+                        return (False, this_state) # The match found had higher energy than the new one, so its descendants' energies were recalculated
                     # pop out one parent / child pair at a time
                     this_state, child = stack2.pop()
                     child.energy_total = min(child.energy_total, this_state.energy_total + self.energy_diff(child, this_state))
@@ -485,13 +482,8 @@ class Burrow:
             for child in this_state.children:
                 stack1.append(child)
 
-
-        # if new_burrowState.detect_completion():
-        #     print('Energy Total (first completion): ', end='')
-        #     print(new_burrowState.energy_total)
-        #     return None
-
-        return new_burrowState
+        # This is truly new
+        return (True, new_burrowState)
 # End of class Burrow
 
 def hallway_compare(this_hallway, new_hallway):
@@ -511,5 +503,9 @@ while len(theBurrow.states_awaiting_next_move_analysis) > 0:
 # theBurrow.next_move()
 # theBurrow.next_move()
 # theBurrow.next_move()
+
+# for iii in range(300):
+#     theBurrow.next_move()
+
 dummy = 123
 
