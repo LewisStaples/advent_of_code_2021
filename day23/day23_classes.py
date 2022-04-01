@@ -6,7 +6,7 @@ from enum import Enum
 import sys
 import copy
 import logging
-
+import uuid
 
 class Location(Enum):
     ORIGIN = 1
@@ -73,16 +73,22 @@ class SideRoom:
 # End of class SideRoom
 
 class BurrowState:
-    def __init__(self, hallway_init):
+    # Create a new BurrowState object, based on init_parameter.
+    # Note that init_parameter could be a string or another BurrowState object
+    def __init__(self, init_parameter):
         self.hallway = []
         self.children = []
+        self.parent = None  
+        self.id = uuid.uuid4().int
+        Burrow.burrowState_lookup[self.id] = self
 
-        #  This reads from input.  It is only run once.
-        if isinstance(hallway_init, str):
+        #  Create BurrowState object using a string representation what's in the hallway.
+        #  This is intended to handle reading from the input file, and it is intended to only be run once.
+        if isinstance(init_parameter, str):
             self.energy_total = 0
             # Remove # and newline characters
-            hallway_init = hallway_init.rstrip()[1:-1]
-            for ch in hallway_init:
+            init_parameter = init_parameter.rstrip()[1:-1]
+            for ch in init_parameter:
                 if ch == '.':
                     self.hallway.append(None)
                 elif ch in Burrow.AMPHIPOD_LIST:
@@ -92,9 +98,13 @@ class BurrowState:
             dummy = 123
 
         # This code is run whenever duplicating a BurrowState.
-        elif isinstance(hallway_init, BurrowState):
-            self.energy_total = hallway_init.energy_total
-            self.hallway = copy.deepcopy(hallway_init.hallway)
+        # It is intended to be used when a child BurrowState object is being created from a parent BurrowState object.
+        elif isinstance(init_parameter, BurrowState):
+            self.energy_total = init_parameter.energy_total
+            self.hallway = copy.deepcopy(init_parameter.hallway)
+            self.parent = init_parameter.id
+            self.id = uuid.uuid4().int
+            Burrow.burrowState_lookup[self.id] = self
         
     def sideroom_init(self, sideroom_str):
         # Process line of input with start of the siderooms.
@@ -133,7 +143,10 @@ class BurrowState:
     # Log contents of BurrowState (write to log file)'
     # Note that this version should handle siderooms with varying numbers of indices
     def logging_BurrowState(self):
-        logging.debug(' ID: ' + str(hex(id(self))))
+        # logging.debug(' ID: ' + str(hex(id(self))))
+
+        logging.debug(' ' + str(self.parent) + ' ---> ' + str(self.id))
+        logging.debug(' ID: ' + str(self.id))
         # logging.debug(' Total Energy: ' + str(self.energy_total))
 
         # Display top line of '#' characters
@@ -191,8 +204,13 @@ class BurrowState:
     # Note that this version should handle siderooms with varying numbers of indices
     def display(self):
         print()
+        # print('ID: ', end='')
+        # print(hex(id(self)))
+        print('parent', end='')
+        print(self.parent)
         print('ID: ', end='')
-        print(hex(id(self)))
+        print(self.id)
+        
         print('Total Energy: ', end='')
         print(self.energy_total)
         
@@ -259,6 +277,8 @@ class Burrow:
     # This dictionary has index = 'type of amphipod' and value is the energy.
     AMPHIPOD_ENERGY = {'A':1, 'B':10, 'C':100, 'D':1000}
 
+    burrowState_lookup = dict()
+
     def __init__(self, input_filename):
         logging.basicConfig(filename='debug.log', filemode = "w", level=logging.DEBUG)
         self.initial_burrowState = None
@@ -306,7 +326,7 @@ class Burrow:
                         self.states_awaiting_next_move_analysis.append(next_state)
 
                     # If logging, log id's of burrowState, next_state
-                    logging.debug(' ' + str(hex(id(burrowState))) + ' ---> ' + str(hex(id(next_state))))
+                    # logging.debug(' ' + str(hex(id(burrowState))) + ' ---> ' + str(hex(id(next_state))))
                     next_state.logging_BurrowState()
 
 
@@ -461,9 +481,11 @@ class Burrow:
                 stack2 = []
 
                 if this_state.energy_total <= new_burrowState.energy_total:
-                    return (False, this_state) # match found has the lower energy than the new one
+                    return (False, this_state) # match found has the lower energy than the new one, so don't replace it
 
+                # Since new_burrowState's energy_total is lower, use the reduced energy
                 this_state.energy_total = new_burrowState.energy_total
+                this_state.parent = new_burrowState.parent
                 while True:
                     # put all children in  stack2, as a pair (with its parent)
                     for child in this_state.children:
@@ -472,7 +494,9 @@ class Burrow:
                         return (False, this_state) # The match found had higher energy than the new one, so its descendants' energies were recalculated
                     # pop out one parent / child pair at a time
                     this_state, child = stack2.pop()
-                    child.energy_total = min(child.energy_total, this_state.energy_total + self.energy_diff(child, this_state))
+                    if child.energy_total > this_state.energy_total + self.energy_diff(child, this_state):
+                        child.energy_total = this_state.energy_total + self.energy_diff(child, this_state)
+                        child.parent = this_state
                     this_state = child
 
                     if child.detect_completion():
@@ -499,10 +523,6 @@ theBurrow.initial_burrowState.logging_BurrowState()
 
 while len(theBurrow.states_awaiting_next_move_analysis) > 0:
     theBurrow.next_move()
-
-# theBurrow.next_move()
-# theBurrow.next_move()
-# theBurrow.next_move()
 
 # for iii in range(300):
 #     theBurrow.next_move()
