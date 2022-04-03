@@ -1,0 +1,18 @@
+# adventOfCode 2021 day 23
+# https://adventofcode.com/2021/day/23
+
+Re-thinking the Day 23 problem
+
+Read data file into data structure representing the initial burrow state
+Loop through a fraction of the available moves, which will be children of initial burrow state
+(1) Send an amphipod from origin sideroom directly to destination sideroom
+(2) Send an amphipod from the hallway directly to destination sideroom
+(3) Send an amphipod from a sideroom to a hallway location
+
+Prevent burrow states from being represented more than once by having a list of pointers to all such states
+
+Each time a burrow state is rediscovered, compare energies and (if needed) adjust it in the tree and all of its branches
+
+I need to design an input file that tests adjusting energies in all branches, preferably near completion, so the results can be traced.
+
+
