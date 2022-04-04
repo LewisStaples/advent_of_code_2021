@@ -80,6 +80,7 @@ class BurrowState:
         self.children = []
         self.parent = None  
         self.id = uuid.uuid4().int
+        # Using lookup table for debugging only, because it's not needed for the actual program
         Burrow.burrowState_lookup[self.id] = self
 
         #  Create BurrowState object using a string representation what's in the hallway.
@@ -103,8 +104,6 @@ class BurrowState:
             self.energy_total = init_parameter.energy_total
             self.hallway = copy.deepcopy(init_parameter.hallway)
             self.parent = init_parameter.id
-            self.id = uuid.uuid4().int
-            Burrow.burrowState_lookup[self.id] = self
         
     def sideroom_init(self, sideroom_str):
         # Process line of input with start of the siderooms.
@@ -142,7 +141,7 @@ class BurrowState:
 
     # Log contents of BurrowState (write to log file)'
     # Note that this version should handle siderooms with varying numbers of indices
-    def logging_BurrowState(self):
+    def logging_BurrowState(self, wrap=False):
         # logging.debug(' ID: ' + str(hex(id(self))))
 
         logging.debug(' ' + str(self.parent) + ' ---> ' + str(self.id))
@@ -150,8 +149,12 @@ class BurrowState:
         # logging.debug(' Total Energy: ' + str(self.energy_total))
 
         # Display top line of '#' characters
-        # logging.debug(' ' + '#'*(len(self.hallway)+2))
-        str_to_log = ' ' + '#'*(len(self.hallway)+2) + '|'
+        str_to_log = ''
+        if wrap:
+            str_to_log += '\n'
+        str_to_log += ' ' + '#'*(len(self.hallway)+2) + '|'
+        if wrap:
+            str_to_log += '\n'
 
         # Traverse the hallway, and display hallway one character at a time
         str_to_log += ' #'
@@ -163,7 +166,8 @@ class BurrowState:
             if isinstance(hallway_space, str):
                 str_to_log += hallway_space
         str_to_log += '#|'
-        # logging.debug(str_to_log)
+        if wrap:
+            str_to_log += '\n'
 
         j = 0
         while True:
@@ -189,13 +193,16 @@ class BurrowState:
                         str_to_log += '#'
             # print('#')
             str_to_log += '#|'
+            if wrap:
+                str_to_log += '\n'
             # logging.debug(str_to_log)
 
             j += 1
             # If amp_count is zero, then the length of all siderooms has been exceeded.
             if amp_count == 0:
                 break
-
+        if wrap:
+            str_to_log += '\n'
         logging.debug(str_to_log)
         logging.debug('')
         logging.debug('')
@@ -258,6 +265,7 @@ class BurrowState:
     def detect_completion(self):
         # Shortcut to detect completion, detect if hallway is empty.
         if len(self.hallway) == self.hallway.count(None) + len(Burrow.AMPHIPOD_LIST):
+            Burrow.complete_burrowStateID = self.id
             return True
         else:
             return False
@@ -278,6 +286,8 @@ class Burrow:
     AMPHIPOD_ENERGY = {'A':1, 'B':10, 'C':100, 'D':1000}
 
     burrowState_lookup = dict()
+
+    complete_burrowStateID = None
 
     def __init__(self, input_filename):
         logging.basicConfig(filename='debug.log', filemode = "w", level=logging.DEBUG)
@@ -327,7 +337,8 @@ class Burrow:
 
                     # If logging, log id's of burrowState, next_state
                     # logging.debug(' ' + str(hex(id(burrowState))) + ' ---> ' + str(hex(id(next_state))))
-                    next_state.logging_BurrowState()
+                    
+                    next_state.logging_BurrowState(wrap=True)
 
 
     def next_move(self):
@@ -458,6 +469,13 @@ class Burrow:
                         amph = parent_state.hallway[i]
 
         steps_traversed = abs(discrepancy_list[0][0] - discrepancy_list[1][0]) + discrepancy_list[0][1] + discrepancy_list[1][1]
+
+        # debugging only
+        # logging.debug('PARENT')
+        # parent_state.logging_BurrowState(wrap = True)
+        # logging.debug('CHILD')
+        # child_state.logging_BurrowState(wrap = True)
+
         dummy = 123
 
         return steps_traversed * Burrow.AMPHIPOD_ENERGY[amph]
@@ -473,19 +491,31 @@ class Burrow:
     # If the new_burrowState's energy is greater or equal than what was found in stack1, return (False, this_state) to keep using what was found on stack1.
     # If the new_burrowState's energy is greater or equal than what was found using stack1, reset the energy of what was found using stack1 to the newest (lower) energy, and then use stack2 to traverse the subtree of its descendants and recalculate their energies.  When stack2 traversal is complete return (False, this_state) to keep using the memory location found on stack1.
     def verify_state_is_new(self, new_burrowState):
+
+        # if new_burrowState.detect_completion():
+        #     print('Energy Total: ', end='')
+        #     print(new_burrowState.energy_total, end=' , ID = ')
+        #     print(new_burrowState.id)
+
         stack1 = [self.initial_burrowState]
         while len(stack1) > 0:
             this_state = stack1.pop()
 
-            if hallway_compare(this_state.hallway, new_burrowState.hallway):
+            # if hallway_compare(this_state.hallway, new_burrowState.hallway):
+            if burrowState_compare(this_state, new_burrowState):
                 stack2 = []
 
                 if this_state.energy_total <= new_burrowState.energy_total:
                     return (False, this_state) # match found has the lower energy than the new one, so don't replace it
 
-                # Since new_burrowState's energy_total is lower, use the reduced energy
+                # Since new_burrowState's energy_total is lower, bring its values to this_state
                 this_state.energy_total = new_burrowState.energy_total
                 this_state.parent = new_burrowState.parent
+
+                # if this_state.detect_completion():
+                #     print('Energy Total: ', end='')
+                #     print(this_state.energy_total)
+
                 while True:
                     # put all children in  stack2, as a pair (with its parent)
                     for child in this_state.children:
@@ -494,38 +524,52 @@ class Burrow:
                         return (False, this_state) # The match found had higher energy than the new one, so its descendants' energies were recalculated
                     # pop out one parent / child pair at a time
                     this_state, child = stack2.pop()
-                    if child.energy_total > this_state.energy_total + self.energy_diff(child, this_state):
-                        child.energy_total = this_state.energy_total + self.energy_diff(child, this_state)
+                    
+                    # if child.energy_total > this_state.energy_total + self.energy_diff(child, this_state):
+                    #     child.energy_total = this_state.energy_total + self.energy_diff(child, this_state)
+                    s_e_d = self.energy_diff(child, this_state)
+                    if child.energy_total > this_state.energy_total + s_e_d:
+                        child.energy_total = this_state.energy_total + s_e_d
                         child.parent = this_state
                     this_state = child
 
-                    if child.detect_completion():
-                        print('Energy Total (later completion): ', end='')
-                        print(child.energy_total)
+                    # if child.detect_completion():
+                    #     print('Energy Total: ', end='')
+                    #     print(child.energy_total)
 
             for child in this_state.children:
                 stack1.append(child)
 
         # This is truly new
+        new_burrowState.detect_completion()
         return (True, new_burrowState)
 # End of class Burrow
 
-def hallway_compare(this_hallway, new_hallway):
+def burrowState_compare(this_burrow, new_burrow):
+    # logging.debug('this_burrow:')
+    # this_burrow.logging_BurrowState(wrap=True)
+    # logging.debug('new_burrow:')
+    # new_burrow.logging_BurrowState(wrap=True)
+    this_hallway = this_burrow.hallway
+    new_hallway = new_burrow.hallway
     for i in range(len(this_hallway)):
         if this_hallway[i] != new_hallway[i]:
             return False
     return True
 
-theBurrow = Burrow('input_sample0.txt')
+theBurrow = Burrow('input_scenario8.txt')
 theBurrow.initial_burrowState.display()
 logging.debug(' Initial Burrow State:')
-theBurrow.initial_burrowState.logging_BurrowState()
+theBurrow.initial_burrowState.logging_BurrowState(wrap=True)
 
 while len(theBurrow.states_awaiting_next_move_analysis) > 0:
     theBurrow.next_move()
 
-# for iii in range(300):
+
+# for iii in range(20):
 #     theBurrow.next_move()
 
-dummy = 123
+print('Lowest energy found is: ', end='')
+print(theBurrow.burrowState_lookup[Burrow.complete_burrowStateID].energy_total)
 
+dummy = 123
