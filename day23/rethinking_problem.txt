@@ -15,4 +15,6 @@ Each time a burrow state is rediscovered, compare energies and (if needed) adjus
 
 I need to design an input file that tests adjusting energies in all branches, preferably near completion, so the results can be traced.
 
+Additional thought:  use a prepackaged implementation of Dykstra or A*, instead of implementing it myself in my code.
+Perhaps this implementation??  https://pypi.org/project/astar
 
