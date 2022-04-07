@@ -387,9 +387,39 @@ class Burrow(astar.AStar):
 
         return ret_val
 
-    # Gives the real distance/cost between two adjacent nodes n1 and n2
-    def distance_between(self, n1, n2):
-        pass
+    # Gives the real distance/cost between two adjacent nodes
+    # (adjacent nodes titled parent_state and child_state to use code
+    # that was created earlier)
+    def distance_between(self, parent_state, child_state):
+        discrepancy_list = []
+        amph = None
+        for i in range(len(parent_state.hallway)):
+            # If parent hallway is SideRoom
+            # 	Compare all SideRoom slots in the parent vs the child
+            # 		If the one is None and the other is str
+            # 			You have found one of the discrepancies
+            # 			You have also identified the amphipod (do for parent only)
+            if isinstance(parent_state.hallway[i], SideRoom):
+                for j in range(len(parent_state.hallway[i].amphipod_list)):
+                    if parent_state.hallway[i].amphipod_list[j] != child_state.hallway[i].amphipod_list[j]:
+                        discrepancy_list.append((i,j+1))
+                        if type(parent_state.hallway[i].amphipod_list[j]) == str:
+                            amph = parent_state.hallway[i].amphipod_list[j]
+            # If parent hallway is a None or str
+            # 	If child is different (or alternatively .... opposite type)
+            # 		You have found one of the discrepancies
+            # 		You have also identified the amphipod (do for parent only)
+            else:  # parent_state.hallway[i] is either str or None
+                if parent_state.hallway[i] != child_state.hallway[i]:
+                    discrepancy_list.append((i,0))
+                    if type(parent_state.hallway[i]) == str:
+                        amph = parent_state.hallway[i]
+
+        steps_traversed = abs(discrepancy_list[0][0] - discrepancy_list[1][0]) + discrepancy_list[0][1] + discrepancy_list[1][1]
+
+        dummy = 123
+
+        return steps_traversed * Burrow.AMPHIPOD_ENERGY[amph]
 
     # Computes the estimated (rough) distance/cost between a node and the goal. 
     # Per https://en.wikipedia.org/wiki/Admissible_heuristic , this must not be greater than the actual value
@@ -508,12 +538,18 @@ def burrowState_compare(this_burrow, new_burrow):
             return False
     return True
 
-theBurrow = Burrow('input_sample0.txt')
+theBurrow = Burrow('input_scenario4.txt')
 theBurrow.initial_burrowState.display()
-logging.debug(' Initial Burrow State:')
-theBurrow.initial_burrowState.logging_BurrowState(wrap=True)
+# logging.debug(' Initial Burrow State:')
+# theBurrow.initial_burrowState.logging_BurrowState(wrap=True)
 
-theBurrow.neighbors(theBurrow.initial_burrowState)
+# Testing code
+neighbors = theBurrow.neighbors(theBurrow.initial_burrowState)
+for neighbor in neighbors:
+    # neighbor.logging_BurrowState(wrap=True)
+    distance = theBurrow.distance_between(theBurrow.initial_burrowState, neighbor)
+    dummy = 123
+
 
 # while len(theBurrow.states_awaiting_next_move_analysis) > 0:
 #     theBurrow.next_move()

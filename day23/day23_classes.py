@@ -270,6 +270,9 @@ class BurrowState:
         else:
             return False
 
+    def __eq__(self, other):
+        return self.hallway == other.hallway
+
 # End of class BurrowState
 
 # Class Burrow will contain information that always applies to the burrow, whereas clas BurrowState has information that captures the momentary state of a burrow.
@@ -339,7 +342,6 @@ class Burrow:
                     # logging.debug(' ' + str(hex(id(burrowState))) + ' ---> ' + str(hex(id(next_state))))
                     
                     next_state.logging_BurrowState(wrap=True)
-
 
     def next_move(self):
         if len(self.states_awaiting_next_move_analysis) > 0:
@@ -557,7 +559,7 @@ def burrowState_compare(this_burrow, new_burrow):
             return False
     return True
 
-theBurrow = Burrow('input_scenario8.txt')
+theBurrow = Burrow('input_sample0.txt')
 theBurrow.initial_burrowState.display()
 logging.debug(' Initial Burrow State:')
 theBurrow.initial_burrowState.logging_BurrowState(wrap=True)
