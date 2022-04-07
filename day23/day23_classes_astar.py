@@ -32,7 +32,10 @@ class SideRoom:
         return self.not_equal(other)
 
     def __eq__(self, other):
-        return self.not_equal(other)
+        if self.not_equal(other):
+            return False
+        else:
+            return True
 
     def append(self, amphipod_next):
         self.amphipod_list.append(amphipod_next)
@@ -92,9 +95,9 @@ class BurrowState:
         self.hallway = []
         self.children = []
         self.parent = None  
-        self.id = uuid.uuid4().int
+        # self.id = uuid.uuid4().int
         # Using lookup table for debugging only, because it's not needed for the actual program
-        Burrow.burrowState_lookup[self.id] = self
+        # Burrow.burrowState_lookup[self.id] = self
 
         #  Create BurrowState object using a string representation what's in the hallway.
         #  This is intended to handle reading from the input file, and it is intended to only be run once.
@@ -158,7 +161,7 @@ class BurrowState:
         # logging.debug(' ID: ' + str(hex(id(self))))
 
         logging.debug(' ' + str(self.parent) + ' ---> ' + str(self.id))
-        logging.debug(' ID: ' + str(self.id))
+        # logging.debug(' ID: ' + str(self.id))
         # logging.debug(' Total Energy: ' + str(self.energy_total))
 
         # Display top line of '#' characters
@@ -229,7 +232,7 @@ class BurrowState:
         print('parent', end='')
         print(self.parent)
         print('ID: ', end='')
-        print(self.id)
+        # print(self.id)
         
         print('Total Energy: ', end='')
         print(self.energy_total)
@@ -275,13 +278,13 @@ class BurrowState:
                 break
         print()
     
-    def detect_completion(self):
-        # Shortcut to detect completion, detect if hallway is empty.
-        if len(self.hallway) == self.hallway.count(None) + len(Burrow.AMPHIPOD_LIST):
-            Burrow.complete_burrowStateID = self.id
-            return True
-        else:
-            return False
+    # def detect_completion(self):
+    #     # Shortcut to detect completion, detect if hallway is empty.
+    #     if len(self.hallway) == self.hallway.count(None) + len(Burrow.AMPHIPOD_LIST):
+    #         Burrow.complete_burrowStateID = self.id
+    #         return True
+    #     else:
+    #         return False
 
     def __eq__(self, other):
         return self.hallway == other.hallway
@@ -538,18 +541,36 @@ def burrowState_compare(this_burrow, new_burrow):
             return False
     return True
 
-theBurrow = Burrow('input_scenario4.txt')
+def create_final_burrowState():
+    ret_val = BurrowState('#...........#')
+    for i in range(len(Burrow.AMPHIPOD_LIST)):
+
+        # Get length of Sideroom in initial state (To support varying Sideroom lengths)
+        sideroom_length = len(theBurrow.initial_burrowState.hallway[Burrow.SIDEROOM_INDICES[i]].amphipod_list)
+
+        ret_val.hallway[Burrow.SIDEROOM_INDICES[i]] = SideRoom([Burrow.AMPHIPOD_LIST[i]]*sideroom_length)
+
+        # Burrow.AMPHIPOD_LIST[i]
+        # Burrow.SIDEROOM_INDICES[i]
+        dummy = 123
+    return ret_val
+
+theBurrow = Burrow('input_scenario8.txt')
+theBurrow.final_burrowState = create_final_burrowState()
 theBurrow.initial_burrowState.display()
 # logging.debug(' Initial Burrow State:')
 # theBurrow.initial_burrowState.logging_BurrowState(wrap=True)
 
 # Testing code
-neighbors = theBurrow.neighbors(theBurrow.initial_burrowState)
-for neighbor in neighbors:
-    # neighbor.logging_BurrowState(wrap=True)
-    distance = theBurrow.distance_between(theBurrow.initial_burrowState, neighbor)
-    dummy = 123
+# neighbors = theBurrow.neighbors(theBurrow.initial_burrowState)
+# for neighbor in neighbors:
+#     # neighbor.logging_BurrowState(wrap=True)
+#     distance = theBurrow.distance_between(theBurrow.initial_burrowState, neighbor)
+#     dummy = 123
 
+# Running code
+path = list(theBurrow.astar(theBurrow.initial_burrowState, theBurrow.final_burrowState))
+# print (len(path))
 
 # while len(theBurrow.states_awaiting_next_move_analysis) > 0:
 #     theBurrow.next_move()
