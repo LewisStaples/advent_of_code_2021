@@ -54,8 +54,13 @@ print(masp.heuristic_cost_estimate('A','D'))
 print()
 
 # Solve problem, and show path
-print(list(masp.astar('A', 'D')))
+path1 = list(masp.astar('A', 'D'))
+print(path1)
+cost1 = 0
 
 # Change problem, solve problem, and show path
 masp.edges['BC'] = 2000
-print(list(masp.astar('A', 'D')))
+path2 = list(masp.astar('A', 'D'))
+print(path2)
+
+
