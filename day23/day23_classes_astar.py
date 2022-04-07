@@ -424,7 +424,7 @@ class Burrow(astar.AStar):
     # Computes the estimated (rough) distance/cost between a node and the goal. 
     # Per https://en.wikipedia.org/wiki/Admissible_heuristic , this must not be greater than the actual value
     def heuristic_cost_estimate(self, current, goal):
-        pass
+        return 0 # I understand that this will yield results associated with Dijkstra's algorithm
 
     def __init__(self, input_filename):
         logging.basicConfig(filename='debug.log', filemode = "w", level=logging.DEBUG)
