@@ -315,8 +315,7 @@ class Burrow(astar.AStar):
         return True
 
     def move_amph(self, node2, origin, dest):
-        # pass
-            # Remove amphipod from origin
+        # Remove amphipod from origin
         if origin[1] is None:
             # Remove origin amphipod from hallway
             pass # TO BE DEFINED LATER ... probably below code
@@ -360,8 +359,31 @@ class Burrow(astar.AStar):
                         ret_val.append(node2)
 
         # Send amphipod from hallway to sideroom
+        for origin in hallway_origins:
+            for dest in sideroom_destinations:
+                if origin[2] == dest[2]:
+                    if self.no_hallway_obstacle(node, origin, dest):
+                        # Copy node to node2
+                        node2 = BurrowState(node)
+
+                        # Move amphipod from origin to destination in node2
+                        self.move_amph(node2, origin, dest)
+
+                        # Add node2 to ret_val
+                        ret_val.append(node2)
 
         # Send amphipod from sideroom to hallway
+        for origin in sideroom_origins:
+            for dest in hallway_destinations:
+                if self.no_hallway_obstacle(node, origin, dest):
+                        # Copy node to node2
+                        node2 = BurrowState(node)
+
+                        # Move amphipod from origin to destination in node2
+                        self.move_amph(node2, origin, dest)
+
+                        # Add node2 to ret_val
+                        ret_val.append(node2)
 
         return ret_val
 
@@ -437,7 +459,7 @@ class Burrow(astar.AStar):
                     ret_val.append((hallway_index, None))
             elif location == Location.ORIGIN:
                 if isinstance(hallway_space, str):
-                    ret_val.append((hallway_index, None))
+                    ret_val.append((hallway_index, None, burrowState.hallway[hallway_index]))
         return ret_val
         
     # # detect difference between parent/child
@@ -486,7 +508,7 @@ def burrowState_compare(this_burrow, new_burrow):
             return False
     return True
 
-theBurrow = Burrow('input_scenario2.txt')
+theBurrow = Burrow('input_sample0.txt')
 theBurrow.initial_burrowState.display()
 logging.debug(' Initial Burrow State:')
 theBurrow.initial_burrowState.logging_BurrowState(wrap=True)
