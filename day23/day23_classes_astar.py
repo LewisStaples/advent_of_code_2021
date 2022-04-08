@@ -18,7 +18,7 @@ class Location(Enum):
 
 class SideRoom:
     def __init__(self, amphipod_init):
-        self.amphipod_list = [amphipod_init]
+        self.amphipod_list = tuple(amphipod_init)
 
     def not_equal(self, other):
         if other is None:
@@ -38,7 +38,10 @@ class SideRoom:
             return True
 
     def append(self, amphipod_next):
+        self.amphipod_list = list(self.amphipod_list)
         self.amphipod_list.append(amphipod_next)
+        self.amphipod_list = tuple(self.amphipod_list)
+        dummy = 123
 
     # This tests if the amphipods in this given SideRoom can be used as origin 
     # (to send elsewhere), or if the sideroom can be used as a destination 
@@ -81,7 +84,9 @@ class SideRoom:
         for amphipod in self.amphipod_list:
             for i, amphipod in enumerate(self.amphipod_list):
                 if amphipod in Burrow.AMPHIPOD_LIST:
+                    self.amphipod_list = list(self.amphipod_list)
                     self.amphipod_list[i] = None
+                    self.amphipod_list = tuple(self.amphipod_list)
                     return amphipod
         return None
 
@@ -92,9 +97,9 @@ class BurrowState:
     # Create a new BurrowState object, based on init_parameter.
     # Note that init_parameter could be a string or another BurrowState object
     def __init__(self, init_parameter):
-        self.hallway = []
-        self.children = []
-        self.parent = None  
+        self.hallway = ()
+        # self.children = []
+        # self.parent = None  
         # self.id = uuid.uuid4().int
         # Using lookup table for debugging only, because it's not needed for the actual program
         # Burrow.burrowState_lookup[self.id] = self
@@ -102,14 +107,24 @@ class BurrowState:
         #  Create BurrowState object using a string representation what's in the hallway.
         #  This is intended to handle reading from the input file, and it is intended to only be run once.
         if isinstance(init_parameter, str):
-            self.energy_total = 0
+            # self.energy_total = 0
             # Remove # and newline characters
             init_parameter = init_parameter.rstrip()[1:-1]
             for ch in init_parameter:
                 if ch == '.':
+                    # self.hallway.append(None)
+                    self.hallway = list(self.hallway)
                     self.hallway.append(None)
+                    self.hallway = tuple(self.hallway)
+
                 elif ch in Burrow.AMPHIPOD_LIST:
+                    self.hallway = list(self.hallway)
                     self.hallway.append(ch)
+                    self.hallway = tuple(self.hallway)
+
+                    # Counting amphipods at the start
+                    Burrow.AMPHIPOD_COUNT += 1
+
                 else:
                     sys.exit('Bad input character: ' + ch)
             dummy = 123
@@ -117,9 +132,9 @@ class BurrowState:
         # This code is run whenever duplicating a BurrowState.
         # It is intended to be used when a child BurrowState object is being created from a parent BurrowState object.
         elif isinstance(init_parameter, BurrowState):
-            self.energy_total = init_parameter.energy_total
+            # self.energy_total = init_parameter.energy_total
             self.hallway = copy.deepcopy(init_parameter.hallway)
-            self.parent = init_parameter.id
+            # self.parent = init_parameter.id
         
     def sideroom_init(self, sideroom_str):
         # Process line of input with start of the siderooms.
@@ -133,12 +148,19 @@ class BurrowState:
         for i,ch in enumerate(sideroom_str):
             if ch.isalpha() or ch == '.':
                 # This hallway position is a side room.  Add first amphipod
-                # self.hallway[i-1] = SideRoom(ch)
+                # self.hallway[i-1] = SideRoom(None) if ch=='.' else SideRoom(ch)
+                self.hallway = list(self.hallway)
                 self.hallway[i-1] = SideRoom(None) if ch=='.' else SideRoom(ch)
+                self.hallway = tuple(self.hallway)
+
                 Burrow.SIDEROOM_INDICES.append(i-1)
 
                 Burrow.DEST_AMPH__SIDEROOM_INDEX[i-1] = Burrow.AMPHIPOD_LIST[i_sideroom]
                 i_sideroom += 1
+            
+            if ch.isalpha():
+                Burrow.AMPHIPOD_COUNT += 1
+
         dummy = 123
 
     def sideroom_append(self, sideroom_str):
@@ -150,9 +172,18 @@ class BurrowState:
             return
         for i in Burrow.SIDEROOM_INDICES:
             if sideroom_str[i+1] == '.':
+                # self.hallway[i].append(None)
+                self.hallway = list(self.hallway)
                 self.hallway[i].append(None)
+                self.hallway = tuple(self.hallway)
+
             else:
+                # self.hallway[i].append(sideroom_str[i+1])
+                self.hallway = list(self.hallway)
                 self.hallway[i].append(sideroom_str[i+1])
+                self.hallway = tuple(self.hallway)
+
+                Burrow.AMPHIPOD_COUNT += 1
             dummy = 123
 
     # Log contents of BurrowState (write to log file)'
@@ -160,7 +191,7 @@ class BurrowState:
     def logging_BurrowState(self, wrap=False):
         # logging.debug(' ID: ' + str(hex(id(self))))
 
-        logging.debug(' ' + str(self.parent) + ' ---> ' + str(self.id))
+        # logging.debug(' ' + str(self.parent) + ' ---> ' + str(self.id))
         # logging.debug(' ID: ' + str(self.id))
         # logging.debug(' Total Energy: ' + str(self.energy_total))
 
@@ -229,13 +260,13 @@ class BurrowState:
         print()
         # print('ID: ', end='')
         # print(hex(id(self)))
-        print('parent', end='')
-        print(self.parent)
-        print('ID: ', end='')
+        # print('parent', end='')
+        # print(self.parent)
+        # print('ID: ', end='')
         # print(self.id)
         
         print('Total Energy: ', end='')
-        print(self.energy_total)
+        # print(self.energy_total)
         
         # Display top line of '#' characters
         for i in range(len(self.hallway) + 2):
@@ -289,6 +320,25 @@ class BurrowState:
     def __eq__(self, other):
         return self.hallway == other.hallway
 
+    def __hash__(self):
+        hash_str = ''
+        for ele in self.hallway:
+            if ele is None:
+                hash_str += 'N'
+            elif isinstance(ele, str):
+                hash_str += ele
+            else:
+                for i,ch in enumerate(ele.amphipod_list):
+                    if ch is None:
+                        hash_str += 'N'
+                    else:
+                        hash_str += ch
+
+                for j in range(i+1, Burrow.AMPHIPOD_COUNT):
+                    hash_str += 'N'
+                dummy = 123
+        return hash(hash_str)
+
 # End of class BurrowState
 
 # Class Burrow will contain information that always applies to the burrow, whereas clas BurrowState has information that captures the momentary state of a burrow.
@@ -303,6 +353,10 @@ class Burrow(astar.AStar):
 
     # This dictionary has index = 'type of amphipod' and value is the energy.
     AMPHIPOD_ENERGY = {'A':1, 'B':10, 'C':100, 'D':1000}
+
+    # This will count the total amphipods in the system
+    # (the example code has eight amphipods in both input samples)
+    AMPHIPOD_COUNT = 0
 
     burrowState_lookup = dict()
 
@@ -323,18 +377,36 @@ class Burrow(astar.AStar):
             # Remove origin amphipod from hallway
             pass # TO BE DEFINED LATER ... probably below code
             transfer_amphipod = node2.hallway[origin[0]]
+            # node2.hallway[origin[0]] = None
+            node2.hallway = list(node2.hallway)
             node2.hallway[origin[0]] = None
+            node2.hallway = tuple(node2.hallway)
+
         else:
             # Remove origin amphipod from a sideroom
+            # transfer_amphipod = node2.hallway[origin[0]].sideroom_pop()
+            node2.hallway = list(node2.hallway)
             transfer_amphipod = node2.hallway[origin[0]].sideroom_pop()
+            node2.hallway = tuple(node2.hallway)
 
         # Add amphipod at destination
         if dest[1] is None:
+            # node2.hallway[dest[0]] = transfer_amphipod
+            node2.hallway = list(node2.hallway)
             node2.hallway[dest[0]] = transfer_amphipod
+            node2.hallway = tuple(node2.hallway)
         else:
             if transfer_amphipod != Burrow.DEST_AMPH__SIDEROOM_INDEX[dest[0]]:
                 return (False, None)
+            # node2.hallway[dest[0]].amphipod_list[dest[1]] = transfer_amphipod
+
+            node2.hallway = list(node2.hallway)
+            node2.hallway[dest[0]].amphipod_list = list(node2.hallway[dest[0]].amphipod_list)
             node2.hallway[dest[0]].amphipod_list[dest[1]] = transfer_amphipod
+            node2.hallway[dest[0]].amphipod_list = tuple(node2.hallway[dest[0]].amphipod_list)
+            node2.hallway = tuple(node2.hallway)
+
+
 
     # For a given node, returns (or yields) the list of its neighbor:
     def neighbors(self, node):
@@ -548,14 +620,18 @@ def create_final_burrowState():
         # Get length of Sideroom in initial state (To support varying Sideroom lengths)
         sideroom_length = len(theBurrow.initial_burrowState.hallway[Burrow.SIDEROOM_INDICES[i]].amphipod_list)
 
+        # ret_val.hallway[Burrow.SIDEROOM_INDICES[i]] = SideRoom([Burrow.AMPHIPOD_LIST[i]]*sideroom_length)
+
+        ret_val.hallway = list(ret_val.hallway)
         ret_val.hallway[Burrow.SIDEROOM_INDICES[i]] = SideRoom([Burrow.AMPHIPOD_LIST[i]]*sideroom_length)
+        ret_val.hallway = tuple(ret_val.hallway)
 
         # Burrow.AMPHIPOD_LIST[i]
         # Burrow.SIDEROOM_INDICES[i]
         dummy = 123
     return ret_val
 
-theBurrow = Burrow('input_scenario8.txt')
+theBurrow = Burrow('input.txt')
 theBurrow.final_burrowState = create_final_burrowState()
 theBurrow.initial_burrowState.display()
 # logging.debug(' Initial Burrow State:')
@@ -567,6 +643,10 @@ theBurrow.initial_burrowState.display()
 #     # neighbor.logging_BurrowState(wrap=True)
 #     distance = theBurrow.distance_between(theBurrow.initial_burrowState, neighbor)
 #     dummy = 123
+
+# Testing
+hash((4,None, 5, ('a','b')))
+# hash(theBurrow.initial_burrowState)
 
 # Running code
 path = list(theBurrow.astar(theBurrow.initial_burrowState, theBurrow.final_burrowState))
@@ -582,3 +662,11 @@ path = list(theBurrow.astar(theBurrow.initial_burrowState, theBurrow.final_burro
 # print(theBurrow.burrowState_lookup[Burrow.complete_burrowStateID].energy_total)
 
 dummy = 123
+
+energy_total = 0
+for i in range(len(path)-1):
+    energy_total += theBurrow.energy_diff(path[i], path[i+1])
+    print( theBurrow.energy_diff(path[i], path[i+1]) )
+
+print('Total energy = ', end='')
+print(energy_total)
