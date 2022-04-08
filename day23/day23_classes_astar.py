@@ -163,6 +163,10 @@ class BurrowState:
 
         dummy = 123
 
+        if Burrow.PROBLEM_PART in ['B', 'b']:
+            self.sideroom_append('  #D#C#B#A#')
+            self.sideroom_append('  #D#B#A#C#')
+
     def sideroom_append(self, sideroom_str):
         has_no_amphipods = True
         for ch in Burrow.AMPHIPOD_LIST:
@@ -358,6 +362,8 @@ class Burrow(astar.AStar):
     # (the example code has eight amphipods in both input samples)
     AMPHIPOD_COUNT = 0
 
+    PROBLEM_PART = None
+
     burrowState_lookup = dict()
 
     complete_burrowStateID = None
@@ -501,9 +507,10 @@ class Burrow(astar.AStar):
     def heuristic_cost_estimate(self, current, goal):
         return 0 # I understand that this will yield results associated with Dijkstra's algorithm
 
-    def __init__(self, input_filename):
+    def __init__(self, input_filename, problem_part):
         logging.basicConfig(filename='debug.log', filemode = "w", level=logging.DEBUG)
         self.initial_burrowState = None
+        Burrow.PROBLEM_PART = problem_part
 
         # Open the input file
         print('Using input file: ', end='')
@@ -631,7 +638,7 @@ def create_final_burrowState():
         dummy = 123
     return ret_val
 
-theBurrow = Burrow('input.txt')
+theBurrow = Burrow('input_sample0.txt', 'B')
 theBurrow.final_burrowState = create_final_burrowState()
 theBurrow.initial_burrowState.display()
 # logging.debug(' Initial Burrow State:')
