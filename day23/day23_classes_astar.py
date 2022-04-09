@@ -37,6 +37,22 @@ class SideRoom:
         else:
             return True
 
+    def __hash__(self):
+        hash_str = ''
+        for i,ch in enumerate(self.amphipod_list):
+            if ch is None:
+                hash_str += 'N'
+            else:
+                hash_str += ch
+
+        for j in range(i+1, Burrow.AMPHIPOD_COUNT):
+            hash_str += 'N'
+
+        return hash(hash_str)
+
+
+
+
     def append(self, amphipod_next):
         self.amphipod_list = list(self.amphipod_list)
         self.amphipod_list.append(amphipod_next)
@@ -156,6 +172,7 @@ class BurrowState:
                 Burrow.SIDEROOM_INDICES.append(i-1)
 
                 Burrow.DEST_AMPH__SIDEROOM_INDEX[i-1] = Burrow.AMPHIPOD_LIST[i_sideroom]
+                Burrow.SIDEROOM_INDEX__DEST_AMPH[Burrow.AMPHIPOD_LIST[i_sideroom]] = i-1
                 i_sideroom += 1
             
             if ch.isalpha():
@@ -354,6 +371,7 @@ class Burrow(astar.AStar):
 
     # Create dictionary to lookup destination amphipod by sideroom's hallway index 
     DEST_AMPH__SIDEROOM_INDEX = dict()
+    SIDEROOM_INDEX__DEST_AMPH = dict()
 
     # This dictionary has index = 'type of amphipod' and value is the energy.
     AMPHIPOD_ENERGY = {'A':1, 'B':10, 'C':100, 'D':1000}
@@ -505,7 +523,35 @@ class Burrow(astar.AStar):
     # Computes the estimated (rough) distance/cost between a node and the goal. 
     # Per https://en.wikipedia.org/wiki/Admissible_heuristic , this must not be greater than the actual value
     def heuristic_cost_estimate(self, current, goal):
-        return 0 # I understand that this will yield results associated with Dijkstra's algorithm
+        # Below program will assume that goal will always be the final state
+        if burrowState_compare(goal, self.final_burrowState):
+            pass
+        else:
+            sys.exit('heuristic_cost_estimate has been called with an unexpected value of goal!')
+        
+        ret_val = 0
+        # Compare current to expected final state 
+        for i_hall, hallway_space in enumerate(current.hallway):
+            if isinstance(hallway_space, str):
+                # ret_val += 1 + abs(i_hall - Burrow.DEST_AMPH__SIDEROOM_INDEX[hallway_space])
+                ret_val += 1 + abs(i_hall - Burrow.SIDEROOM_INDEX__DEST_AMPH[hallway_space])
+                dummy = 123
+            elif isinstance(hallway_space, SideRoom):
+                no_blocked_amphs_found_yet = True
+                for i_sideroom in range(len(hallway_space.amphipod_list) - 1, -1, -1):
+                    ch = hallway_space.amphipod_list[i_sideroom]
+                    if ch == Burrow.DEST_AMPH__SIDEROOM_INDEX[i_hall]:
+                        if no_blocked_amphs_found_yet:
+                            continue
+                    elif isinstance(ch, str):
+                        no_blocked_amphs_found_yet = False
+                    elif ch is None:
+                        break
+                    ret_val += 2 + abs(i_hall - Burrow.SIDEROOM_INDEX__DEST_AMPH[ch]) + i_sideroom
+
+        return ret_val
+
+
 
     def __init__(self, input_filename, problem_part):
         # logging.basicConfig(filename='debug.log', filemode = "w", level=logging.DEBUG)
