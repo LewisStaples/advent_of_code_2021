@@ -508,7 +508,7 @@ class Burrow(astar.AStar):
         return 0 # I understand that this will yield results associated with Dijkstra's algorithm
 
     def __init__(self, input_filename, problem_part):
-        logging.basicConfig(filename='debug.log', filemode = "w", level=logging.DEBUG)
+        # logging.basicConfig(filename='debug.log', filemode = "w", level=logging.DEBUG)
         self.initial_burrowState = None
         Burrow.PROBLEM_PART = problem_part
 
