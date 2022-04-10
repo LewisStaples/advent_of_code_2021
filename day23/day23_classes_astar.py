@@ -534,7 +534,7 @@ class Burrow(astar.AStar):
         for i_hall, hallway_space in enumerate(current.hallway):
             if isinstance(hallway_space, str):
                 # ret_val += 1 + abs(i_hall - Burrow.DEST_AMPH__SIDEROOM_INDEX[hallway_space])
-                ret_val += 1 + abs(i_hall - Burrow.SIDEROOM_INDEX__DEST_AMPH[hallway_space])
+                ret_val += (1 + abs(i_hall - Burrow.SIDEROOM_INDEX__DEST_AMPH[hallway_space])) * Burrow.AMPHIPOD_ENERGY[hallway_space]
                 dummy = 123
             elif isinstance(hallway_space, SideRoom):
                 no_blocked_amphs_found_yet = True
@@ -547,7 +547,7 @@ class Burrow(astar.AStar):
                         no_blocked_amphs_found_yet = False
                     elif ch is None:
                         break
-                    ret_val += 2 + abs(i_hall - Burrow.SIDEROOM_INDEX__DEST_AMPH[ch]) + i_sideroom
+                    ret_val += (2 + abs(i_hall - Burrow.SIDEROOM_INDEX__DEST_AMPH[ch]) + i_sideroom) * Burrow.AMPHIPOD_ENERGY[ch]
 
         return ret_val
 
