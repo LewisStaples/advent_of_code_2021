@@ -5,8 +5,6 @@
 from enum import Enum
 import sys
 import copy
-import logging
-import uuid
 
 import astar
 from numpy import not_equal
@@ -18,13 +16,13 @@ class Location(Enum):
 
 class SideRoom:
     def __init__(self, amphipod_init):
-        self.amphipod_list = tuple(amphipod_init)
+        self.amphipod_structure = tuple(amphipod_init)
 
     def not_equal(self, other):
         if other is None:
             return True
-        for i in range(len(self.amphipod_list)):
-            if self.amphipod_list[i] != other.amphipod_list[i]:
+        for i in range(len(self.amphipod_structure)):
+            if self.amphipod_structure[i] != other.amphipod_structure[i]:
                 return True
         return False
 
@@ -39,7 +37,7 @@ class SideRoom:
 
     def __hash__(self):
         hash_str = ''
-        for i,ch in enumerate(self.amphipod_list):
+        for i,ch in enumerate(self.amphipod_structure):
             if ch is None:
                 hash_str += 'N'
             else:
@@ -50,14 +48,8 @@ class SideRoom:
 
         return hash(hash_str)
 
-
-
-
     def append(self, amphipod_next):
-        self.amphipod_list = list(self.amphipod_list)
-        self.amphipod_list.append(amphipod_next)
-        self.amphipod_list = tuple(self.amphipod_list)
-        dummy = 123
+        self.amphipod_structure = self.amphipod_structure + (amphipod_next,)
 
     # This tests if the amphipods in this given SideRoom can be used as origin 
     # (to send elsewhere), or if the sideroom can be used as a destination 
@@ -70,10 +62,10 @@ class SideRoom:
             # If the sideroom has no amphipods in it, then it returns None
             # If any amphipods are in the sideroom, and if all amphipods here intend to stay here, it returns None
             # Otherwise the index of the first encountered amphipod (starting from index 0) is returned
-            for i, amphipod in enumerate(self.amphipod_list):
+            for i, amphipod in enumerate(self.amphipod_structure):
                 if amphipod in Burrow.AMPHIPOD_LIST:
                     # Skip sideroom if all amphipods are at their intended destination
-                    list_set = set(self.amphipod_list[i:])
+                    list_set = set(self.amphipod_structure[i:])
                     if len(list_set) == 1 and sideroom_dest_amph in list_set:
                         continue
 
@@ -86,27 +78,23 @@ class SideRoom:
             # If an empty slot is discovered, its index is returned
             # If the top is reached without encountering any empty slots, return None
 
-            for i in range(len(self.amphipod_list) - 1, -1, -1):
-                if self.amphipod_list[i] is None:
+            for i in range(len(self.amphipod_structure) - 1, -1, -1):
+                if self.amphipod_structure[i] is None:
                     # Index of an empty slot.  An amphipod could be sent here.
                     return i
                 # elif there is an amphipod and it wants to go elsewhere, then return None
-                elif self.amphipod_list[i] != sideroom_dest_amph:
+                elif self.amphipod_structure[i] != sideroom_dest_amph:
                     return None
             dummy = 123
             return None
         
     def sideroom_pop(self):
-        for amphipod in self.amphipod_list:
-            for i, amphipod in enumerate(self.amphipod_list):
+        for amphipod in self.amphipod_structure:
+            for i, amphipod in enumerate(self.amphipod_structure):
                 if amphipod in Burrow.AMPHIPOD_LIST:
-                    self.amphipod_list = list(self.amphipod_list)
-                    self.amphipod_list[i] = None
-                    self.amphipod_list = tuple(self.amphipod_list)
+                    self.amphipod_structure = self.amphipod_structure[:i] + (None,) + self.amphipod_structure[i+1:]
                     return amphipod
         return None
-
-
 # End of class SideRoom
 
 class BurrowState:
@@ -114,43 +102,29 @@ class BurrowState:
     # Note that init_parameter could be a string or another BurrowState object
     def __init__(self, init_parameter):
         self.hallway = ()
-        # self.children = []
-        # self.parent = None  
-        # self.id = uuid.uuid4().int
-        # Using lookup table for debugging only, because it's not needed for the actual program
-        # Burrow.burrowState_lookup[self.id] = self
 
         #  Create BurrowState object using a string representation what's in the hallway.
         #  This is intended to handle reading from the input file, and it is intended to only be run once.
         if isinstance(init_parameter, str):
-            # self.energy_total = 0
             # Remove # and newline characters
             init_parameter = init_parameter.rstrip()[1:-1]
             for ch in init_parameter:
                 if ch == '.':
-                    # self.hallway.append(None)
-                    self.hallway = list(self.hallway)
-                    self.hallway.append(None)
-                    self.hallway = tuple(self.hallway)
+                    self.hallway = self.hallway + (None,)
 
                 elif ch in Burrow.AMPHIPOD_LIST:
-                    self.hallway = list(self.hallway)
-                    self.hallway.append(ch)
-                    self.hallway = tuple(self.hallway)
+                    self.hallway = self.hallway + (ch,)
 
                     # Counting amphipods at the start
                     Burrow.AMPHIPOD_COUNT += 1
 
                 else:
                     sys.exit('Bad input character: ' + ch)
-            dummy = 123
 
         # This code is run whenever duplicating a BurrowState.
         # It is intended to be used when a child BurrowState object is being created from a parent BurrowState object.
         elif isinstance(init_parameter, BurrowState):
-            # self.energy_total = init_parameter.energy_total
             self.hallway = copy.deepcopy(init_parameter.hallway)
-            # self.parent = init_parameter.id
         
     def sideroom_init(self, sideroom_str):
         # Process line of input with start of the siderooms.
@@ -164,10 +138,8 @@ class BurrowState:
         for i,ch in enumerate(sideroom_str):
             if ch.isalpha() or ch == '.':
                 # This hallway position is a side room.  Add first amphipod
-                # self.hallway[i-1] = SideRoom(None) if ch=='.' else SideRoom(ch)
-                self.hallway = list(self.hallway)
-                self.hallway[i-1] = SideRoom(None) if ch=='.' else SideRoom(ch)
-                self.hallway = tuple(self.hallway)
+                new_val = SideRoom(None) if ch=='.' else SideRoom(ch)
+                self.hallway = self.hallway[:i-1] + (new_val,) + self.hallway[i:]
 
                 Burrow.SIDEROOM_INDICES.append(i-1)
 
@@ -177,8 +149,6 @@ class BurrowState:
             
             if ch.isalpha():
                 Burrow.AMPHIPOD_COUNT += 1
-
-        dummy = 123
 
         if Burrow.PROBLEM_PART in ['B', 'b']:
             self.sideroom_append('  #D#C#B#A#')
@@ -193,101 +163,16 @@ class BurrowState:
             return
         for i in Burrow.SIDEROOM_INDICES:
             if sideroom_str[i+1] == '.':
-                # self.hallway[i].append(None)
-                self.hallway = list(self.hallway)
-                self.hallway[i].append(None)
-                self.hallway = tuple(self.hallway)
+                self.hallway[i] = self.hallway[i] + (None,)
 
             else:
-                # self.hallway[i].append(sideroom_str[i+1])
-                self.hallway = list(self.hallway)
-                self.hallway[i].append(sideroom_str[i+1])
-                self.hallway = tuple(self.hallway)
-
+                self.hallway[i].amphipod_structure = self.hallway[i].amphipod_structure + (sideroom_str[i+1],)
                 Burrow.AMPHIPOD_COUNT += 1
-            dummy = 123
-
-    # Log contents of BurrowState (write to log file)'
-    # Note that this version should handle siderooms with varying numbers of indices
-    def logging_BurrowState(self, wrap=False):
-        # logging.debug(' ID: ' + str(hex(id(self))))
-
-        # logging.debug(' ' + str(self.parent) + ' ---> ' + str(self.id))
-        # logging.debug(' ID: ' + str(self.id))
-        # logging.debug(' Total Energy: ' + str(self.energy_total))
-
-        # Display top line of '#' characters
-        str_to_log = ''
-        if wrap:
-            str_to_log += '\n'
-        str_to_log += ' ' + '#'*(len(self.hallway)+2) + '|'
-        if wrap:
-            str_to_log += '\n'
-
-        # Traverse the hallway, and display hallway one character at a time
-        str_to_log += ' #'
-        for hallway_space in self.hallway:
-            if hallway_space is None:
-                str_to_log += '.'
-            if isinstance(hallway_space, SideRoom):
-                str_to_log += '.'
-            if isinstance(hallway_space, str):
-                str_to_log += hallway_space
-        str_to_log += '#|'
-        if wrap:
-            str_to_log += '\n'
-
-        j = 0
-        while True:
-            # amp counts siderooms with amphipods visible
-            amp_count = 0
-            # print('#', end='')
-            str_to_log += ' #'
-            for i in range(len(self.hallway)):
-                if i not in Burrow.SIDEROOM_INDICES:
-                    # print('#', end='')
-                    str_to_log += '#'
-                else:
-                    if j < len(self.hallway[i].amphipod_list):
-                        if self.hallway[i].amphipod_list[j] is None:
-                            # print('.', end='')
-                            str_to_log += '.'
-                        else:
-                            # print(self.hallway[i].amphipod_list[j], end='')
-                            str_to_log += self.hallway[i].amphipod_list[j]
-                        amp_count += 1
-                    else:
-                        # print('#', end='')
-                        str_to_log += '#'
-            # print('#')
-            str_to_log += '#|'
-            if wrap:
-                str_to_log += '\n'
-            # logging.debug(str_to_log)
-
-            j += 1
-            # If amp_count is zero, then the length of all siderooms has been exceeded.
-            if amp_count == 0:
-                break
-        if wrap:
-            str_to_log += '\n'
-        logging.debug(str_to_log)
-        logging.debug('')
-        logging.debug('')
 
     # Display contents of BurrowState (by printing)'
     # Note that this version should handle siderooms with varying numbers of indices
     def display(self):
         print()
-        # print('ID: ', end='')
-        # print(hex(id(self)))
-        # print('parent', end='')
-        # print(self.parent)
-        # print('ID: ', end='')
-        # print(self.id)
-        
-        print('Total Energy: ', end='')
-        # print(self.energy_total)
         
         # Display top line of '#' characters
         for i in range(len(self.hallway) + 2):
@@ -315,11 +200,11 @@ class BurrowState:
                 if i not in Burrow.SIDEROOM_INDICES:
                     print('#', end='')
                 else:
-                    if j < len(self.hallway[i].amphipod_list):
-                        if self.hallway[i].amphipod_list[j] is None:
+                    if j < len(self.hallway[i].amphipod_structure):
+                        if self.hallway[i].amphipod_structure[j] is None:
                             print('.', end='')
                         else:
-                            print(self.hallway[i].amphipod_list[j], end='')
+                            print(self.hallway[i].amphipod_structure[j], end='')
                         amp_count += 1
                     else:
                         print('#', end='')
@@ -330,14 +215,6 @@ class BurrowState:
                 break
         print()
     
-    # def detect_completion(self):
-    #     # Shortcut to detect completion, detect if hallway is empty.
-    #     if len(self.hallway) == self.hallway.count(None) + len(Burrow.AMPHIPOD_LIST):
-    #         Burrow.complete_burrowStateID = self.id
-    #         return True
-    #     else:
-    #         return False
-
     def __eq__(self, other):
         return self.hallway == other.hallway
 
@@ -349,7 +226,7 @@ class BurrowState:
             elif isinstance(ele, str):
                 hash_str += ele
             else:
-                for i,ch in enumerate(ele.amphipod_list):
+                for i,ch in enumerate(ele.amphipod_structure):
                     if ch is None:
                         hash_str += 'N'
                     else:
@@ -357,7 +234,6 @@ class BurrowState:
 
                 for j in range(i+1, Burrow.AMPHIPOD_COUNT):
                     hash_str += 'N'
-                dummy = 123
         return hash(hash_str)
 
 # End of class BurrowState
@@ -388,7 +264,6 @@ class Burrow(astar.AStar):
 
     # Note:  it is not necessary to look for obstacles in the SideRoom(s) because that protection is already implemented in class SideRoom.  Therefore this function looks for a character (type str) in any hallway slots between origin and destination.
     def no_hallway_obstacle(self, node2, origin, dest):
-        dummy = 123
         step_dir = 1 if origin[0] < dest[0] else -1
         for i in range(origin[0] + step_dir, dest[0], step_dir):
             if isinstance(node2.hallway[i], str):
@@ -399,42 +274,24 @@ class Burrow(astar.AStar):
         # Remove amphipod from origin
         if origin[1] is None:
             # Remove origin amphipod from hallway
-            pass # TO BE DEFINED LATER ... probably below code
             transfer_amphipod = node2.hallway[origin[0]]
-            # node2.hallway[origin[0]] = None
-            node2.hallway = list(node2.hallway)
-            node2.hallway[origin[0]] = None
-            node2.hallway = tuple(node2.hallway)
+            node2.hallway = node2.hallway[:origin[0]] + (None,) + node2.hallway[origin[0]+1:]
 
         else:
             # Remove origin amphipod from a sideroom
-            # transfer_amphipod = node2.hallway[origin[0]].sideroom_pop()
-            node2.hallway = list(node2.hallway)
             transfer_amphipod = node2.hallway[origin[0]].sideroom_pop()
-            node2.hallway = tuple(node2.hallway)
 
         # Add amphipod at destination
         if dest[1] is None:
-            # node2.hallway[dest[0]] = transfer_amphipod
-            node2.hallway = list(node2.hallway)
-            node2.hallway[dest[0]] = transfer_amphipod
-            node2.hallway = tuple(node2.hallway)
+            node2.hallway = node2.hallway[:dest[0]] + (transfer_amphipod,) + node2.hallway[dest[0]+1:]
         else:
             if transfer_amphipod != Burrow.DEST_AMPH__SIDEROOM_INDEX[dest[0]]:
                 return (False, None)
-            # node2.hallway[dest[0]].amphipod_list[dest[1]] = transfer_amphipod
 
-            node2.hallway = list(node2.hallway)
-            node2.hallway[dest[0]].amphipod_list = list(node2.hallway[dest[0]].amphipod_list)
-            node2.hallway[dest[0]].amphipod_list[dest[1]] = transfer_amphipod
-            node2.hallway[dest[0]].amphipod_list = tuple(node2.hallway[dest[0]].amphipod_list)
-            node2.hallway = tuple(node2.hallway)
+            node2.hallway[dest[0]].amphipod_structure = node2.hallway[dest[0]].amphipod_structure[:dest[1]] + (transfer_amphipod,) + node2.hallway[dest[0]].amphipod_structure[dest[1]+1:] 
 
-
-
-    # For a given node, returns (or yields) the list of its neighbor:
+    # For a given node, returns (or yields) the list of its neighbors:
     def neighbors(self, node):
-        # pass
         ret_val = []
 
         sideroom_origins = self.list_siderooms(node, Location.ORIGIN)
@@ -499,11 +356,11 @@ class Burrow(astar.AStar):
             # 			You have found one of the discrepancies
             # 			You have also identified the amphipod (do for parent only)
             if isinstance(parent_state.hallway[i], SideRoom):
-                for j in range(len(parent_state.hallway[i].amphipod_list)):
-                    if parent_state.hallway[i].amphipod_list[j] != child_state.hallway[i].amphipod_list[j]:
+                for j in range(len(parent_state.hallway[i].amphipod_structure)):
+                    if parent_state.hallway[i].amphipod_structure[j] != child_state.hallway[i].amphipod_structure[j]:
                         discrepancy_list.append((i,j+1))
-                        if type(parent_state.hallway[i].amphipod_list[j]) == str:
-                            amph = parent_state.hallway[i].amphipod_list[j]
+                        if type(parent_state.hallway[i].amphipod_structure[j]) == str:
+                            amph = parent_state.hallway[i].amphipod_structure[j]
             # If parent hallway is a None or str
             # 	If child is different (or alternatively .... opposite type)
             # 		You have found one of the discrepancies
@@ -515,9 +372,6 @@ class Burrow(astar.AStar):
                         amph = parent_state.hallway[i]
 
         steps_traversed = abs(discrepancy_list[0][0] - discrepancy_list[1][0]) + discrepancy_list[0][1] + discrepancy_list[1][1]
-
-        dummy = 123
-
         return steps_traversed * Burrow.AMPHIPOD_ENERGY[amph]
 
     # Computes the estimated (rough) distance/cost between a node and the goal. 
@@ -533,13 +387,11 @@ class Burrow(astar.AStar):
         # Compare current to expected final state 
         for i_hall, hallway_space in enumerate(current.hallway):
             if isinstance(hallway_space, str):
-                # ret_val += 1 + abs(i_hall - Burrow.DEST_AMPH__SIDEROOM_INDEX[hallway_space])
                 ret_val += (1 + abs(i_hall - Burrow.SIDEROOM_INDEX__DEST_AMPH[hallway_space])) * Burrow.AMPHIPOD_ENERGY[hallway_space]
-                dummy = 123
             elif isinstance(hallway_space, SideRoom):
                 no_blocked_amphs_found_yet = True
-                for i_sideroom in range(len(hallway_space.amphipod_list) - 1, -1, -1):
-                    ch = hallway_space.amphipod_list[i_sideroom]
+                for i_sideroom in range(len(hallway_space.amphipod_structure) - 1, -1, -1):
+                    ch = hallway_space.amphipod_structure[i_sideroom]
                     if ch == Burrow.DEST_AMPH__SIDEROOM_INDEX[i_hall]:
                         if no_blocked_amphs_found_yet:
                             continue
@@ -551,10 +403,7 @@ class Burrow(astar.AStar):
 
         return ret_val
 
-
-
     def __init__(self, input_filename, problem_part):
-        # logging.basicConfig(filename='debug.log', filemode = "w", level=logging.DEBUG)
         self.initial_burrowState = None
         Burrow.PROBLEM_PART = problem_part
 
@@ -578,16 +427,13 @@ class Burrow(astar.AStar):
                         sys.exit('Bad input!')
                     
                     # Create the first BurrowState
-                    # self.active_burrowStates.append(BurrowState(in_string))
                     self.initial_burrowState = BurrowState(in_string)
                     self.states_awaiting_next_move_analysis = [self.initial_burrowState]
 
                 elif row_num == 2:
-                    # self.active_burrowStates[0].sideroom_init(in_string)
                     self.initial_burrowState.sideroom_init(in_string)
 
                 else:
-                    # self.active_burrowStates[0].sideroom_append(in_string)
                     self.initial_burrowState.sideroom_append(in_string)
 
     # This gets a list of siderooms that can give up an amphipod (origin) or receive an amphipod (dest)
@@ -599,11 +445,10 @@ class Burrow(astar.AStar):
             
             if location == Location.ORIGIN:
                 if sideroom_index is not None: # sideroom space has an amphipod
-                    ret_val.append((hallway_index, sideroom_index, burrowState.hallway[hallway_index].amphipod_list[sideroom_index]))
+                    ret_val.append((hallway_index, sideroom_index, burrowState.hallway[hallway_index].amphipod_structure[sideroom_index]))
                     dummy = 123
             else: # if destination
                 if sideroom_index is not None:
-                    # ret_val.append((hallway_index, sideroom_index, burrowState.hallway[hallway_index].amphipod_list[sideroom_index]))
                     ret_val.append((hallway_index, sideroom_index, self.DEST_AMPH__SIDEROOM_INDEX[hallway_index]))
 
         dummy = 123
@@ -631,11 +476,11 @@ class Burrow(astar.AStar):
             # 			You have found one of the discrepancies
             # 			You have also identified the amphipod (do for parent only)
             if isinstance(parent_state.hallway[i], SideRoom):
-                for j in range(len(parent_state.hallway[i].amphipod_list)):
-                    if parent_state.hallway[i].amphipod_list[j] != child_state.hallway[i].amphipod_list[j]:
+                for j in range(len(parent_state.hallway[i].amphipod_structure)):
+                    if parent_state.hallway[i].amphipod_structure[j] != child_state.hallway[i].amphipod_structure[j]:
                         discrepancy_list.append((i,j+1))
-                        if type(parent_state.hallway[i].amphipod_list[j]) == str:
-                            amph = parent_state.hallway[i].amphipod_list[j]
+                        if type(parent_state.hallway[i].amphipod_structure[j]) == str:
+                            amph = parent_state.hallway[i].amphipod_structure[j]
             # If parent hallway is a None or str
             # 	If child is different (or alternatively .... opposite type)
             # 		You have found one of the discrepancies
@@ -648,17 +493,11 @@ class Burrow(astar.AStar):
 
         steps_traversed = abs(discrepancy_list[0][0] - discrepancy_list[1][0]) + discrepancy_list[0][1] + discrepancy_list[1][1]
 
-        dummy = 123
-
         return steps_traversed * Burrow.AMPHIPOD_ENERGY[amph]
 
 # End of class Burrow
 
 def burrowState_compare(this_burrow, new_burrow):
-    # logging.debug('this_burrow:')
-    # this_burrow.logging_BurrowState(wrap=True)
-    # logging.debug('new_burrow:')
-    # new_burrow.logging_BurrowState(wrap=True)
     this_hallway = this_burrow.hallway
     new_hallway = new_burrow.hallway
     for i in range(len(this_hallway)):
@@ -671,55 +510,27 @@ def create_final_burrowState():
     for i in range(len(Burrow.AMPHIPOD_LIST)):
 
         # Get length of Sideroom in initial state (To support varying Sideroom lengths)
-        sideroom_length = len(theBurrow.initial_burrowState.hallway[Burrow.SIDEROOM_INDICES[i]].amphipod_list)
-
-        # ret_val.hallway[Burrow.SIDEROOM_INDICES[i]] = SideRoom([Burrow.AMPHIPOD_LIST[i]]*sideroom_length)
-
-        ret_val.hallway = list(ret_val.hallway)
-        ret_val.hallway[Burrow.SIDEROOM_INDICES[i]] = SideRoom([Burrow.AMPHIPOD_LIST[i]]*sideroom_length)
-        ret_val.hallway = tuple(ret_val.hallway)
-
-        # Burrow.AMPHIPOD_LIST[i]
-        # Burrow.SIDEROOM_INDICES[i]
-        dummy = 123
+        sideroom_length = len(theBurrow.initial_burrowState.hallway[Burrow.SIDEROOM_INDICES[i]].amphipod_structure)
+        ret_val.hallway = ret_val.hallway[:Burrow.SIDEROOM_INDICES[i]] + (SideRoom([Burrow.AMPHIPOD_LIST[i]]*sideroom_length),) + ret_val.hallway[Burrow.SIDEROOM_INDICES[i]+1:]
     return ret_val
 
 theBurrow = Burrow('input_sample0.txt', 'B')
 theBurrow.final_burrowState = create_final_burrowState()
 theBurrow.initial_burrowState.display()
-# logging.debug(' Initial Burrow State:')
-# theBurrow.initial_burrowState.logging_BurrowState(wrap=True)
 
 # Testing code
 # neighbors = theBurrow.neighbors(theBurrow.initial_burrowState)
 # for neighbor in neighbors:
-#     # neighbor.logging_BurrowState(wrap=True)
 #     distance = theBurrow.distance_between(theBurrow.initial_burrowState, neighbor)
 #     dummy = 123
 
-# Testing
-hash((4,None, 5, ('a','b')))
-# hash(theBurrow.initial_burrowState)
-
 # Running code
 path = list(theBurrow.astar(theBurrow.initial_burrowState, theBurrow.final_burrowState))
-# print (len(path))
-
-# while len(theBurrow.states_awaiting_next_move_analysis) > 0:
-#     theBurrow.next_move()
-
-
-
-
-# print('Lowest energy found is: ', end='')
-# print(theBurrow.burrowState_lookup[Burrow.complete_burrowStateID].energy_total)
-
-dummy = 123
 
 energy_total = 0
 for i in range(len(path)-1):
     energy_total += theBurrow.energy_diff(path[i], path[i+1])
-    print( theBurrow.energy_diff(path[i], path[i+1]) )
+    # print( theBurrow.energy_diff(path[i], path[i+1]) )    # Use to see energy values, as they appear
 
 print('Total energy = ', end='')
 print(energy_total)
