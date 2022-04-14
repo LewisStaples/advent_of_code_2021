@@ -32,33 +32,34 @@ for player1_score in range(20, -1, -1):
                 player1_wins = 0
                 player2_wins = 0
                 for roll1 in range(1, 4):
-                    # player1_score_round = (player1_score + roll1)
-                    player1_space_round = handle_space_overflow(player1_space + roll1)
-                    player1_score_round = player1_score + player1_space_round
+                    for roll2 in range(1, 4):
+                        for roll3 in range(1, 4):
+                            player1_space_round = handle_space_overflow(player1_space + roll1 + roll2 + roll3)
+                            player1_score_round = player1_score + player1_space_round
 
-                    # print(roll1, end=': ')
-                    if player1_score_round > 20:
-                        player1_wins += 1
-                    else:
-                        for roll2 in range(1, 4):
-                            # player2_score_round = (player2_score + roll2)
-                            player2_space_round = handle_space_overflow(player2_space + roll2)
-                            player2_score_round = player2_score + player2_space_round
-                            if player2_score_round > 20:
-                                player2_wins += 1
+                            if player1_score_round > 20:
+                                player1_wins += 1
                             else:
-                                try:
-                                    player2_wins += game_outcome_dict[Roll_Input(player1_score_round, player2_score_round,player1_space_round, player2_space_round)].PlayerTwoWinCount
-                                except KeyError:
-                                    print('Error!')
-                                    print(player1_score_round)
-                                    print(player2_score_round)
-                                    print(player1_space_round)
-                                    print(player2_space_round)
-                                    sys.exit('KeyError!')
+                                for roll4 in range(1, 4):
+                                    for roll5 in range(1, 4):
+                                        for roll6 in range(1, 4):
+                                            player2_space_round = handle_space_overflow(player2_space + roll4 + roll5 + roll6)
+                                            player2_score_round = player2_score + player2_space_round
+                                            if player2_score_round > 20:
+                                                player2_wins += 1
+                                            else:
+                                                try:
+                                                    player2_wins += game_outcome_dict[Roll_Input(player1_score_round, player2_score_round, player1_space_round, player2_space_round)].PlayerTwoWinCount
+                                                except KeyError:
+                                                    print('Error!')
+                                                    print(player1_score_round)
+                                                    print(player2_score_round)
+                                                    print(player1_space_round)
+                                                    print(player2_space_round)
+                                                    sys.exit('KeyError!')
 
-                                player1_wins += game_outcome_dict[Roll_Input(player1_score_round, player2_score_round,player1_space_round, player2_space_round)].PlayerOneWinCount
-                    game_outcome_dict[this_roll_input] = Roll_Output(player1_wins, player2_wins) # player one has won
+                                                player1_wins += game_outcome_dict[Roll_Input(player1_score_round, player2_score_round,player1_space_round, player2_space_round)].PlayerOneWinCount
+                            game_outcome_dict[this_roll_input] = Roll_Output(player1_wins, player2_wins) # player one has won
 
 dummy = 123
 
