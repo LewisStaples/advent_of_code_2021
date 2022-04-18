@@ -3,6 +3,7 @@
 
 import re
 import math
+import sys
 
 class Scanner:
     def __init__(self):
@@ -36,12 +37,52 @@ def get_scanner_pair():
                 return (this_scanner_transformed, this_scanner_untransformed)
 
 def transform(this_scanner_transformed, this_scanner_untransformed):
-    # Find two edges that are in both scanners
+    # Look for two connected edges in both the transformed and untransformed scanners
     lengths_squared_in_common = this_scanner_transformed.lengths_squared.intersection(this_scanner_untransformed.lengths_squared)
-    edge0 = lengths_squared_in_common.pop()
-    edge1 = lengths_squared_in_common.pop()
+    edge0_length = lengths_squared_in_common.pop()
+    edge0_tr = this_scanner_transformed.edges[edge0_length]
+    edge1_tr = edge0_untr = edge1_untr = None
+    for edge1_length in lengths_squared_in_common:
+        if edge0_tr[0] in this_scanner_transformed.edges[edge1_length]:
+            edge1_tr = this_scanner_transformed.edges[edge1_length]
+            edge0_untr = this_scanner_untransformed.edges[edge0_length]
+            edge1_untr = this_scanner_untransformed.edges[edge1_length]
+            break # found edge1 (no need to look for any other acceptable edge1 possibilities)
 
-    # Find a point that is in edge0 and edge1.  This point is now known for both scanners, as well as two other points (the points that are in one edge and not the other one)
+    # Identify three beacons (points) that are represented in both the transformed and untransformed scanners by creating a list of three 2-tuples (tr. vs. untr.) of 3-tuples (3 coordinates, defining location of the beacon).
+    beacon_list = []
+    tr_middle = set(edge0_tr).intersection(set(edge1_tr)).pop()
+    untr_middle = set(edge0_untr).intersection(set(edge1_untr)).pop()
+
+    # Indicating point where edge0 and edge1 meet
+    beacon_list.append(
+        (this_scanner_untransformed.point_list[untr_middle],
+        this_scanner_transformed.point_list[tr_middle])
+    )
+
+    tr_0 = list(edge0_tr)
+    tr_0.remove(tr_middle)
+    tr_0 = tr_0.pop()
+    untr_0 = list(edge0_untr)
+    untr_0.remove(untr_middle)
+    untr_0 = untr_0.pop()
+    beacon_list.append(
+        (this_scanner_untransformed.point_list[untr_0],
+        this_scanner_transformed.point_list[tr_0])
+    )
+
+    tr_1 = list(edge1_tr)
+    tr_1.remove(tr_middle)
+    tr_1 = tr_1.pop()
+    untr_1 = list(edge1_untr)
+    untr_1.remove(untr_middle)
+    untr_1 = untr_1.pop()
+    beacon_list.append(
+        (this_scanner_untransformed.point_list[untr_1],
+        this_scanner_transformed.point_list[tr_1])
+    )
+
+    dummy = 123
 
     # Use one of these points to define the (x,y) displacement between the scanners.  Use this (x,y) displacement, along with the 24 available rotations to identify the rotation that works for the other two untransformed points.
 
@@ -53,6 +94,8 @@ def transform(this_scanner_transformed, this_scanner_untransformed):
 
 # reading input from the input file
 input_filename='input.txt'
+print('Using input file ', end='')
+print(input_filename)
 with open(input_filename) as f:
     # pull in each line from the input file
     for in_string in f:
