@@ -85,13 +85,25 @@ def transform(this_scanner_transformed, this_scanner_untransformed):
 
     # Use one of these points to define the (x,y) displacement between the scanners.  
     displacement = []
+    original__beacon_list = copy.deepcopy(beacon_list)
+    dummy = 123
     for i in range(len(beacon_list[0][0])):
-        displacement.append(beacon_list[0][0][i] - beacon_list[0][1][i])
-    for i in range(len(beacon_list)):
-        for j in range(len(beacon_list[0])):
-            for k in range(len(beacon_list[0][0])):
-                beacon_list[i][j][k] -= displacement[k]
-                
+        displacement.append(0 - beacon_list[0][0][i] + beacon_list[0][1][i])
+        # for first of three points ...
+        beacon_list[0][0][i] = original__beacon_list[0][0][i] + displacement[i]
+    
+    dummy = 123
+    
+    # Below code works for first scanner pair (as a step to developing the general approach)
+    for i in range(1, len(beacon_list[0][0])):
+        # for remaining beacons first component for first scanner pair ....
+        beacon_list[i][0][0] = original__beacon_list[i][0][2] - original__beacon_list[0][0][2] + original__beacon_list[0][0][0] + displacement[0]
+        # for remaining beacons second component for first scanner pair ....
+        beacon_list[i][0][1] = original__beacon_list[i][0][1] + displacement[1]
+        # for remaining beacons third component for first scanner pair ....
+        beacon_list[i][0][2] = 0 - original__beacon_list[i][0][0] + original__beacon_list[0][0][0] + original__beacon_list[0][0][2] + displacement[2]
+
+
     # Use the above (x,y) displacement, along with the 24 available rotations to identify the rotation that works for the other two untransformed points.
 
     # Apply the known (x,y) displacement and rotation to all untransformed points
