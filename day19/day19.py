@@ -4,6 +4,7 @@
 import re
 import math
 import sys
+import copy
 
 class Scanner:
     def __init__(self):
@@ -11,8 +12,8 @@ class Scanner:
         self.edges = dict()
         self.lengths_squared = set()
 
-    def load_point(self, point_tuple):
-        self.point_list.append(point_tuple)
+    def load_point(self, point):
+        self.point_list.append(point)
 
     def determine_edges(self):
         for p1_index in range(len(self.point_list) - 1):
@@ -56,8 +57,8 @@ def transform(this_scanner_transformed, this_scanner_untransformed):
 
     # Indicating point where edge0 and edge1 meet
     beacon_list.append(
-        (this_scanner_untransformed.point_list[untr_middle],
-        this_scanner_transformed.point_list[tr_middle])
+        [this_scanner_untransformed.point_list[untr_middle],
+        this_scanner_transformed.point_list[tr_middle]]
     )
 
     tr_0 = list(edge0_tr)
@@ -67,8 +68,8 @@ def transform(this_scanner_transformed, this_scanner_untransformed):
     untr_0.remove(untr_middle)
     untr_0 = untr_0.pop()
     beacon_list.append(
-        (this_scanner_untransformed.point_list[untr_0],
-        this_scanner_transformed.point_list[tr_0])
+        [this_scanner_untransformed.point_list[untr_0],
+        this_scanner_transformed.point_list[tr_0]]
     )
 
     tr_1 = list(edge1_tr)
@@ -78,13 +79,20 @@ def transform(this_scanner_transformed, this_scanner_untransformed):
     untr_1.remove(untr_middle)
     untr_1 = untr_1.pop()
     beacon_list.append(
-        (this_scanner_untransformed.point_list[untr_1],
-        this_scanner_transformed.point_list[tr_1])
+        [this_scanner_untransformed.point_list[untr_1],
+        this_scanner_transformed.point_list[tr_1]]
     )
 
-    dummy = 123
-
-    # Use one of these points to define the (x,y) displacement between the scanners.  Use this (x,y) displacement, along with the 24 available rotations to identify the rotation that works for the other two untransformed points.
+    # Use one of these points to define the (x,y) displacement between the scanners.  
+    displacement = []
+    for i in range(len(beacon_list[0][0])):
+        displacement.append(beacon_list[0][0][i] - beacon_list[0][1][i])
+    for i in range(len(beacon_list)):
+        for j in range(len(beacon_list[0])):
+            for k in range(len(beacon_list[0][0])):
+                beacon_list[i][j][k] -= displacement[k]
+                
+    # Use the above (x,y) displacement, along with the 24 available rotations to identify the rotation that works for the other two untransformed points.
 
     # Apply the known (x,y) displacement and rotation to all untransformed points
 
@@ -106,7 +114,7 @@ with open(input_filename) as f:
         if re.match('--- scanner', in_string):
             scannerListUntransformed.append(Scanner())
         else:
-            scannerListUntransformed[-1].load_point(tuple([int(x) for x in in_string.split(',')]))
+            scannerListUntransformed[-1].load_point(list([int(x) for x in in_string.split(',')]))
     # get last line
     scannerListUntransformed[-1].determine_edges()
 
