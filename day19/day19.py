@@ -34,7 +34,7 @@ REQUIRED_NUMBER_OF_EQUAL_LENGTH_EDGES = 66
 def get_scanner_pair():
     for this_scanner_transformed in scannerListTransformed:
         for this_scanner_untransformed in scannerListUntransformed:
-            if len(this_scanner_transformed.lengths_squared.intersection(this_scanner_untransformed.lengths_squared)) > 11:
+            if len(this_scanner_transformed.lengths_squared.intersection(this_scanner_untransformed.lengths_squared)) > 65:
                 return (this_scanner_transformed, this_scanner_untransformed)
 
 def get_signs_shifts(beacon_trio, displacement):
