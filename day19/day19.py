@@ -103,15 +103,6 @@ def transform(this_scanner_transformed, this_scanner_untransformed):
     dummy = 123
 
     signs, shifts = get_signs_shifts(beacon_trio, displacement)
-    # for signs in ((1,1,1),(1,1,-1),(1,-1,1),(-1,1,1),(-1,-1,1),(-1,1,-1), (1,-1,-1),(-1,-1,-1)):
-    #     for shifts in ((0,1,2),(0,2,1),(1,0,2),(1,2,0),(2,0,1),(2,1,0)):
-    #         for i in range(1, 3):
-    #             if beacon_trio[i][1] == [
-    #                 signs[0]*(original__beacon_trio[i][0][shifts[0]] - original__beacon_trio[0][0][shifts[0]]) + original__beacon_trio[0][0][0] + displacement[0],
-    #                 signs[1]*(original__beacon_trio[i][0][shifts[1]] - original__beacon_trio[0][0][shifts[1]]) + original__beacon_trio[0][0][1] + displacement[1],
-    #                 signs[2]*(original__beacon_trio[i][0][shifts[2]] - original__beacon_trio[0][0][shifts[2]]) + original__beacon_trio[0][0][2] + displacement[2]
-    #             ]:
-    #                 dummy = 123
 
     # Apply the known (x,y) displacement and rotation to all untransformed points
     # (And for testing only .... verify that there are at least 12 points in common)
@@ -123,21 +114,24 @@ def transform(this_scanner_transformed, this_scanner_untransformed):
         beacon[0] = signs[0]*(beacon_copy[shifts[0]] - original__beacon_trio[0][0][shifts[0]]) + original__beacon_trio[0][0][0] + displacement[0]
 
         # for remaining beacons second component for first scanner pair ....
-        # beacon[1] = beacon_copy[1] + displacement[1]
         beacon[1] = signs[1]*(beacon_copy[shifts[1]] - original__beacon_trio[0][0][shifts[1]]) + original__beacon_trio[0][0][1] + displacement[1]
 
         # for remaining beacons third component for first scanner pair ....
-        # beacon[2] = 0 - beacon_copy[0] + original__beacon_trio[0][0][0] + original__beacon_trio[0][0][2] + displacement[2]
         beacon[2] = signs[2]*(beacon_copy[shifts[2]] - original__beacon_trio[0][0][shifts[2]]) + original__beacon_trio[0][0][2] + displacement[2]
 
         if beacon in this_scanner_transformed.point_list:
             point_match_count += 1
 
-    print(point_match_count)
-
     # Relabel the untransformed scanner list as now having been transformed
     scannerListTransformed.append(this_scanner_untransformed)
     scannerListUntransformed.remove(this_scanner_untransformed)
+
+    # return beacon_trio[0][0]
+    scanner_point = [0,0,0]
+    scanner_point[0] = signs[0]*(0 - original__beacon_trio[0][0][shifts[0]]) + original__beacon_trio[0][0][0] + displacement[0]
+    scanner_point[1] = signs[1]*(0 - original__beacon_trio[0][0][shifts[1]]) + original__beacon_trio[0][0][1] + displacement[1]
+    scanner_point[2] = signs[2]*(0 - original__beacon_trio[0][0][shifts[2]]) + original__beacon_trio[0][0][2] + displacement[2]
+    return scanner_point
 
 # reading input from the input file
 input_filename='input.txt'
@@ -160,11 +154,36 @@ with open(input_filename) as f:
 # Remove one Scanner from cannerListUntransformed and add it as-is to cannerListTransformed
 this_scanner_untransformed = scannerListUntransformed.pop()
 scannerListTransformed.append(this_scanner_untransformed)
+scanners = [[0,0,0]]
 dummy = 123
 
 while len(scannerListUntransformed) > 0:
     scanner_pair = get_scanner_pair()
-    transform(*scanner_pair)
+    scanners.append(transform(*scanner_pair))
+    dummy = 123
 
-print('The answer is:')
-print('(To be determined)')
+all_points = set()
+while len(scannerListTransformed) > 0:
+    this_scanner = scannerListTransformed.pop()
+    for this_point in this_scanner.point_list:
+        dummy = 123
+        all_points.add(tuple(this_point))
+
+print('The answer to part (a) is:', end=' ')
+print(len(all_points))
+
+max_manhattan_distance = 0
+while len(scanners) > 0:
+    this_scanner = scanners.pop()
+    for scanner2 in scanners:
+        max_manhattan_distance = max(max_manhattan_distance, 
+            abs(this_scanner[0] - scanner2[0]) +
+            abs(this_scanner[1] - scanner2[1]) +
+            abs(this_scanner[2] - scanner2[2])
+        )
+        dummy = 123
+dummy = 123
+
+print('The answer to part (b) is:', end=' ')
+print(max_manhattan_distance)
+print()
