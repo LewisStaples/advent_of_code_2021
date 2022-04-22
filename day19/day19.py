@@ -37,6 +37,17 @@ def get_scanner_pair():
             if len(this_scanner_transformed.lengths_squared.intersection(this_scanner_untransformed.lengths_squared)) > 11:
                 return (this_scanner_transformed, this_scanner_untransformed)
 
+def get_signs_shifts(beacon_trio, displacement):
+    for signs in ((1,1,1),(1,1,-1),(1,-1,1),(-1,1,1),(-1,-1,1),(-1,1,-1), (1,-1,-1),(-1,-1,-1)):
+        for shifts in ((0,1,2),(0,2,1),(1,0,2),(1,2,0),(2,0,1),(2,1,0)):
+            for i in range(1, 3):
+                if beacon_trio[i][1] == [
+                    signs[0]*(beacon_trio[i][0][shifts[0]] - beacon_trio[0][0][shifts[0]]) + beacon_trio[0][0][0] + displacement[0],
+                    signs[1]*(beacon_trio[i][0][shifts[1]] - beacon_trio[0][0][shifts[1]]) + beacon_trio[0][0][1] + displacement[1],
+                    signs[2]*(beacon_trio[i][0][shifts[2]] - beacon_trio[0][0][shifts[2]]) + beacon_trio[0][0][2] + displacement[2]
+                ]:
+                    return (signs, shifts)
+
 def transform(this_scanner_transformed, this_scanner_untransformed):
     # Look for two connected edges in both the transformed and untransformed scanners
     lengths_squared_in_common = this_scanner_transformed.lengths_squared.intersection(this_scanner_untransformed.lengths_squared)
@@ -51,12 +62,12 @@ def transform(this_scanner_transformed, this_scanner_untransformed):
             break # found edge1 (no need to look for any other acceptable edge1 possibilities)
 
     # Identify three beacons (points) that are represented in both the transformed and untransformed scanners by creating a list of three 2-tuples (tr. vs. untr.) of 3-tuples (3 coordinates, defining location of the beacon).
-    beacon_list = []
+    beacon_trio = []
     tr_middle = set(edge0_tr).intersection(set(edge1_tr)).pop()
     untr_middle = set(edge0_untr).intersection(set(edge1_untr)).pop()
 
     # Indicating point where edge0 and edge1 meet
-    beacon_list.append(
+    beacon_trio.append(
         [this_scanner_untransformed.point_list[untr_middle],
         this_scanner_transformed.point_list[tr_middle]]
     )
@@ -67,7 +78,7 @@ def transform(this_scanner_transformed, this_scanner_untransformed):
     untr_0 = list(edge0_untr)
     untr_0.remove(untr_middle)
     untr_0 = untr_0.pop()
-    beacon_list.append(
+    beacon_trio.append(
         [this_scanner_untransformed.point_list[untr_0],
         this_scanner_transformed.point_list[tr_0]]
     )
@@ -78,42 +89,29 @@ def transform(this_scanner_transformed, this_scanner_untransformed):
     untr_1 = list(edge1_untr)
     untr_1.remove(untr_middle)
     untr_1 = untr_1.pop()
-    beacon_list.append(
+    beacon_trio.append(
         [this_scanner_untransformed.point_list[untr_1],
         this_scanner_transformed.point_list[tr_1]]
     )
 
     # Use one of these points to define the (x,y) displacement between the scanners.  
     displacement = []
-    original__beacon_list = copy.deepcopy(beacon_list)
+    original__beacon_trio = copy.deepcopy(beacon_trio)
     dummy = 123
-    # print('(')
-    for i in range(len(beacon_list[0][0])):
-        displacement.append(0 - beacon_list[0][0][i] + beacon_list[0][1][i])
-        # for first of three points ...
-        # print(original__beacon_list[0][0][i] + displacement[i], end=',')
-    # print(')')
+    for i in range(len(beacon_trio[0][0])):
+        displacement.append(0 - beacon_trio[0][0][i] + beacon_trio[0][1][i])
     dummy = 123
 
-    # # Use the above (x,y) displacement, along with the 24 available rotations to identify the rotation that works for the other two untransformed points.
-    # # Below code works for first scanner pair (as a step to developing the general approach)
-    # for i in range(1, len(beacon_list[0][0])):
-    #     # for remaining beacons first component for first scanner pair ....
-    #     print('(', end='')
-    #     print(original__beacon_list[i][0][2] - original__beacon_list[0][0][2] + original__beacon_list[0][0][0] + displacement[0], end=',')
-    #     # beacon_list[i][0][0] = original__beacon_list[i][0][2] - original__beacon_list[0][0][2] + original__beacon_list[0][0][0] + displacement[0]
-    #     # for remaining beacons second component for first scanner pair ....
-    #     # beacon_list[i][0][1] = 
-    #     print(original__beacon_list[i][0][1] + displacement[1], end=',')
-    #     # beacon_list[i][0][1] = original__beacon_list[i][0][1] + displacement[1]
-    #     # for remaining beacons third component for first scanner pair ....
-    #     # beacon_list[i][0][2] = 
-    #     print(0 - original__beacon_list[i][0][0] + original__beacon_list[0][0][0] + original__beacon_list[0][0][2] + displacement[2], end=')\n')
-    #     # beacon_list[i][0][2] = 0 - original__beacon_list[i][0][0] + original__beacon_list[0][0][0] + original__beacon_list[0][0][2] + displacement[2]
-
-    dummy = 123
-
-
+    signs, shifts = get_signs_shifts(beacon_trio, displacement)
+    # for signs in ((1,1,1),(1,1,-1),(1,-1,1),(-1,1,1),(-1,-1,1),(-1,1,-1), (1,-1,-1),(-1,-1,-1)):
+    #     for shifts in ((0,1,2),(0,2,1),(1,0,2),(1,2,0),(2,0,1),(2,1,0)):
+    #         for i in range(1, 3):
+    #             if beacon_trio[i][1] == [
+    #                 signs[0]*(original__beacon_trio[i][0][shifts[0]] - original__beacon_trio[0][0][shifts[0]]) + original__beacon_trio[0][0][0] + displacement[0],
+    #                 signs[1]*(original__beacon_trio[i][0][shifts[1]] - original__beacon_trio[0][0][shifts[1]]) + original__beacon_trio[0][0][1] + displacement[1],
+    #                 signs[2]*(original__beacon_trio[i][0][shifts[2]] - original__beacon_trio[0][0][shifts[2]]) + original__beacon_trio[0][0][2] + displacement[2]
+    #             ]:
+    #                 dummy = 123
 
     # Apply the known (x,y) displacement and rotation to all untransformed points
     # (And for testing only .... verify that there are at least 12 points in common)
@@ -121,24 +119,21 @@ def transform(this_scanner_transformed, this_scanner_untransformed):
     point_match_count = 0
     for beacon in this_scanner_untransformed.point_list:
         beacon_copy = copy.deepcopy(beacon)
-        # beacon.clear()
-        # beacon.extend([0,0,0])
-
         # for remaining beacons first component for first scanner pair ....
-        # print(beacon[0], end=', replaced by ')
-        # print(original__beacon_list[i][0][2] - original__beacon_list[0][0][2] + beacon_copy[0] + displacement[0])
-        beacon[0] = beacon_copy[2] - original__beacon_list[0][0][2] + original__beacon_list[0][0][0] + displacement[0]
+        beacon[0] = signs[0]*(beacon_copy[shifts[0]] - original__beacon_trio[0][0][shifts[0]]) + original__beacon_trio[0][0][0] + displacement[0]
+
         # for remaining beacons second component for first scanner pair ....
-        # print(beacon[1], end=', replaced by ')
-        # print(beacon_copy[1] + displacement[1])
-        beacon[1] = beacon_copy[1] + displacement[1]
+        # beacon[1] = beacon_copy[1] + displacement[1]
+        beacon[1] = signs[1]*(beacon_copy[shifts[1]] - original__beacon_trio[0][0][shifts[1]]) + original__beacon_trio[0][0][1] + displacement[1]
+
         # for remaining beacons third component for first scanner pair ....
-        # print(beacon[2], end=', replaced by ')
-        # print(0 - original__beacon_list[i][0][0] + original__beacon_list[0][0][0] + beacon_copy[2] + displacement[2])
-        beacon[2] = 0 - beacon_copy[0] + original__beacon_list[0][0][0] + original__beacon_list[0][0][2] + displacement[2]
+        # beacon[2] = 0 - beacon_copy[0] + original__beacon_trio[0][0][0] + original__beacon_trio[0][0][2] + displacement[2]
+        beacon[2] = signs[2]*(beacon_copy[shifts[2]] - original__beacon_trio[0][0][shifts[2]]) + original__beacon_trio[0][0][2] + displacement[2]
 
         if beacon in this_scanner_transformed.point_list:
             point_match_count += 1
+
+    print(point_match_count)
 
     # Relabel the untransformed scanner list as now having been transformed
     scannerListTransformed.append(this_scanner_untransformed)
