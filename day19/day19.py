@@ -23,7 +23,6 @@ class Scanner:
                     length_squared += (self.point_list[p1_index][comp_index] - self.point_list[p2_index][comp_index])**2
                 self.edges[length_squared] = (p1_index, p2_index)
                 self.lengths_squared.add(length_squared)
-        dummy = 123
 
 scannerListUntransformed = []
 scannerListTransformed = []
@@ -97,10 +96,8 @@ def transform(this_scanner_transformed, this_scanner_untransformed):
     # Use one of these points to define the (x,y) displacement between the scanners.  
     displacement = []
     original__beacon_trio = copy.deepcopy(beacon_trio)
-    dummy = 123
     for i in range(len(beacon_trio[0][0])):
         displacement.append(0 - beacon_trio[0][0][i] + beacon_trio[0][1][i])
-    dummy = 123
 
     signs, shifts = get_signs_shifts(beacon_trio, displacement)
 
@@ -126,7 +123,6 @@ def transform(this_scanner_transformed, this_scanner_untransformed):
     scannerListTransformed.append(this_scanner_untransformed)
     scannerListUntransformed.remove(this_scanner_untransformed)
 
-    # return beacon_trio[0][0]
     scanner_point = [0,0,0]
     scanner_point[0] = signs[0]*(0 - original__beacon_trio[0][0][shifts[0]]) + original__beacon_trio[0][0][0] + displacement[0]
     scanner_point[1] = signs[1]*(0 - original__beacon_trio[0][0][shifts[1]]) + original__beacon_trio[0][0][1] + displacement[1]
@@ -135,8 +131,7 @@ def transform(this_scanner_transformed, this_scanner_untransformed):
 
 # reading input from the input file
 input_filename='input.txt'
-print('Using input file ', end='')
-print(input_filename)
+print(f"Using input file {input_filename}")
 with open(input_filename) as f:
     # pull in each line from the input file
     for in_string in f:
@@ -155,22 +150,17 @@ with open(input_filename) as f:
 this_scanner_untransformed = scannerListUntransformed.pop()
 scannerListTransformed.append(this_scanner_untransformed)
 scanners = [[0,0,0]]
-dummy = 123
 
 while len(scannerListUntransformed) > 0:
     scanner_pair = get_scanner_pair()
     scanners.append(transform(*scanner_pair))
-    dummy = 123
 
 all_points = set()
 while len(scannerListTransformed) > 0:
     this_scanner = scannerListTransformed.pop()
     for this_point in this_scanner.point_list:
-        dummy = 123
         all_points.add(tuple(this_point))
-
-print('The answer to part (a) is:', end=' ')
-print(len(all_points))
+print(f'The answer to part (a) is: {len(all_points)}')
 
 max_manhattan_distance = 0
 while len(scanners) > 0:
@@ -181,9 +171,6 @@ while len(scanners) > 0:
             abs(this_scanner[1] - scanner2[1]) +
             abs(this_scanner[2] - scanner2[2])
         )
-        dummy = 123
-dummy = 123
 
-print('The answer to part (b) is:', end=' ')
-print(max_manhattan_distance)
-print()
+print(f'The answer to part (b) is: {max_manhattan_distance}\n')
+
